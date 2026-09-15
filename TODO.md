@@ -2,9 +2,9 @@
 
 ## Core build (in order)
 - [x] Plan written (PLAN.md)
-- [ ] Data layer: seeded PRNG, scouts, deals, notifications, risks, aggregates
-- [ ] App shell: theme tokens, sidebar, topbar, layout wiring
-- [ ] Overview: summary strip + system map
+- [x] Data layer: seeded PRNG, scouts, deals, notifications, risks, aggregates
+- [x] App shell: theme tokens, sidebar, topbar, layout wiring
+- [x] Overview: summary strip + system map
 - [ ] Detail: Scout Network
 - [ ] Detail: Incentive Engine
 - [ ] Detail: Deal Workflow
