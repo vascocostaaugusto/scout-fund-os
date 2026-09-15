@@ -1,0 +1,123 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { NAV_NODES } from "@/lib/nav";
+import { CONNECTIONS } from "@/lib/connections";
+import { cn } from "@/lib/utils";
+
+const RADIUS = 40; // percent of container
+const CENTER = 50;
+
+function positionFor(index: number, total: number) {
+  const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
+  const x = CENTER + RADIUS * Math.cos(angle);
+  const y = CENTER + RADIUS * Math.sin(angle) * 0.82; // slight ellipse for widescreen
+  return { x, y };
+}
+
+const positions = NAV_NODES.map((_, i) => positionFor(i, NAV_NODES.length));
+const slugToIndex = new Map(NAV_NODES.map((n, i) => [n.slug, i]));
+
+export function SystemMap() {
+  const [hovered, setHovered] = useState<string | null>(null);
+
+  const connectedSlugs = new Set<string>();
+  if (hovered) {
+    connectedSlugs.add(hovered);
+    for (const c of CONNECTIONS[hovered] ?? []) connectedSlugs.add(c.slug);
+  }
+
+  return (
+    <div className="relative mx-auto aspect-[16/10] w-full max-w-5xl select-none">
+      <svg
+        className="absolute inset-0 h-full w-full overflow-visible"
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+      >
+        {/* hub -> node spokes */}
+        {positions.map((p, i) => {
+          const slug = NAV_NODES[i].slug;
+          const active = hovered === null || connectedSlugs.has(slug);
+          return (
+            <line
+              key={`spoke-${slug}`}
+              x1={CENTER}
+              y1={CENTER}
+              x2={p.x}
+              y2={p.y}
+              stroke="var(--border)"
+              strokeWidth={hovered === slug ? 0.5 : 0.3}
+              opacity={active ? (hovered === slug ? 0.9 : 0.5) : 0.15}
+              vectorEffect="non-scaling-stroke"
+            />
+          );
+        })}
+        {/* cross-connections between related nodes */}
+        {Object.entries(CONNECTIONS).flatMap(([slug, conns]) =>
+          conns
+            .filter((c) => slugToIndex.get(c.slug)! > slugToIndex.get(slug)!)
+            .map((c) => {
+              const a = positions[slugToIndex.get(slug)!];
+              const b = positions[slugToIndex.get(c.slug)!];
+              const isHoveredEdge =
+                hovered === slug || hovered === c.slug;
+              const dim = hovered !== null && !isHoveredEdge;
+              return (
+                <line
+                  key={`edge-${slug}-${c.slug}`}
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke="var(--primary)"
+                  strokeDasharray="1.5 1.5"
+                  strokeWidth={isHoveredEdge ? 0.4 : 0.25}
+                  opacity={dim ? 0.06 : isHoveredEdge ? 0.55 : 0.18}
+                  vectorEffect="non-scaling-stroke"
+                />
+              );
+            }),
+        )}
+      </svg>
+
+      {/* hub */}
+      <div
+        className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-full border border-primary/30 bg-card text-center shadow-sm"
+        style={{ left: `${CENTER}%`, top: `${CENTER}%`, width: "13%", aspectRatio: "1" }}
+      >
+        <div className="text-[0.65rem] font-semibold uppercase tracking-wide text-primary">Scout Fund</div>
+        <div className="text-[0.55rem] text-muted-foreground">Shapers Fund II</div>
+      </div>
+
+      {NAV_NODES.map((node, i) => {
+        const p = positions[i];
+        const Icon = node.icon;
+        const dim = hovered !== null && !connectedSlugs.has(node.slug);
+        return (
+          <Link
+            key={node.slug}
+            href={node.href}
+            onMouseEnter={() => setHovered(node.slug)}
+            onMouseLeave={() => setHovered(null)}
+            className={cn(
+              "group absolute w-44 -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-card p-3.5 shadow-sm transition-all duration-200",
+              "hover:-translate-y-[calc(50%+3px)] hover:border-primary/50 hover:shadow-lg",
+              dim ? "opacity-40" : "opacity-100",
+              hovered === node.slug ? "border-primary/60 shadow-lg" : "border-border",
+            )}
+            style={{ left: `${p.x}%`, top: `${p.y}%` }}
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <Icon className="size-3.5" />
+              </div>
+              <div className="text-sm font-semibold text-foreground">{node.title}</div>
+            </div>
+            <p className="mt-2 text-xs leading-snug text-muted-foreground">{node.oneLiner}</p>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
