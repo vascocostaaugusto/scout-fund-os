@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { LiveActivityToasts } from "@/components/layout/live-activity-toasts";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { DealStoreProvider } from "@/lib/deal-store";
+import { ScoutOnboardingProvider } from "@/lib/scout-onboarding-store";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,8 +42,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <TooltipProvider delay={150}>
             <DealStoreProvider>
-              <AppShell>{children}</AppShell>
-              <LiveActivityToasts />
+              <ScoutOnboardingProvider>
+                <AppShell>{children}</AppShell>
+                <LiveActivityToasts />
+              </ScoutOnboardingProvider>
             </DealStoreProvider>
             <CommandPalette />
             <Toaster position="bottom-right" />

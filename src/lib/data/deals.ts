@@ -1,6 +1,6 @@
 import { makeRng } from "./prng";
 import { scouts } from "./scouts";
-import type { Deal, DealStage } from "./types";
+import type { Deal, DealStage, LegalDocStatus, SafeTerms, WireStatus } from "./types";
 
 const rng = makeRng(3333);
 
@@ -132,6 +132,42 @@ function checkSizeFor(): number {
   return Math.round(rng.float(10_000, 50_000, 0) / 1000) * 1000;
 }
 
+// Every scout check uses the same instrument — a standard Post-Money SAFE —
+// so there's one template to draft, not bespoke terms per deal. Terms are
+// deterministic per deal (seeded off its id) so re-reading a deal's SAFE
+// always shows the same cap/discount rather than reshuffling on every call.
+function hashSeed(key: string): number {
+  let h = 0;
+  for (let i = 0; i < key.length; i++) h = (Math.imul(31, h) + key.charCodeAt(i)) | 0;
+  return h;
+}
+
+export function safeTermsFor(checkSizeUsd: number, seedKey: string): SafeTerms {
+  const local = makeRng(hashSeed(seedKey));
+  return {
+    instrument: "Post-Money SAFE",
+    valuationCapUsd: local.float(4_000_000, 12_000_000, -5),
+    discountPct: local.pick([15, 20, 20, 20, 25] as const),
+  };
+}
+
+// The legal/banking chain behind an "approved" decision — most approved
+// deals are somewhere mid-closing (drafted, out for signature, or executed
+// and waiting on a wire), which is what makes the Fund Portal's closing
+// queue look like a real desk instead of an empty state on first load.
+function closingProgressFor(stage: DealStage): { legalDocStatus: LegalDocStatus; wireStatus: WireStatus } {
+  const funded = stage === "check_written" || stage === "follow_on_watch" || stage === "exited" || stage === "dead";
+  if (funded) return { legalDocStatus: "executed", wireStatus: "confirmed" };
+  if (stage !== "approved") return { legalDocStatus: "not_started", wireStatus: "not_initiated" };
+  const legalDocStatus = rng.weighted([
+    ["draft_generated", 3],
+    ["sent_for_signature", 4],
+    ["executed", 3],
+  ] as const);
+  const wireStatus: WireStatus = legalDocStatus === "executed" && rng.bool(0.4) ? "initiated" : "not_initiated";
+  return { legalDocStatus, wireStatus };
+}
+
 function responseHoursFor(stage: DealStage): { hours: number | null; firstLookAt: string | null; late: boolean } {
   if (stage === "submitted") return { hours: null, firstLookAt: null, late: false };
   // Most first-looks land comfortably inside the 48h target; a small tail
@@ -154,7 +190,14 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
   const firstLookAt = hours != null ? new Date(submittedAt.getTime() + hours * 3600_000).toISOString() : null;
 
   const funded = stage === "check_written" || stage === "follow_on_watch" || stage === "exited" || stage === "dead";
-  const checkSizeUsd = funded ? checkSizeFor() : null;
+  const hasTicket = funded || stage === "approved";
+  const checkSizeUsd = hasTicket ? checkSizeFor() : null;
+  const { legalDocStatus, wireStatus } = closingProgressFor(stage);
+  const safeTerms = hasTicket ? safeTermsFor(checkSizeUsd!, `dl_seed_${i}`) : null;
+  const wireConfirmedAt =
+    funded && firstLookAt
+      ? new Date(new Date(firstLookAt).getTime() + rng.int(2, 10) * 24 * 3600_000).toISOString()
+      : null;
 
   const geography = rng.bool(0.72)
     ? scout.coverage.split(" · ")[0]
@@ -177,8 +220,15 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     isLate: late,
     reviewingPartner: rng.pick(PARTNERS),
     partnerNotes: rng.pick(partnerNotesByStage[stage]),
-    rightOfFirstLook: funded,
+    rightOfFirstLook: hasTicket,
     followOnParticipated: stage === "follow_on_watch" || stage === "exited",
+    legalDocStatus,
+    safeTerms,
+    wireStatus,
+    wireConfirmedAt,
+    // Distribution processing lags an exit in real funds (marks, waterfall
+    // calc, wire) — none of this cohort's exits have been distributed yet.
+    carryPaidAt: null,
   } satisfies Deal;
 }).sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime())
   .map((d, i) => ({ ...d, id: `dl_${String(i + 1).padStart(3, "0")}` }));

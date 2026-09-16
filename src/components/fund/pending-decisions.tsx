@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { Check, X, RotateCcw } from "lucide-react";
-import { scoutById } from "@/lib/data";
+import { scoutById, TICKET_SIZE_MIN, TICKET_SIZE_MAX } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
-import { formatDate, timeAgo } from "@/lib/format";
+import { formatDate, formatUsd, timeAgo } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 
 const PARTNERS = [
@@ -15,21 +15,24 @@ const PARTNERS = [
   "Marcus Lindqvist",
 ] as const;
 
+const DEFAULT_TICKET = 25_000;
+
 export function PendingDecisions() {
   const { deals, overrides, decideDeal, resetDeal } = useDealStore();
   const [actingAs, setActingAs] = useState<string>(PARTNERS[0]);
   const [notes, setNotes] = useState<Record<string, string>>({});
+  const [tickets, setTickets] = useState<Record<string, number>>({});
 
   const pending = deals
     .filter((d) => d.stage === "submitted" || d.stage === "under_review")
     .sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime());
 
-  const decidedThisSession = Object.entries(overrides).sort(
-    (a, b) => new Date(b[1].decidedAt).getTime() - new Date(a[1].decidedAt).getTime(),
-  );
+  const decidedThisSession = Object.entries(overrides)
+    .filter(([, o]) => o.patch.stage === "approved" || o.patch.stage === "declined")
+    .sort((a, b) => new Date(b[1].decidedAt).getTime() - new Date(a[1].decidedAt).getTime());
 
   function decide(dealId: string, decision: "approved" | "declined") {
-    decideDeal(dealId, decision, actingAs, notes[dealId] ?? "");
+    decideDeal(dealId, decision, actingAs, notes[dealId] ?? "", tickets[dealId] ?? DEFAULT_TICKET);
     setNotes((prev) => {
       const next = { ...prev };
       delete next[dealId];
@@ -87,15 +90,29 @@ export function PendingDecisions() {
                   rows={2}
                   className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/50"
                 />
-                <div className="flex gap-2">
-                  <Button size="sm" variant="ghost" className="text-critical hover:bg-critical/10 hover:text-critical" onClick={() => decide(d.id, "declined")}>
-                    <X className="size-3.5" />
-                    Decline
-                  </Button>
-                  <Button size="sm" onClick={() => decide(d.id, "approved")}>
-                    <Check className="size-3.5" />
-                    Approve
-                  </Button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    If approved, ticket
+                    <input
+                      type="number"
+                      min={TICKET_SIZE_MIN}
+                      max={TICKET_SIZE_MAX}
+                      step={1000}
+                      value={tickets[d.id] ?? DEFAULT_TICKET}
+                      onChange={(e) => setTickets((prev) => ({ ...prev, [d.id]: Number(e.target.value) }))}
+                      className="w-24 rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    />
+                  </label>
+                  <div className="ml-auto flex gap-2">
+                    <Button size="sm" variant="ghost" className="text-critical hover:bg-critical/10 hover:text-critical" onClick={() => decide(d.id, "declined")}>
+                      <X className="size-3.5" />
+                      Decline
+                    </Button>
+                    <Button size="sm" onClick={() => decide(d.id, "approved")}>
+                      <Check className="size-3.5" />
+                      Approve
+                    </Button>
+                  </div>
                 </div>
               </div>
             );
@@ -109,14 +126,15 @@ export function PendingDecisions() {
           {decidedThisSession.map(([dealId, o]) => {
             const deal = deals.find((d) => d.id === dealId);
             if (!deal) return null;
+            const declined = o.patch.stage === "declined";
             return (
               <div key={dealId} className="flex items-center justify-between gap-3 text-xs">
                 <span className="text-foreground">
                   {deal.companyName} —{" "}
-                  <span className={o.stage === "declined" ? "text-critical" : "text-success"}>
-                    {o.stage === "declined" ? "Declined" : "Approved"}
+                  <span className={declined ? "text-critical" : "text-success"}>
+                    {declined ? "Declined" : `Approved · ${formatUsd(o.patch.checkSizeUsd ?? 0)}`}
                   </span>{" "}
-                  by {o.reviewingPartner} · {formatDate(o.decidedAt)}
+                  by {o.patch.reviewingPartner} · {formatDate(o.decidedAt)}
                 </span>
                 <button
                   type="button"

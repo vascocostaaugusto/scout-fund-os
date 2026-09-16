@@ -134,3 +134,46 @@ screenshots but not a field-by-field spec of exactly what moves where.
   the architecture file as an integration, not built — there's no real
   Gmail connection in this prototype, and building one was explicitly
   framed by the user as an architecture-doc concern, not an app feature.
+
+## 11. Legal (SAFE) + banking + carry distribution — closing the "approved
+    doesn't mean funded" gap
+**Ambiguity:** User, role-playing as the fund partner, asked what's missing
+to operationalize this end-to-end and specifically flagged legal (SAFEs) as
+something that needs to be covered, even if lightly. There was no spec for
+exact SAFE terms, e-signature flow, or how carry distribution should work.
+**Assumptions and judgment calls:**
+- Every scout check uses one standard instrument — a Post-Money SAFE — to
+  avoid the complexity of per-deal negotiated legal structures. Cap ($4M–
+  $12M) and discount (15–25%) are randomized per deal but deterministic
+  (seeded off the deal id), not user-editable — this is a status/workflow
+  simulation, not a real document generator.
+- Added a real state machine to the Fund Portal's "Legal & closing" section:
+  `not_started → draft_generated → sent_for_signature → executed`, then
+  `wireStatus: not_initiated → initiated → confirmed`. Confirming the wire
+  is what actually flips the deal to `check_written` — matches the real
+  chain (approval alone doesn't move money). Built as live client-side
+  state via `deal-store.tsx`, same session-scoped localStorage pattern as
+  decisions, not a real DocuSign/banking integration (documented as
+  "planned" in the architecture doc).
+- Approving a deal now requires a ticket size input (the partner picks
+  $10K–$50K at approval time) instead of a size being assigned later —
+  matches how a real check-size decision actually gets made.
+- Scouts need onboarding paperwork (tax form, payout bank account) before a
+  carry distribution can be paid out — modeled as a small independent
+  session-store (`scout-onboarding-store.tsx`) surfaced in the Scout
+  Portal ("Program paperwork") and enforced in the Fund Portal's new "Exit
+  distributions" section, which blocks the "mark paid" action with a named
+  reason until both are on file. ~18–22% of the seeded roster starts
+  missing one or the other, deliberately, so the blocking logic has
+  something real to show on first load.
+- Exit distributions use the same mark-to-market convention
+  (`STAGE_MARK_MULTIPLE.exited = 4.0x`) and the same fund carry (20%) /
+  scout share (12.5% of that) already used for the Scout Portal's
+  estimated-upside figure — one formula, not a second one invented for
+  this feature.
+- Did not build: cap table / ownership-percentage tracking, LP capital
+  calls, a follow-on decision workflow (distinct from the general "approve
+  a memo" flow), new-scout recruitment/onboarding pipeline, or fund-level
+  LP reporting status. These are logged as further gaps, not silently
+  dropped — see the running partner-review list this session is working
+  through.

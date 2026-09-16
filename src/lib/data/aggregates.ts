@@ -55,6 +55,35 @@ for (const d of deals) pipelineByStage[d.stage]++;
 const TERMINAL_STAGES: DealStage[] = ["declined", "exited", "dead"];
 export const pipelineOpenCount = deals.filter((d) => !TERMINAL_STAGES.includes(d.stage)).length;
 
+// ---- Legal / closing funnel (approved deals not yet wired) -----------------
+// "Approved" isn't the finish line — every approved deal still has to move a
+// SAFE through drafting → signature → execution, then a wire through
+// initiation → confirmation, before it's actually check_written.
+const approvedDeals = deals.filter((d) => d.stage === "approved");
+export const closingQueueCount = approvedDeals.length;
+export const closingByLegalStatus = {
+  not_started: approvedDeals.filter((d) => d.legalDocStatus === "not_started").length,
+  draft_generated: approvedDeals.filter((d) => d.legalDocStatus === "draft_generated").length,
+  sent_for_signature: approvedDeals.filter((d) => d.legalDocStatus === "sent_for_signature").length,
+  executed: approvedDeals.filter((d) => d.legalDocStatus === "executed").length,
+};
+export const closingAwaitingWire = approvedDeals.filter(
+  (d) => d.legalDocStatus === "executed" && d.wireStatus !== "confirmed",
+).length;
+
+// ---- Payout readiness (exited deals whose scout is missing tax/payout
+// paperwork — the thing that actually blocks a carry check from going out,
+// independent of whether the deal itself realized a return) -----------------
+const exitedDeals = deals.filter((d) => d.stage === "exited");
+export const scoutsBlockedForPayout = [
+  ...new Set(
+    exitedDeals
+      .map((d) => scouts.find((s) => s.id === d.scoutId)!)
+      .filter((s) => s.taxFormStatus === "not_submitted" || s.payoutAccountStatus === "not_linked")
+      .map((s) => s.id),
+  ),
+].length;
+
 const followOnEligible = fundedDeals.length;
 const followOnCount = deals.filter((d) => d.followOnParticipated).length;
 export const followOnParticipationRate = followOnCount / (followOnEligible || 1);

@@ -5,6 +5,7 @@ import { PortalHeader } from "@/components/portal/portal-header";
 import { StatTile } from "@/components/detail/stat-tile";
 import { MyDealsTable } from "@/components/portal/my-deals-table";
 import { MonthInReview } from "@/components/portal/month-in-review";
+import { ProgramPaperwork } from "@/components/portal/program-paperwork";
 
 export default async function ScoutPortalDashboard({
   params,
@@ -50,7 +51,10 @@ export default async function ScoutPortalDashboard({
         <MyDealsTable scoutId={scoutId} />
       </div>
 
-      <MonthInReview scoutId={scoutId} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <MonthInReview scoutId={scoutId} />
+        <ProgramPaperwork scoutId={scoutId} />
+      </div>
     </div>
   );
 }

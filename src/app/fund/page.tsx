@@ -3,6 +3,8 @@ import { Landmark } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
 import { PendingDecisions } from "@/components/fund/pending-decisions";
+import { ClosingQueue } from "@/components/fund/closing-queue";
+import { ExitDistributions } from "@/components/fund/exit-distributions";
 import { DealTable } from "@/components/info-hub/deal-table";
 import { NotificationFeed } from "@/components/info-hub/notification-feed";
 import { MonthlyEmailStatus } from "@/components/fund/monthly-email-status";
@@ -29,6 +31,20 @@ export default function FundPortalPage() {
         subtitle="Every submitted memo waiting on a first look. Decide here — it updates the kanban and audit trail immediately."
       >
         <PendingDecisions />
+      </Section>
+
+      <Section
+        title="Legal & closing"
+        subtitle="An approval isn't a funded deal — every approved memo still needs a signed SAFE and a confirmed wire. Work the queue here."
+      >
+        <ClosingQueue />
+      </Section>
+
+      <Section
+        title="Exit distributions"
+        subtitle="When a deal exits, the scout's carry share doesn't pay itself — work it here, blocked automatically until their paperwork is on file."
+      >
+        <ExitDistributions />
       </Section>
 
       <Section title="Deployment pacing" subtitle="Cumulative capital deployed vs. the pace needed to fully deploy the pool in 24 months.">

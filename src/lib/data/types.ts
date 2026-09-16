@@ -2,6 +2,12 @@ export type ScoutTier = 1 | 2 | 3;
 
 export type ScoutStatus = "active" | "alumni";
 
+// Onboarding paperwork every scout needs on file before capital can be
+// deployed on their intro (agreement) or before carry can ever be paid out
+// to them (tax form, payout account) — see BLOCKERS #11.
+export type TaxFormStatus = "not_submitted" | "submitted";
+export type PayoutAccountStatus = "not_linked" | "linked";
+
 export interface Scout {
   id: string;
   name: string;
@@ -15,6 +21,9 @@ export interface Scout {
   cohort: string; // e.g. "Cohort 1 (2025–26)"
   status: ScoutStatus;
   joinedAt: string; // ISO date
+  agreementSignedAt: string; // ISO date — scout participation & carry agreement
+  taxFormStatus: TaxFormStatus; // W-9 / W-8BEN on file
+  payoutAccountStatus: PayoutAccountStatus; // bank details on file for carry payout
 }
 
 export type DealStage =
@@ -27,6 +36,24 @@ export type DealStage =
   | "exited"
   | "dead";
 
+// The legal/banking chain that actually turns an "approved" decision into a
+// wired check — a real step in the process, not paperwork trivia. See the
+// System Architecture doc for which of this is simulated vs. a real
+// integration (SAFE drafting, e-signature, wire rails).
+export type LegalDocStatus =
+  | "not_started"
+  | "draft_generated"
+  | "sent_for_signature"
+  | "executed";
+
+export type WireStatus = "not_initiated" | "initiated" | "confirmed";
+
+export interface SafeTerms {
+  instrument: "Post-Money SAFE";
+  valuationCapUsd: number;
+  discountPct: number;
+}
+
 export interface Deal {
   id: string;
   scoutId: string;
@@ -34,7 +61,7 @@ export interface Deal {
   sector: string;
   geography: string;
   stage: DealStage;
-  checkSizeUsd: number | null; // null until a check is written
+  checkSizeUsd: number | null; // proposed at approval, final once wired; null before approval
   submittedAt: string; // ISO date
   firstLookAt: string | null; // ISO date-time of partner first response
   responseHours: number | null; // hours to first response, null if still pending
@@ -43,6 +70,11 @@ export interface Deal {
   partnerNotes: string;
   rightOfFirstLook: boolean;
   followOnParticipated: boolean;
+  legalDocStatus: LegalDocStatus;
+  safeTerms: SafeTerms | null;
+  wireStatus: WireStatus;
+  wireConfirmedAt: string | null;
+  carryPaidAt: string | null; // set once the scout's carry share on this exit has actually been distributed
 }
 
 export interface NotificationEvent {

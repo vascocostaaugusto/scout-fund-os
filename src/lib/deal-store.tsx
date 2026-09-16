@@ -1,53 +1,61 @@
 "use client";
 
-// A lightweight client-side store for decisions made *in this browser
-// session* — the thing that makes the Fund Portal an actual place to work,
-// not just a read-only view of the seeded dataset. There's no backend, so
-// "persistence" is localStorage, scoped to one browser. Every deal-consuming
-// view that should reflect live decisions reads through useDeals() instead
-// of importing the static `deals` array directly.
+// A lightweight client-side store for everything that happens to a deal
+// *in this browser session* — the thing that makes the Fund Portal an
+// actual place to work, not just a read-only view of the seeded dataset.
+// There's no backend, so "persistence" is localStorage, scoped to one
+// browser. Every deal-consuming view that should reflect live changes reads
+// through useDealStore() instead of importing the static `deals` array
+// directly.
+//
+// Overrides are stored as a *patch* per deal (not a full replacement
+// object) so decisions and closing steps can each apply incrementally —
+// approve a deal, then separately generate its SAFE, then send it for
+// signature — without one action clobbering another's field.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { deals as seedDeals } from "@/lib/data";
-import type { Deal, DealStage } from "@/lib/data";
+import { deals as seedDeals, safeTermsFor } from "@/lib/data";
+import type { Deal, DealStage, LegalDocStatus } from "@/lib/data";
 
 const STORAGE_KEY = "scout-fund-os:deal-overrides";
 const REFERENCE_NOW = new Date("2026-09-16T09:00:00Z");
 
-export interface DealOverride {
-  stage: DealStage;
-  partnerNotes: string;
-  reviewingPartner: string;
-  firstLookAt: string;
-  responseHours: number;
-  isLate: boolean;
-  decidedAt: string;
+interface DealOverrideEntry {
+  patch: Partial<Deal>;
+  decidedAt: string; // when the decision (approve/decline) was made — used by the "decided this session" list
+  lastActionAt: string;
 }
 
 interface DealStoreValue {
   deals: Deal[];
-  overrides: Record<string, DealOverride>;
-  decideDeal: (dealId: string, decision: "approved" | "declined", partner: string, note: string) => void;
+  overrides: Record<string, DealOverrideEntry>;
+  decideDeal: (dealId: string, decision: "approved" | "declined", partner: string, note: string, ticketUsd?: number) => void;
   resetDeal: (dealId: string) => void;
+  generateSafe: (dealId: string) => void;
+  sendForSignature: (dealId: string) => void;
+  markExecuted: (dealId: string) => void;
+  initiateWire: (dealId: string) => void;
+  confirmWire: (dealId: string) => void;
+  markCarryPaid: (dealId: string) => void;
 }
 
 const DealStoreContext = createContext<DealStoreValue | null>(null);
 
 export function DealStoreProvider({ children }: { children: ReactNode }) {
-  const [overrides, setOverrides] = useState<Record<string, DealOverride>>({});
+  const [overrides, setOverridesState] = useState<Record<string, DealOverrideEntry>>({});
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring session-local decisions after mount, not derivable from props/state
-      if (raw) setOverrides(JSON.parse(raw));
+      if (raw) setOverridesState(JSON.parse(raw));
     } catch {
       // localStorage unavailable or corrupt — start clean
     }
   }, []);
 
-  const persist = useCallback((next: Record<string, DealOverride>) => {
-    setOverrides(next);
+  const persist = useCallback((next: Record<string, DealOverrideEntry>) => {
+    setOverridesState(next);
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
@@ -55,23 +63,53 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const snapshot = useCallback(
+    (dealId: string): Deal | undefined => {
+      const base = seedDeals.find((d) => d.id === dealId);
+      if (!base) return undefined;
+      const existing = overrides[dealId]?.patch;
+      return existing ? { ...base, ...existing } : base;
+    },
+    [overrides],
+  );
+
+  const applyPatch = useCallback(
+    (dealId: string, patch: Partial<Deal>, opts?: { isDecision?: boolean }) => {
+      const existing = overrides[dealId];
+      const entry: DealOverrideEntry = {
+        patch: { ...(existing?.patch ?? {}), ...patch },
+        decidedAt: opts?.isDecision ? REFERENCE_NOW.toISOString() : existing?.decidedAt ?? REFERENCE_NOW.toISOString(),
+        lastActionAt: REFERENCE_NOW.toISOString(),
+      };
+      persist({ ...overrides, [dealId]: entry });
+    },
+    [overrides, persist],
+  );
+
   const decideDeal = useCallback(
-    (dealId: string, decision: "approved" | "declined", partner: string, note: string) => {
+    (dealId: string, decision: "approved" | "declined", partner: string, note: string, ticketUsd?: number) => {
       const base = seedDeals.find((d) => d.id === dealId);
       if (!base) return;
       const responseHours = Math.round(((REFERENCE_NOW.getTime() - new Date(base.submittedAt).getTime()) / 3600_000) * 10) / 10;
-      const override: DealOverride = {
+      const patch: Partial<Deal> = {
         stage: decision,
-        partnerNotes: note || (decision === "approved" ? "Approved, closing docs with scout." : "Declined."),
+        partnerNotes: note || (decision === "approved" ? "Approved, SAFE drafting to start." : "Declined."),
         reviewingPartner: partner,
         firstLookAt: REFERENCE_NOW.toISOString(),
         responseHours,
         isLate: responseHours > 48,
-        decidedAt: REFERENCE_NOW.toISOString(),
+        rightOfFirstLook: decision === "approved",
       };
-      persist({ ...overrides, [dealId]: override });
+      if (decision === "approved") {
+        patch.checkSizeUsd = ticketUsd ?? 25_000;
+        patch.legalDocStatus = "not_started";
+        patch.safeTerms = null;
+        patch.wireStatus = "not_initiated";
+        patch.wireConfirmedAt = null;
+      }
+      applyPatch(dealId, patch, { isDecision: true });
     },
-    [overrides, persist],
+    [applyPatch],
   );
 
   const resetDeal = useCallback(
@@ -83,28 +121,107 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
     [overrides, persist],
   );
 
+  // ---- Closing steps: SAFE drafting → signature → execution → wire --------
+  const generateSafe = useCallback(
+    (dealId: string) => {
+      const deal = snapshot(dealId);
+      if (!deal || deal.checkSizeUsd == null) return;
+      const legalDocStatus: LegalDocStatus = "draft_generated";
+      applyPatch(dealId, {
+        legalDocStatus,
+        safeTerms: safeTermsFor(deal.checkSizeUsd, `${dealId}:${REFERENCE_NOW.getTime()}`),
+        partnerNotes: "SAFE drafted — post-money, terms out for review.",
+      });
+    },
+    [snapshot, applyPatch],
+  );
+
+  const sendForSignature = useCallback(
+    (dealId: string) => {
+      applyPatch(dealId, {
+        legalDocStatus: "sent_for_signature",
+        partnerNotes: "SAFE sent for e-signature — fund and founder counter-signing.",
+      });
+    },
+    [applyPatch],
+  );
+
+  const markExecuted = useCallback(
+    (dealId: string) => {
+      applyPatch(dealId, {
+        legalDocStatus: "executed",
+        partnerNotes: "SAFE executed by both parties — cleared to wire.",
+      });
+    },
+    [applyPatch],
+  );
+
+  const initiateWire = useCallback(
+    (dealId: string) => {
+      applyPatch(dealId, {
+        wireStatus: "initiated",
+        partnerNotes: "Wire initiated from the fund's operating account.",
+      });
+    },
+    [applyPatch],
+  );
+
+  const confirmWire = useCallback(
+    (dealId: string) => {
+      applyPatch(dealId, {
+        wireStatus: "confirmed",
+        wireConfirmedAt: REFERENCE_NOW.toISOString(),
+        stage: "check_written" as DealStage,
+        partnerNotes: "Wire confirmed — check written, right-of-first-look logged.",
+      });
+    },
+    [applyPatch],
+  );
+
+  const markCarryPaid = useCallback(
+    (dealId: string) => {
+      applyPatch(dealId, {
+        carryPaidAt: REFERENCE_NOW.toISOString(),
+        partnerNotes: "Carry distribution wired to scout.",
+      });
+    },
+    [applyPatch],
+  );
+
   const mergedDeals = useMemo(
     () =>
       seedDeals.map((d) => {
         const o = overrides[d.id];
-        if (!o) return d;
-        return {
-          ...d,
-          stage: o.stage,
-          partnerNotes: o.partnerNotes,
-          reviewingPartner: o.reviewingPartner,
-          firstLookAt: o.firstLookAt,
-          responseHours: o.responseHours,
-          isLate: o.isLate,
-          rightOfFirstLook: o.stage === "approved",
-        } satisfies Deal;
+        return o ? ({ ...d, ...o.patch } satisfies Deal) : d;
       }),
     [overrides],
   );
 
   const value = useMemo(
-    () => ({ deals: mergedDeals, overrides, decideDeal, resetDeal }),
-    [mergedDeals, overrides, decideDeal, resetDeal],
+    () => ({
+      deals: mergedDeals,
+      overrides,
+      decideDeal,
+      resetDeal,
+      generateSafe,
+      sendForSignature,
+      markExecuted,
+      initiateWire,
+      confirmWire,
+      markCarryPaid,
+    }),
+    [
+      mergedDeals,
+      overrides,
+      decideDeal,
+      resetDeal,
+      generateSafe,
+      sendForSignature,
+      markExecuted,
+      initiateWire,
+      confirmWire,
+      markCarryPaid,
+    ],
   );
 
   return <DealStoreContext.Provider value={value}>{children}</DealStoreContext.Provider>;
