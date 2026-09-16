@@ -6,6 +6,7 @@ import { StatTile } from "@/components/detail/stat-tile";
 import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { KanbanBoard } from "@/components/workflow/kanban-board";
 import { ProcessSteps } from "@/components/workflow/process-steps";
+import { DecisionAuditLog } from "@/components/workflow/decision-audit-log";
 import { avgSlaHours, slaBreachRate, pipelineOpenCount, totalMemos } from "@/lib/data";
 import { formatHours, formatPct } from "@/lib/format";
 
@@ -47,6 +48,13 @@ export default function WorkflowPage() {
         subtitle="Every scout-sourced deal, by current stage. Scroll a column to see the full list."
       >
         <KanbanBoard />
+      </Section>
+
+      <Section
+        title="Decision audit trail"
+        subtitle="Every reviewed deal, logged with who made the call, when, and why — the compliance-facing view of the same kanban above."
+      >
+        <DecisionAuditLog />
       </Section>
 
       <ConnectionCallout slug="workflow" />

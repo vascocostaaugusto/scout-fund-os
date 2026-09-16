@@ -96,6 +96,27 @@ export const coverageTags: CoverageTag[] = [...coverageCounts.entries()]
   .map(([label, count]) => ({ label, count }))
   .sort((a, b) => b.count - a.count);
 
+// ---- Current mark-to-market (fed by the fund's quarterly regulatory
+// filing, e.g. Form PF / ILPA quarterly report — see regulatory.ts) --------
+// Unlike the maturity model below, this is a bottom-up figure computed
+// directly from the funded deals' current stage: each stage implies a
+// conservative interim markup convention the fund already uses for
+// regulatory NAV reporting.
+export const STAGE_MARK_MULTIPLE: Partial<Record<DealStage, number>> = {
+  check_written: 1.3, // early markup, most recent round's price
+  follow_on_watch: 2.6, // priced up by signaled next round
+  exited: 4.0, // realized-return proxy
+  dead: 0, // written off
+};
+
+export const scoutBookMarkedValueUsd = fundedDeals.reduce(
+  (sum, d) => sum + (d.checkSizeUsd ?? 0) * (STAGE_MARK_MULTIPLE[d.stage] ?? 1),
+  0,
+);
+export const scoutBookMoicToDate = capitalDeployedUsd
+  ? scoutBookMarkedValueUsd / capitalDeployedUsd
+  : 0;
+
 // ---- Long-term "proof it earns its place" model ----------------------------
 // Modeled at fund maturity (Year 8, typical VC fund life), not today's
 // snapshot — scout checks are small today, but the thesis is that early,

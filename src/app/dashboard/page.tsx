@@ -10,6 +10,7 @@ import { SlaTrendChart } from "@/components/charts/sla-trend-chart";
 import { CoverageMap } from "@/components/charts/coverage-map";
 import { FollowOnFunnel } from "@/components/charts/follow-on-funnel";
 import { RetentionChart } from "@/components/charts/retention-chart";
+import { RegulatoryProvenance } from "@/components/charts/regulatory-provenance";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   fundedConversionRate,
@@ -17,6 +18,7 @@ import {
   vpTrackScouts,
   fundIICarryAtMaturity,
   scoutCarryAtMaturity,
+  scoutBookMoicToDate,
   coverageTags,
 } from "@/lib/data";
 import { formatPct, formatHours, formatUsdCompact } from "@/lib/format";
@@ -82,21 +84,26 @@ export default function DashboardPage() {
 
           <TabsContent value="long" className="flex flex-col gap-4 pt-4">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              <StatTile
+                label="Scout-book MOIC to date"
+                value={`${scoutBookMoicToDate.toFixed(2)}x`}
+                hint="actual, current quarter — not modeled"
+                emphasis
+              />
               <StatTile label="Fund II carry at maturity" value={formatUsdCompact(fundIICarryAtMaturity)} hint="modeled, whole fund, Year 8" />
               <StatTile
                 label="Scout-sourced carry"
                 value={formatUsdCompact(scoutCarryAtMaturity)}
                 hint="modeled, scout book, Year 8"
-                emphasis
               />
-              <StatTile label="Whole-fund MOIC" value="3.0x" hint="blended gross assumption" />
-              <StatTile label="Scout-book MOIC" value="4.5x" hint="earlier, cheaper entry assumption" />
+              <StatTile label="Scout-book MOIC at maturity" value="4.5x" hint="modeled, earlier/cheaper entry assumption" />
             </div>
             <p className="rounded-xl border border-dashed border-border bg-card p-4 text-xs leading-relaxed text-muted-foreground">
               See the headline chart above — the scout program is modeled to punch well above its capital weight in
               Fund II&apos;s carry pool, because scout checks land earlier and cheaper into the same companies that
               would otherwise only be reachable at a priced round.
             </p>
+            <RegulatoryProvenance />
           </TabsContent>
         </Tabs>
       </Section>
