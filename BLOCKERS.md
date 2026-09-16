@@ -171,9 +171,44 @@ exact SAFE terms, e-signature flow, or how carry distribution should work.
   scout share (12.5% of that) already used for the Scout Portal's
   estimated-upside figure — one formula, not a second one invented for
   this feature.
-- Did not build: cap table / ownership-percentage tracking, LP capital
-  calls, a follow-on decision workflow (distinct from the general "approve
-  a memo" flow), new-scout recruitment/onboarding pipeline, or fund-level
-  LP reporting status. These are logged as further gaps, not silently
-  dropped — see the running partner-review list this session is working
-  through.
+- Did not build in this round: cap table / ownership-percentage tracking,
+  LP capital calls, a follow-on decision workflow distinct from the
+  general "approve a memo" flow. Logged as further gaps, not dropped.
+
+## 12. Treasury visibility, conflict-of-interest disclosure, scout
+    recruiting, and LP reporting status
+**Ambiguity:** Continuing the same partner-eye review as #11, with no
+further spec than "keep finding and closing gaps until you run out of
+tokens."
+**Assumptions and judgment calls:**
+- Added a Treasury panel to the top of the Fund Portal: wired vs.
+  committed-but-not-yet-wired vs. available capital against the $6M pool.
+  "Committed" reads live off approved-but-unwired deals' ticket sizes —
+  otherwise nothing stops the fund from approving past the pool ceiling,
+  since only confirmed wires counted as deployed before this.
+- Added conflict-of-interest disclosure to the deal model — ~6% of memos
+  are seeded with a disclosed conflict (a prior personal stake, a former
+  colleague founder, a spouse on the cap table), surfaced as a hard-to-miss
+  banner in the Fund Portal's decision queue and a flag icon in the system
+  of record. This is the one piece explicitly requested ("dont go deep
+  ... but needs to be covered, legal meaning SAFEs") extended slightly
+  past SAFEs themselves into the adjacent disclosure obligation a real
+  LPA would require — kept intentionally shallow (a boolean + a note, no
+  formal recusal workflow).
+- Added a scout recruiting pipeline (`candidates.ts` + `candidate-store.tsx`)
+  — nomination → interview → reference check → agreement sent → signed,
+  seeded with 7 candidates across different stages. Deliberately does NOT
+  splice a "signed" candidate into the live 30-scout roster (would cascade
+  into every tier count and aggregate in the app) — the panel says so
+  explicitly rather than silently doing nothing.
+- Added a quarterly LP/regulatory reporting status panel, computed from
+  fixed program dates rather than stored data — every quarter since
+  program start is marked filed ~15 days after quarter close, the current
+  quarter shows "not yet due." This is a status view only, consistent with
+  the earlier app/doc split decision (#10) — no report is actually
+  generated or sent.
+- Did not build: an "in prep" intermediate state ever actually appears
+  given today's reference date (Sep 16, 2026 falls well after the last
+  quarter's filing and before the next quarter even closes) — noted rather
+  than forced, since faking a mid-prep state at an arbitrary date would be
+  less honest than the panel just showing what's really true today.

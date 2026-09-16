@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, RotateCcw } from "lucide-react";
+import { Check, X, RotateCcw, ShieldAlert } from "lucide-react";
 import { scoutById, TICKET_SIZE_MIN, TICKET_SIZE_MAX } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
 import { formatDate, formatUsd, timeAgo } from "@/lib/format";
@@ -83,6 +83,14 @@ export function PendingDecisions() {
                     {d.stage === "submitted" ? "Awaiting first look" : "Under review"}
                   </span>
                 </div>
+                {d.conflictDisclosed ? (
+                  <div className="flex items-start gap-2 rounded-lg border border-critical/30 bg-critical/10 px-3 py-2 text-[11px] text-critical">
+                    <ShieldAlert className="mt-0.5 size-3.5 shrink-0" />
+                    <span>
+                      <strong className="font-semibold">Conflict disclosed by scout —</strong> {d.conflictNotes}
+                    </span>
+                  </div>
+                ) : null}
                 <textarea
                   value={notes[d.id] ?? ""}
                   onChange={(e) => setNotes((prev) => ({ ...prev, [d.id]: e.target.value }))}

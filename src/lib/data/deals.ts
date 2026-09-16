@@ -177,6 +177,19 @@ function responseHoursFor(stage: DealStage): { hours: number | null; firstLookAt
   return { hours, firstLookAt: null, late };
 }
 
+const CONFLICT_NOTES = [
+  "Scout holds a small personal angel check in this company from before joining the program.",
+  "Founder is a former colleague of the scout — no financial stake, disclosed for transparency.",
+  "Scout's spouse is an early employee at the company.",
+] as const;
+
+function conflictFor(): { conflictDisclosed: boolean; conflictNotes: string | null } {
+  // Real conflicts are rare — most scout intros have none. When one exists,
+  // it's disclosed up front rather than discovered later.
+  const disclosed = rng.bool(0.06);
+  return { conflictDisclosed: disclosed, conflictNotes: disclosed ? rng.pick(CONFLICT_NOTES) : null };
+}
+
 const used = new Set<string>();
 const scoutWeights = buildScoutWeights();
 
@@ -198,6 +211,7 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     funded && firstLookAt
       ? new Date(new Date(firstLookAt).getTime() + rng.int(2, 10) * 24 * 3600_000).toISOString()
       : null;
+  const { conflictDisclosed, conflictNotes } = conflictFor();
 
   const geography = rng.bool(0.72)
     ? scout.coverage.split(" · ")[0]
@@ -222,6 +236,8 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     partnerNotes: rng.pick(partnerNotesByStage[stage]),
     rightOfFirstLook: hasTicket,
     followOnParticipated: stage === "follow_on_watch" || stage === "exited",
+    conflictDisclosed,
+    conflictNotes,
     legalDocStatus,
     safeTerms,
     wireStatus,

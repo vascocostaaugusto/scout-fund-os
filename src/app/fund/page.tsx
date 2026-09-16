@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import { Landmark } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
+import { TreasuryPanel } from "@/components/fund/treasury-panel";
 import { PendingDecisions } from "@/components/fund/pending-decisions";
 import { ClosingQueue } from "@/components/fund/closing-queue";
 import { ExitDistributions } from "@/components/fund/exit-distributions";
+import { ScoutRecruiting } from "@/components/fund/scout-recruiting";
 import { DealTable } from "@/components/info-hub/deal-table";
 import { NotificationFeed } from "@/components/info-hub/notification-feed";
 import { MonthlyEmailStatus } from "@/components/fund/monthly-email-status";
+import { LpReportingStatus } from "@/components/fund/lp-reporting-status";
 import { PacingChart } from "@/components/charts/pacing-chart";
 import { totalMemos, notifications } from "@/lib/data";
 
@@ -25,6 +28,8 @@ export default function FundPortalPage() {
         title="Fund Portal"
         description="Where the fund actually works the pipeline — decide on pending memos, browse the system of record, and see what scouts have been told."
       />
+
+      <TreasuryPanel />
 
       <Section
         title="Pending decisions"
@@ -52,19 +57,27 @@ export default function FundPortalPage() {
       </Section>
 
       <Section
+        title="Scout recruiting"
+        subtitle="The network doesn't stay at 30 scouts on its own — nominate, vet, and sign new scouts here."
+      >
+        <ScoutRecruiting />
+      </Section>
+
+      <Section
         title="System of record"
         subtitle={`All ${totalMemos} records — company, scout, sector, check size, status, partner notes.`}
       >
         <DealTable />
       </Section>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         <Section title="Notifications" subtitle="Simulated — the real integration posts to Slack.">
           <NotificationFeed limit={12} />
         </Section>
         <Section title="Scout communications" subtitle={`${notifications.filter((n) => n.kind === "digest").length} monthly batches sent to date.`}>
           <MonthlyEmailStatus />
         </Section>
+        <LpReportingStatus />
       </div>
     </div>
   );

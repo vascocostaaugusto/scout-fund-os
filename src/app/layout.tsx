@@ -9,6 +9,7 @@ import { LiveActivityToasts } from "@/components/layout/live-activity-toasts";
 import { CommandPalette } from "@/components/layout/command-palette";
 import { DealStoreProvider } from "@/lib/deal-store";
 import { ScoutOnboardingProvider } from "@/lib/scout-onboarding-store";
+import { CandidateStoreProvider } from "@/lib/candidate-store";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,8 +44,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <TooltipProvider delay={150}>
             <DealStoreProvider>
               <ScoutOnboardingProvider>
-                <AppShell>{children}</AppShell>
-                <LiveActivityToasts />
+                <CandidateStoreProvider>
+                  <AppShell>{children}</AppShell>
+                  <LiveActivityToasts />
+                </CandidateStoreProvider>
               </ScoutOnboardingProvider>
             </DealStoreProvider>
             <CommandPalette />

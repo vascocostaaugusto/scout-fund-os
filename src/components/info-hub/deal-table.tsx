@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { ArrowUp, ArrowDown, ArrowUpDown, ShieldAlert } from "lucide-react";
 import { scoutById } from "@/lib/data";
 import type { DealStage } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
@@ -143,7 +143,19 @@ export function DealTable() {
               ) : (
                 rows.map((d) => (
                   <TableRow key={d.id}>
-                    <TableCell className="font-medium text-foreground">{d.companyName}</TableCell>
+                    <TableCell className="font-medium text-foreground">
+                      <span className="inline-flex items-center gap-1.5">
+                        {d.companyName}
+                        {d.conflictDisclosed ? (
+                          <span title={d.conflictNotes ?? "Conflict of interest disclosed"}>
+                            <ShieldAlert
+                              className="size-3.5 shrink-0 text-critical"
+                              aria-label="Conflict of interest disclosed"
+                            />
+                          </span>
+                        ) : null}
+                      </span>
+                    </TableCell>
                     <TableCell className="text-right tabular-nums text-sm">
                       {d.checkSizeUsd ? formatUsd(d.checkSizeUsd) : "—"}
                     </TableCell>
