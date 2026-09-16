@@ -21,6 +21,8 @@ export const PACING_MONTHLY_TARGET_USD = SCOUT_POOL_SIZE / PACING_TARGET_MONTHS;
 // ---- Roster-derived ---------------------------------------------------------
 export const totalScouts = scouts.length;
 export const activeScouts = scouts.filter((s) => s.status !== "alumni").length;
+export const scoutCountByTier: Record<1 | 2 | 3, number> = { 1: 0, 2: 0, 3: 0 };
+for (const s of scouts) scoutCountByTier[s.tier]++;
 
 // ---- Deal-derived ------------------------------------------------------------
 const FUNDED_STAGES: DealStage[] = ["check_written", "follow_on_watch", "exited", "dead"];
@@ -127,23 +129,11 @@ export const scoutBookMoicToDate = capitalDeployedUsd
   ? scoutBookMarkedValueUsd / capitalDeployedUsd
   : 0;
 
-// ---- Long-term "proof it earns its place" model ----------------------------
-// Modeled at fund maturity (Year 8, typical VC fund life), not today's
-// snapshot — scout checks are small today, but the thesis is that early,
-// cheap entry into future breakout companies compounds disproportionately.
-// Assumptions are explicit and intentionally conservative-adjacent:
-//   - Whole-fund blended gross MOIC: 3.0x (typical top-quartile target)
-//   - Scout-sourced book blended gross MOIC: 4.5x (earlier/cheaper entry)
-//   - Standard GP carry rate applied fund-wide: 20%
-export const MATURITY_WHOLE_FUND_MOIC = 3.0;
-export const MATURITY_SCOUT_BOOK_MOIC = 4.5;
+// Standard GP carry rate, applied fund-wide — still needed for the Scout
+// Portal's estimated-upside math below. The Year-8 maturity projection this
+// used to feed (headline "proof it earns its place" chart) moved to the
+// program brief document — narrative/modeled content, not app status.
 export const CARRY_RATE = 0.2;
-
-export const fundIIProfitAtMaturity = FUND_II_TARGET_MID * (MATURITY_WHOLE_FUND_MOIC - 1);
-export const fundIICarryAtMaturity = fundIIProfitAtMaturity * CARRY_RATE;
-export const scoutProfitAtMaturity = SCOUT_POOL_SIZE * (MATURITY_SCOUT_BOOK_MOIC - 1);
-export const scoutCarryAtMaturity = scoutProfitAtMaturity * CARRY_RATE;
-export const scoutCarryShareOfFund = scoutCarryAtMaturity / fundIICarryAtMaturity;
 
 // ---- Per-scout estimated upside (Scout Portal) ------------------------------
 // Same mark-to-market convention as the fund-wide figure above, scoped to one
@@ -173,22 +163,6 @@ export const scoutUpside: Map<string, ScoutUpside> = new Map(
     return [s.id, { scoutId: s.id, deployedUsd, markedValueUsd, profitUsd, estimatedCarryUsd }];
   }),
 );
-
-// ---- Retention across cohorts (line chart) ---------------------------------
-// The program's first formal cohort is still active, so cohort-over-cohort
-// retention before 2025 reflects the informal Shapers Club pilot; the final
-// point is a modeled projection for the next cohort under the now-formalized
-// structure (clearly labeled as projected in the UI).
-export interface CohortRetention {
-  cohort: string;
-  retentionPct: number;
-  projected: boolean;
-}
-export const retentionByCohort: CohortRetention[] = [
-  { cohort: "Pilot ('23–'24)", retentionPct: 58, projected: false },
-  { cohort: "Cohort 1 ('25–'26)", retentionPct: 79, projected: false },
-  { cohort: "Cohort 2 ('26–'27)", retentionPct: 86, projected: true },
-];
 
 // ---- Near-term response-time trend (last 8 "weeks" of the cohort, synthetic
 // but consistent with avgResponseHours) --------------------------------------

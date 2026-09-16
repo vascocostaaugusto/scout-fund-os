@@ -3,8 +3,8 @@ import { Users } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
 import { StatTile } from "@/components/detail/stat-tile";
-import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { ScoutActivityChart } from "@/components/charts/scout-activity-chart";
+import { PoolActivity } from "@/components/incentives/pool-activity";
 import { TierBadge } from "@/components/network/tier-badge";
 import {
   Table,
@@ -14,36 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { scouts, scoutStats, totalScouts, activeScouts, capitalDeployedUsd } from "@/lib/data";
+import { scouts, scoutStats, totalScouts, activeScouts, capitalDeployedUsd, scoutCountByTier, repeatFunderScouts } from "@/lib/data";
 import { formatUsd, formatUsdCompact, formatPct } from "@/lib/format";
-
-const TIER_COPY = [
-  {
-    tier: 1 as const,
-    name: "Shapers Club Operators",
-    range: "16–20 scouts",
-    body:
-      "Existing LP-operators — fintech founders from companies like Qonto, Wise, N26, and Bitpanda — each owning a vertical or a geography. They already have the Shapers relationship and the founder network; the program gives that a formal channel.",
-  },
-  {
-    tier: 2 as const,
-    name: "Portfolio Founders",
-    range: "6–8 scouts",
-    body:
-      "Founders of existing Shapers portfolio companies, scouting peer founders in adjacent fintech categories. Highest signal-to-noise: they're evaluating people they'd actually want as neighbors on a cap table.",
-  },
-  {
-    tier: 3 as const,
-    name: "Category Specialists",
-    range: "3–5 scouts",
-    body:
-      "Dedicated scouts in crypto and stablecoin infrastructure — the one vertical where the core team's network is thinnest today. A deliberate patch, not a general-purpose tier.",
-  },
-];
 
 export const metadata: Metadata = {
   title: "Scout Network · Scout Fund OS",
-  description: "The tiered scout recruiting model behind the Shapers Scout Fund.",
+  description: "The scout roster behind the Shapers Scout Fund.",
 };
 
 export default function NetworkPage() {
@@ -53,32 +29,17 @@ export default function NetworkPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
       <DetailHeader
         icon={Users}
-        tagline="Component 1 of 6"
+        tagline="Program component"
         title="Scout Network"
-        description="A three-tier recruiting model that converts the Shapers Club's existing operator relationships into a structured sourcing engine, patched with dedicated coverage where the core team's network runs thin."
+        description="The active roster, tiered by coverage — who's sourcing, and how much they've moved."
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile label="Active scouts" value={`${activeScouts}`} hint={`of ${totalScouts} total in Cohort 1`} />
-        <StatTile label="Cohort target" value="25–35" hint="active scouts per 18–24 month cohort" />
+        <StatTile label="Tier split" value={`${scoutCountByTier[1]} / ${scoutCountByTier[2]} / ${scoutCountByTier[3]}`} hint="operators · founders · specialists" />
         <StatTile label="Capital deployed" value={formatUsdCompact(capitalDeployedUsd)} hint="from the shared $6M pool" emphasis />
-        <StatTile label="Tiers" value="3" hint="operators · founders · specialists" />
+        <StatTile label="Repeat scouts" value={`${repeatFunderScouts}`} hint="funded 2+ deals" />
       </div>
-
-      <Section title="Three tiers, one mandate" subtitle="Each tier solves a different sourcing problem — coverage breadth, founder-level trust, or a specific thesis gap.">
-        <div className="grid gap-4 lg:grid-cols-3">
-          {TIER_COPY.map((t) => (
-            <div key={t.tier} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-5">
-              <div className="flex items-center justify-between">
-                <TierBadge tier={t.tier} />
-                <span className="text-xs text-muted-foreground">{t.range}</span>
-              </div>
-              <div className="text-sm font-semibold text-foreground">{t.name}</div>
-              <p className="text-xs leading-relaxed text-muted-foreground">{t.body}</p>
-            </div>
-          ))}
-        </div>
-      </Section>
 
       <Section title="Roster" subtitle="Every scout and their sourcing activity this cohort — aggregated live from the deal pipeline. Tickets draw from the shared pool, not a personal ceiling.">
         <div className="overflow-hidden rounded-xl border border-border bg-card">
@@ -129,7 +90,9 @@ export default function NetworkPage() {
         <ScoutActivityChart />
       </Section>
 
-      <ConnectionCallout slug="network" />
+      <Section title="Pool activity" subtitle="Every scout draws from the same $6M evergreen pool — this is who's actually put tickets to work.">
+        <PoolActivity />
+      </Section>
     </div>
   );
 }

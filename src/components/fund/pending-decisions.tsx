@@ -1,0 +1,136 @@
+"use client";
+
+import { useState } from "react";
+import { Check, X, RotateCcw } from "lucide-react";
+import { scoutById } from "@/lib/data";
+import { useDealStore } from "@/lib/deal-store";
+import { formatDate, timeAgo } from "@/lib/format";
+import { Button } from "@/components/ui/button";
+
+const PARTNERS = [
+  "Nils Haverkamp",
+  "Beatriz Coelho",
+  "Simon Whitfield",
+  "Katarzyna Wolski",
+  "Marcus Lindqvist",
+] as const;
+
+export function PendingDecisions() {
+  const { deals, overrides, decideDeal, resetDeal } = useDealStore();
+  const [actingAs, setActingAs] = useState<string>(PARTNERS[0]);
+  const [notes, setNotes] = useState<Record<string, string>>({});
+
+  const pending = deals
+    .filter((d) => d.stage === "submitted" || d.stage === "under_review")
+    .sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime());
+
+  const decidedThisSession = Object.entries(overrides).sort(
+    (a, b) => new Date(b[1].decidedAt).getTime() - new Date(a[1].decidedAt).getTime(),
+  );
+
+  function decide(dealId: string, decision: "approved" | "declined") {
+    decideDeal(dealId, decision, actingAs, notes[dealId] ?? "");
+    setNotes((prev) => {
+      const next = { ...prev };
+      delete next[dealId];
+      return next;
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-xs text-muted-foreground">
+          {pending.length} deal{pending.length === 1 ? "" : "s"} awaiting a decision
+        </span>
+        <label className="flex items-center gap-2 text-xs text-muted-foreground">
+          Acting as
+          <select
+            value={actingAs}
+            onChange={(e) => setActingAs(e.target.value)}
+            className="rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
+          >
+            {PARTNERS.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
+      {pending.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
+          Nothing pending — every submitted memo has a decision on file.
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {pending.map((d) => {
+            const scout = scoutById.get(d.scoutId);
+            return (
+              <div key={d.id} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{d.companyName}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {d.sector} · sourced by {scout?.name} · submitted {timeAgo(d.submittedAt)}
+                    </div>
+                  </div>
+                  <span className="rounded-full bg-warning/15 px-2 py-0.5 text-[11px] font-medium text-warning">
+                    {d.stage === "submitted" ? "Awaiting first look" : "Under review"}
+                  </span>
+                </div>
+                <textarea
+                  value={notes[d.id] ?? ""}
+                  onChange={(e) => setNotes((prev) => ({ ...prev, [d.id]: e.target.value }))}
+                  placeholder="Optional note — why, or what's next"
+                  rows={2}
+                  className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                />
+                <div className="flex gap-2">
+                  <Button size="sm" variant="ghost" className="text-critical hover:bg-critical/10 hover:text-critical" onClick={() => decide(d.id, "declined")}>
+                    <X className="size-3.5" />
+                    Decline
+                  </Button>
+                  <Button size="sm" onClick={() => decide(d.id, "approved")}>
+                    <Check className="size-3.5" />
+                    Approve
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {decidedThisSession.length > 0 ? (
+        <div className="flex flex-col gap-2 rounded-xl border border-dashed border-border bg-card/60 p-4">
+          <span className="text-xs font-medium text-muted-foreground">Decided this session</span>
+          {decidedThisSession.map(([dealId, o]) => {
+            const deal = deals.find((d) => d.id === dealId);
+            if (!deal) return null;
+            return (
+              <div key={dealId} className="flex items-center justify-between gap-3 text-xs">
+                <span className="text-foreground">
+                  {deal.companyName} —{" "}
+                  <span className={o.stage === "declined" ? "text-critical" : "text-success"}>
+                    {o.stage === "declined" ? "Declined" : "Approved"}
+                  </span>{" "}
+                  by {o.reviewingPartner} · {formatDate(o.decidedAt)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => resetDeal(dealId)}
+                  className="flex shrink-0 items-center gap-1 text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="size-3" />
+                  Undo
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}

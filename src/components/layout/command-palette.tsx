@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, Moon, Sun, Compass } from "lucide-react";
+import { LayoutGrid, Moon, Sun, Compass, Landmark } from "lucide-react";
 import { useTheme } from "next-themes";
 import { NAV_NODES } from "@/lib/nav";
 import {
@@ -67,7 +67,14 @@ export function CommandPalette() {
             ))}
           </CommandGroup>
           <CommandSeparator />
-          <CommandGroup heading="Scout-facing">
+          <CommandGroup heading="Portals">
+            <CommandItem onSelect={() => go("/fund")}>
+              <Landmark />
+              Fund Portal
+              <CommandShortcut className="max-w-40 truncate text-right normal-case tracking-normal">
+                Pending decisions
+              </CommandShortcut>
+            </CommandItem>
             <CommandItem onSelect={() => go("/portal")}>
               <Compass />
               Scout Portal

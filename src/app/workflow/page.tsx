@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
-import { GitBranch } from "lucide-react";
+import Link from "next/link";
+import { GitBranch, ArrowRight } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
 import { StatTile } from "@/components/detail/stat-tile";
-import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { KanbanBoard } from "@/components/workflow/kanban-board";
-import { ProcessSteps } from "@/components/workflow/process-steps";
 import { DecisionAuditLog } from "@/components/workflow/decision-audit-log";
-import { avgResponseHours, lateResponseRate, pipelineOpenCount, totalMemos } from "@/lib/data";
+import { avgResponseHours, lateResponseRate, pipelineOpenCount, totalMemos, pipelineByStage } from "@/lib/data";
 import { formatHours, formatPct } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -16,14 +15,25 @@ export const metadata: Metadata = {
 };
 
 export default function WorkflowPage() {
+  const pendingCount = pipelineByStage.submitted + pipelineByStage.under_review;
+
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
-      <DetailHeader
-        icon={GitBranch}
-        tagline="Component 3 of 6"
-        title="Deal Workflow"
-        description="One intake channel, a 48-hour target on the first response, and a small check with no full diligence at this stage. The workflow is deliberately lightweight — the underwriting happens later, at the priced round."
-      />
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <DetailHeader
+          icon={GitBranch}
+          tagline="Program component"
+          title="Deal Workflow"
+          description="Intake, first-look response, and the pipeline from memo to check."
+        />
+        <Link
+          href="/fund"
+          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          Review pending decisions
+          <ArrowRight className="size-4" />
+        </Link>
+      </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile
@@ -36,12 +46,8 @@ export default function WorkflowPage() {
         />
         <StatTile label="Late responses" value={formatPct(lateResponseRate, 1)} hint="first looks over 48h" />
         <StatTile label="Open pipeline" value={`${pipelineOpenCount}`} hint={`of ${totalMemos} memos submitted`} />
-        <StatTile label="Diligence at this stage" value="None" hint="reserved for the priced follow-on round" />
+        <StatTile label="Pending decision" value={`${pendingCount}`} hint="submitted + under review" emphasis />
       </div>
-
-      <Section title="How a deal moves" subtitle="Four steps from memo to check — built to be fast, not thorough.">
-        <ProcessSteps />
-      </Section>
 
       <Section
         title="Live pipeline"
@@ -52,12 +58,10 @@ export default function WorkflowPage() {
 
       <Section
         title="Decision audit trail"
-        subtitle="Every reviewed deal, logged with who made the call, when, and why — the accountability-facing view of the same kanban above."
+        subtitle="Every reviewed deal, logged with who made the call, when, and why."
       >
         <DecisionAuditLog />
       </Section>
-
-      <ConnectionCallout slug="workflow" />
     </div>
   );
 }

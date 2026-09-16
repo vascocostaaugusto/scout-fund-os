@@ -97,3 +97,40 @@ should be today.
 - The 24-month pacing clock uses the same program-start date already used
   everywhere else (Jan 2025) rather than resetting to "today," so the app
   keeps one single consistent timeline instead of introducing a second one.
+
+## 10. Splitting into app / program brief / architecture doc
+**Ambiguity:** User asked to separate "informative/assumption" content from
+"working" content into three deliverables (a lean app, a program brief
+document, an architecture document), with several examples given via
+screenshots but not a field-by-field spec of exactly what moves where.
+**Assumptions and judgment calls:**
+- Treated as "app-worthy": anything computed live from the seeded dataset
+  (tables, kanban, charts, the decision queue). Treated as "doc-worthy":
+  anything static/narrative that explains *why* rather than shows *what is
+  happening now* (tier bios, the 4-step workflow explainer, the Fund
+  Structure comparison, the Year-8 maturity model, cohort retention
+  projections, the "how this connects" relationship graph).
+- Cutting Incentive Engine, Fund Structure, Success Dashboard, and Info Hub
+  down to almost nothing left only 2 "program components" (Network,
+  Workflow). The circular hub-and-spoke system map was designed for 6-7
+  nodes and looked broken with 2, so it's replaced with a simple 2-card
+  layout — a visual consequence of the content split, not something
+  separately requested, but necessary once the node count collapsed.
+- Kept two pieces of the old Success Dashboard that felt like genuine
+  *status* rather than *pitch*: the deployment pacing chart (moved to the
+  new Fund Portal, since that's where the fund would actually watch it) and
+  the three near-term metrics explicitly requested for Overview. Cut the
+  rest (headline MOIC/carry chart, regulatory filing history, retention,
+  follow-on funnel) to the doc — these were modeled/narrative, not live status.
+- Built the Fund Portal's decision queue as **real client-side interactive
+  state** (a React context + localStorage), not a static mockup — approving
+  or declining a deal there actually updates the kanban and audit trail
+  elsewhere in the app. This is scoped to decisions only (deal stage +
+  partner notes); it does not make every derived stat elsewhere in the app
+  (e.g. Overview's pipeline counts) reactive to session-local changes, since
+  that would require turning the whole static aggregates layer into
+  client-computed state — a much larger change than "make decisions work."
+- The Gmail/other-channel automation the user described is documented in
+  the architecture file as an integration, not built — there's no real
+  Gmail connection in this prototype, and building one was explicitly
+  framed by the user as an architecture-doc concern, not an app feature.

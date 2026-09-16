@@ -1,5 +1,8 @@
-import { deals, scoutById } from "@/lib/data";
+"use client";
+
+import { scoutById } from "@/lib/data";
 import type { DealStage } from "@/lib/data";
+import { useDealStore } from "@/lib/deal-store";
 import { formatUsd, timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +29,7 @@ const STAGE_DOT: Record<DealStage, string> = {
 };
 
 export function KanbanBoard() {
+  const { deals } = useDealStore();
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
       {COLUMNS.map((col, colIndex) => {

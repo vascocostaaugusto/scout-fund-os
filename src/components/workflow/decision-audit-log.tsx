@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { deals, scoutById } from "@/lib/data";
+import { scoutById } from "@/lib/data";
 import type { DealStage } from "@/lib/data";
+import { useDealStore } from "@/lib/deal-store";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
@@ -56,6 +57,7 @@ const FILTERS = [
 
 export function DecisionAuditLog() {
   const [filter, setFilter] = useState("all");
+  const { deals } = useDealStore();
 
   const rows = useMemo(() => {
     const decided = deals.filter((d) => DECIDED_STAGES.includes(d.stage) && d.firstLookAt);
@@ -64,7 +66,7 @@ export function DecisionAuditLog() {
         ? decided
         : decided.filter((d) => (filter === "declined" ? d.stage === "declined" : d.stage !== "declined"));
     return [...filtered].sort((a, b) => new Date(b.firstLookAt!).getTime() - new Date(a.firstLookAt!).getTime());
-  }, [filter]);
+  }, [filter, deals]);
 
   const declinedCount = deals.filter((d) => d.stage === "declined").length;
 

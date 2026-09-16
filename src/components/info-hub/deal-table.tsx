@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react";
 import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
-import { deals, scoutById } from "@/lib/data";
+import { scoutById } from "@/lib/data";
 import type { DealStage } from "@/lib/data";
+import { useDealStore } from "@/lib/deal-store";
 import { formatUsd, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
@@ -56,6 +57,7 @@ const SORTABLE: { key: SortKey; label: string; className?: string }[] = [
 ];
 
 export function DealTable() {
+  const { deals } = useDealStore();
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: "submitted", dir: "desc" });
 
@@ -75,7 +77,7 @@ export function DealTable() {
       return sort.dir === "asc" ? cmp : -cmp;
     });
     return sorted;
-  }, [stageFilter, sort]);
+  }, [stageFilter, sort, deals]);
 
   return (
     <div className="flex flex-col gap-3">

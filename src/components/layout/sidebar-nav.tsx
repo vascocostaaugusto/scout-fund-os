@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Compass } from "lucide-react";
+import { LayoutGrid, Compass, Landmark } from "lucide-react";
 import { NAV_NODES } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
@@ -54,8 +54,27 @@ export function SidebarNav() {
       })}
 
       <div className="mt-3 mb-1 px-3 text-[11px] font-medium uppercase tracking-wider text-sidebar-foreground/40">
-        Scout-facing
+        Portals
       </div>
+      <Link
+        href="/fund"
+        className={cn(
+          "group flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+          pathname.startsWith("/fund")
+            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+            : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+        )}
+      >
+        <Landmark
+          className={cn(
+            "size-4 shrink-0",
+            pathname.startsWith("/fund")
+              ? "text-sidebar-primary"
+              : "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70",
+          )}
+        />
+        <span className="truncate">Fund Portal</span>
+      </Link>
       <Link
         href="/portal"
         className={cn(
