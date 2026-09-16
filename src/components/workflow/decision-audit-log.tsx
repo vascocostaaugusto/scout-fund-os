@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ShieldAlert } from "lucide-react";
 import { scoutById } from "@/lib/data";
 import type { DealStage } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
@@ -106,7 +107,14 @@ export function DecisionAuditLog() {
               {rows.map((d) => (
                 <TableRow key={d.id}>
                   <TableCell className="whitespace-normal font-medium text-foreground">
-                    {d.companyName}
+                    <span className="inline-flex items-center gap-1.5">
+                      {d.companyName}
+                      {d.conflictDisclosed ? (
+                        <span title={d.conflictNotes ?? "Conflict of interest disclosed"}>
+                          <ShieldAlert className="size-3.5 shrink-0 text-critical" aria-label="Conflict disclosed" />
+                        </span>
+                      ) : null}
+                    </span>
                     <div className="text-xs font-normal text-muted-foreground">
                       sourced by {scoutById.get(d.scoutId)?.name}
                     </div>
