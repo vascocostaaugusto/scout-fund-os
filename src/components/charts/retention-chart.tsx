@@ -24,7 +24,7 @@ export function RetentionChart() {
         </span>
       </div>
       <ResponsiveContainer width="100%" height="85%">
-        <LineChart data={data} margin={{ top: 4, right: 12, left: -20, bottom: 0 }}>
+        <LineChart data={data} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--border)" />
           <XAxis
             dataKey="cohort"
@@ -36,7 +36,7 @@ export function RetentionChart() {
             tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
             axisLine={false}
             tickLine={false}
-            width={30}
+            width={36}
             domain={[0, 100]}
             unit="%"
           />

@@ -15,7 +15,7 @@ export function SlaTrendChart() {
         </span>
       </div>
       <ResponsiveContainer width="100%" height="85%">
-        <LineChart data={slaTrend} margin={{ top: 4, right: 12, left: -20, bottom: 0 }}>
+        <LineChart data={slaTrend} margin={{ top: 4, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--border)" />
           <XAxis
             dataKey="week"
