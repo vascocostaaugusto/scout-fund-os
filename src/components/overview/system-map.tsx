@@ -30,7 +30,31 @@ export function SystemMap() {
   }
 
   return (
-    <div className="relative mx-auto aspect-[16/6.5] w-full max-w-5xl select-none">
+    <>
+      {/* Narrow viewports: the circular hub-and-spoke layout has no room to
+          breathe below ~lg, so fall back to a simple responsive grid. */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:hidden">
+        {NAV_NODES.map((node) => {
+          const Icon = node.icon;
+          return (
+            <Link
+              key={node.slug}
+              href={node.href}
+              className="group flex items-start gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/50"
+            >
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-accent text-accent-foreground transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                <Icon className="size-4" />
+              </div>
+              <div className="flex flex-col gap-0.5">
+                <div className="text-sm font-semibold text-foreground">{node.title}</div>
+                <p className="text-xs leading-snug text-muted-foreground">{node.oneLiner}</p>
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="relative mx-auto hidden aspect-[16/6.5] w-full max-w-5xl select-none lg:block">
       <svg
         className="absolute inset-0 h-full w-full overflow-visible"
         viewBox="0 0 100 100"
@@ -123,6 +147,7 @@ export function SystemMap() {
           </Link>
         );
       })}
-    </div>
+      </div>
+    </>
   );
 }

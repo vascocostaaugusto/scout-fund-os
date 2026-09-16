@@ -24,7 +24,7 @@ export default function OverviewPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-baseline justify-between">
           <h2 className="text-sm font-medium text-foreground">System map</h2>
-          <span className="text-xs text-muted-foreground">Hover a node to trace its connections</span>
+          <span className="hidden text-xs text-muted-foreground lg:inline">Hover a node to trace its connections</span>
         </div>
         <SystemMap />
       </div>
