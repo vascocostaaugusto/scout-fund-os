@@ -35,13 +35,16 @@
       overflow, broken Recharts FunnelChart) that build/lint could not catch
 - [x] SESSION_REPORT.md
 
+- [x] Command palette (Cmd+K) — added, with a visible "Jump to…" trigger in
+      the topbar plus the keyboard shortcut. Caught and fixed a real runtime
+      crash in the process (shadcn's CommandDialog doesn't auto-wrap children
+      in the cmdk Command root context).
+- [x] Sortable deal table columns (Company / Check / Submitted, click-to-toggle)
+
 ## Remaining ideas (not done — lower value than what shipped, listed for
 ## transparency; pick up here if resuming this session)
 - Per-scout or per-deal drill-down detail pages (explicitly out of scope —
   see BLOCKERS.md #8)
-- A real settings/export affordance on the deal table (CSV export, column
-  sort) — table is filterable but not sortable
-- Command palette (cmd+K) for jumping between the 7 components — would fit
-  the "real internal software" feel well, cut for time
+- CSV export affordance on the deal table
 - Dedicated unit tests for src/lib/data aggregation logic (currently only
   manually verified via tsx sanity scripts during the data-layer build step)
