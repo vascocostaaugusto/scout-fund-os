@@ -10,10 +10,18 @@ const RADIUS = 42; // percent of container — the container's own wide aspect
 // ratio does the ellipse-flattening, so this stays a true circle in logical space
 const CENTER = 50;
 
+// Math.sin/cos can differ in their last bit between server (Node) and
+// client (browser) engines — rounding avoids a hydration mismatch on
+// these SVG coordinates. 4 decimal places is far more precision than a
+// percentage-based layout needs.
+function round(n: number) {
+  return Math.round(n * 10_000) / 10_000;
+}
+
 function positionFor(index: number, total: number) {
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-  const x = CENTER + RADIUS * Math.cos(angle);
-  const y = CENTER + RADIUS * Math.sin(angle);
+  const x = round(CENTER + RADIUS * Math.cos(angle));
+  const y = round(CENTER + RADIUS * Math.sin(angle));
   return { x, y };
 }
 
