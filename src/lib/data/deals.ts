@@ -2,7 +2,7 @@ import { makeRng } from "./prng";
 import { scouts } from "./scouts";
 import type { Deal, DealStage } from "./types";
 
-const rng = makeRng(5150);
+const rng = makeRng(3333);
 
 const SECTORS = [
   "SME Banking",
@@ -116,7 +116,7 @@ const STAGE_WEIGHTS: [DealStage, number][] = [
   ["dead", 1],
 ];
 
-const TOTAL_DEALS = 47;
+const TOTAL_DEALS = 150;
 
 // Tier-1 operators are the most active sourcers by design (widest network,
 // most tenure); tier-3 specialists source fewer but higher-conviction deals.
@@ -126,12 +126,10 @@ function buildScoutWeights() {
   return scouts.map((s) => [s.id, TIER_ACTIVITY_WEIGHT[s.tier]] as const);
 }
 
-function checkSizeFor(scoutAllocation: number): number {
-  // Individual checks are a slice of the scout's total allocation, sized as
-  // if 2–4 companies will share it across the cohort.
-  const perCompanyMax = scoutAllocation / 2.4;
-  const perCompanyMin = scoutAllocation / 4.2;
-  return Math.round(rng.float(perCompanyMin, perCompanyMax, 0) / 1000) * 1000;
+function checkSizeFor(): number {
+  // Tickets are $10K–$50K, drawn straight from the shared evergreen pool —
+  // no longer sized off a per-scout allocation ceiling.
+  return Math.round(rng.float(10_000, 50_000, 0) / 1000) * 1000;
 }
 
 function responseHoursFor(stage: DealStage): { hours: number | null; firstLookAt: string | null; late: boolean } {
@@ -156,7 +154,7 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
   const firstLookAt = hours != null ? new Date(submittedAt.getTime() + hours * 3600_000).toISOString() : null;
 
   const funded = stage === "check_written" || stage === "follow_on_watch" || stage === "exited" || stage === "dead";
-  const checkSizeUsd = funded ? checkSizeFor(scout.allocationUsd) : null;
+  const checkSizeUsd = funded ? checkSizeFor() : null;
 
   const geography = rng.bool(0.72)
     ? scout.coverage.split(" · ")[0]

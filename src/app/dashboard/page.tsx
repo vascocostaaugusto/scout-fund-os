@@ -11,6 +11,7 @@ import { CoverageMap } from "@/components/charts/coverage-map";
 import { FollowOnFunnel } from "@/components/charts/follow-on-funnel";
 import { RetentionChart } from "@/components/charts/retention-chart";
 import { RegulatoryProvenance } from "@/components/charts/regulatory-provenance";
+import { PacingChart } from "@/components/charts/pacing-chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   fundedConversionRate,
@@ -78,6 +79,7 @@ export default function DashboardPage() {
                 emphasis
               />
             </div>
+            <PacingChart />
             <RetentionChart />
           </TabsContent>
 

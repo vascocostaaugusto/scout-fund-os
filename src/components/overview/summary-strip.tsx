@@ -4,7 +4,6 @@ import {
   totalScouts,
   SCOUT_POOL_SIZE,
   capitalDeployedUsd,
-  capitalAllocatedUsd,
   pipelineOpenCount,
   totalMemos,
 } from "@/lib/data";
@@ -22,7 +21,7 @@ export function SummaryStrip() {
     {
       label: "Scout pool size",
       value: formatUsdCompact(SCOUT_POOL_SIZE),
-      sub: `<5% of Fund II · ${formatUsdCompact(capitalAllocatedUsd)} allocated to Cohort 1`,
+      sub: "<5% of Fund II · shared, evergreen",
       icon: Wallet,
     },
     {
@@ -33,8 +32,8 @@ export function SummaryStrip() {
     },
     {
       label: "Capital deployed",
-      value: `${formatUsdCompact(capitalDeployedUsd)} / ${formatUsdCompact(capitalAllocatedUsd)}`,
-      sub: `${formatPct(capitalDeployedUsd / capitalAllocatedUsd, 0)} of allocated`,
+      value: formatUsdCompact(capitalDeployedUsd),
+      sub: `${formatPct(capitalDeployedUsd / SCOUT_POOL_SIZE, 0)} of the $6M pool`,
       icon: Landmark,
     },
     {

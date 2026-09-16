@@ -7,13 +7,20 @@ import type { DealStage } from "./types";
 export const FUND_II_TARGET_LOW = 100_000_000;
 export const FUND_II_TARGET_HIGH = 150_000_000;
 export const FUND_II_TARGET_MID = 125_000_000;
-export const SCOUT_POOL_SIZE = 6_000_000; // program-level ceiling, LPAC-authorized
+// A single shared, evergreen pool — not split into per-scout ceilings. Any
+// scout can draw a $10K–$50K ticket from it at any time; the pool
+// replenishes as deals realize and is targeted for full deployment within
+// 24 months of the program's start.
+export const SCOUT_POOL_SIZE = 6_000_000;
 export const SCOUT_POOL_PCT_OF_FUND = SCOUT_POOL_SIZE / FUND_II_TARGET_MID;
+export const TICKET_SIZE_MIN = 10_000;
+export const TICKET_SIZE_MAX = 50_000;
+export const PACING_TARGET_MONTHS = 24;
+export const PACING_MONTHLY_TARGET_USD = SCOUT_POOL_SIZE / PACING_TARGET_MONTHS;
 
 // ---- Roster-derived ---------------------------------------------------------
 export const totalScouts = scouts.length;
 export const activeScouts = scouts.filter((s) => s.status !== "alumni").length;
-export const capitalAllocatedUsd = scouts.reduce((sum, s) => sum + s.allocationUsd, 0);
 
 // ---- Deal-derived ------------------------------------------------------------
 const FUNDED_STAGES: DealStage[] = ["check_written", "follow_on_watch", "exited", "dead"];
@@ -194,3 +201,37 @@ export const responseTimeTrend: ResponseWeek[] = Array.from({ length: 8 }, (_, i
   week: `W${i + 1}`,
   avgHours: Math.round(responseRng.float(avgResponseHours - 9, avgResponseHours + 9, 1) * 10) / 10,
 }));
+
+// ---- Deployment pacing: cumulative actual vs. the straight-line target to
+// fully deploy the pool within PACING_TARGET_MONTHS ---------------------------
+// Uses each funded deal's first-look response as a proxy "deployed at" date
+// (checks are written shortly after that point) — deals.ts doesn't track a
+// separate funding-execution timestamp, and this is the closest one it has.
+const PROGRAM_START = new Date("2025-01-20T09:00:00Z");
+const TODAY_REF = new Date("2026-09-16T09:00:00Z");
+
+export interface PacingPoint {
+  month: string; // e.g. "M0", "M12"
+  monthIndex: number;
+  actualCumulativeUsd: number | null; // null once past today — unknown yet
+  targetCumulativeUsd: number;
+}
+
+export const deploymentPacing: PacingPoint[] = Array.from({ length: PACING_TARGET_MONTHS + 1 }, (_, m) => {
+  const cutoff = new Date(PROGRAM_START);
+  cutoff.setUTCMonth(cutoff.getUTCMonth() + m);
+  const isFuture = cutoff > TODAY_REF;
+
+  const actualCumulativeUsd = isFuture
+    ? null
+    : fundedDeals
+        .filter((d) => d.firstLookAt && new Date(d.firstLookAt) <= cutoff)
+        .reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0);
+
+  return {
+    month: `M${m}`,
+    monthIndex: m,
+    actualCumulativeUsd,
+    targetCumulativeUsd: Math.min(PACING_MONTHLY_TARGET_USD * m, SCOUT_POOL_SIZE),
+  };
+});

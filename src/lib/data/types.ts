@@ -14,7 +14,6 @@ export interface Scout {
   initials: string;
   cohort: string; // e.g. "Cohort 1 (2025–26)"
   status: ScoutStatus;
-  allocationUsd: number; // personal allocation ceiling for this cohort
   joinedAt: string; // ISO date
 }
 

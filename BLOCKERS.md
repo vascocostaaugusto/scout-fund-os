@@ -75,3 +75,25 @@ component), not a page per scout or per deal.
 **Assumption:** Kept to the 7 specified routes. Scout/deal-level detail is
 surfaced inline (tables, kanban cards, tooltips) rather than as separate
 routes, to stay inside the specified information architecture.
+
+## 9. Shared evergreen pool model (post-launch revision)
+**Ambiguity:** User asked to move from per-scout fixed allocations to "a
+shared evergreen $6M pool," 30 active scouts, $10K–$50K tickets, and a
+24-month full-deployment target — but didn't specify exact roster
+composition, ticket-size distribution shape, or how far along deployment
+should be today.
+**Assumptions:**
+- 30 scouts keeps the original 9:4:2 tier ratio doubled to 18:8:4
+  (Tier 1/2/3), with 15 new fictional bios added in the same style as the
+  original 15 (real company pedigree, invented individuals).
+- Ticket size drawn uniformly from $10K–$50K (no skew) — the brief gave a
+  flat range, not a distribution shape.
+- Deployment-to-date is real and *behind* the straight-line pacing target
+  (~20% of pool deployed vs. ~85% of pace-to-date would imply) rather than
+  forced to match. This is deliberate: a referral-driven scout program
+  plausibly ramps slower than a linear target early on, and showing a real
+  gap is what makes the new pacing chart worth having — a chart that
+  always shows "on track" proves nothing.
+- The 24-month pacing clock uses the same program-start date already used
+  everywhere else (Jan 2025) rather than resetting to "today," so the app
+  keeps one single consistent timeline instead of introducing a second one.

@@ -14,28 +14,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { scouts, scoutStats, totalScouts, activeScouts, capitalAllocatedUsd } from "@/lib/data";
+import { scouts, scoutStats, totalScouts, activeScouts, capitalDeployedUsd } from "@/lib/data";
 import { formatUsd, formatUsdCompact, formatPct } from "@/lib/format";
 
 const TIER_COPY = [
   {
     tier: 1 as const,
     name: "Shapers Club Operators",
-    range: "8–10 scouts",
+    range: "16–20 scouts",
     body:
       "Existing LP-operators — fintech founders from companies like Qonto, Wise, N26, and Bitpanda — each owning a vertical or a geography. They already have the Shapers relationship and the founder network; the program gives that a formal channel.",
   },
   {
     tier: 2 as const,
     name: "Portfolio Founders",
-    range: "3–4 scouts",
+    range: "6–8 scouts",
     body:
       "Founders of existing Shapers portfolio companies, scouting peer founders in adjacent fintech categories. Highest signal-to-noise: they're evaluating people they'd actually want as neighbors on a cap table.",
   },
   {
     tier: 3 as const,
     name: "Category Specialists",
-    range: "2–3 scouts",
+    range: "3–5 scouts",
     body:
       "Dedicated scouts in crypto and stablecoin infrastructure — the one vertical where the core team's network is thinnest today. A deliberate patch, not a general-purpose tier.",
   },
@@ -60,8 +60,8 @@ export default function NetworkPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile label="Active scouts" value={`${activeScouts}`} hint={`of ${totalScouts} total in Cohort 1`} />
-        <StatTile label="Cohort target" value="12–15" hint="active scouts per 18–24 month cohort" />
-        <StatTile label="Capital allocated" value={formatUsdCompact(capitalAllocatedUsd)} hint="sum of all scout ceilings" emphasis />
+        <StatTile label="Cohort target" value="25–35" hint="active scouts per 18–24 month cohort" />
+        <StatTile label="Capital deployed" value={formatUsdCompact(capitalDeployedUsd)} hint="from the shared $6M pool" emphasis />
         <StatTile label="Tiers" value="3" hint="operators · founders · specialists" />
       </div>
 
@@ -80,7 +80,7 @@ export default function NetworkPage() {
         </div>
       </Section>
 
-      <Section title="Roster" subtitle="Every scout, their allocation ceiling, and sourcing activity this cohort — aggregated live from the deal pipeline.">
+      <Section title="Roster" subtitle="Every scout and their sourcing activity this cohort — aggregated live from the deal pipeline. Tickets draw from the shared pool, not a personal ceiling.">
         <div className="overflow-hidden rounded-xl border border-border bg-card">
           <Table>
             <TableHeader>
@@ -88,7 +88,7 @@ export default function NetworkPage() {
                 <TableHead>Scout</TableHead>
                 <TableHead>Tier</TableHead>
                 <TableHead>Coverage</TableHead>
-                <TableHead className="text-right">Allocation</TableHead>
+                <TableHead className="text-right">Deployed</TableHead>
                 <TableHead className="text-right">Memos</TableHead>
                 <TableHead className="text-right">Funded</TableHead>
                 <TableHead className="text-right">Conversion</TableHead>
@@ -109,7 +109,9 @@ export default function NetworkPage() {
                       <TierBadge tier={s.tier} />
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{s.coverage}</TableCell>
-                    <TableCell className="text-right tabular-nums text-sm">{formatUsd(s.allocationUsd)}</TableCell>
+                    <TableCell className="text-right tabular-nums text-sm">
+                      {stats.capitalDeployedUsd ? formatUsd(stats.capitalDeployedUsd) : "—"}
+                    </TableCell>
                     <TableCell className="text-right tabular-nums text-sm">{stats.memosSubmitted}</TableCell>
                     <TableCell className="text-right tabular-nums text-sm">{stats.dealsFunded}</TableCell>
                     <TableCell className="text-right tabular-nums text-sm text-muted-foreground">

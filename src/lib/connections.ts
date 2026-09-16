@@ -8,7 +8,7 @@ export interface Connection {
 
 export const CONNECTIONS: Record<string, Connection[]> = {
   network: [
-    { slug: "incentives", note: "Tier and allocation ceiling set each scout's earning potential." },
+    { slug: "incentives", note: "Every scout draws tickets from the same shared pool — tier sets coverage, not earning potential." },
     { slug: "workflow", note: "Scouts are the sole entry point into the intake pipeline." },
   ],
   incentives: [

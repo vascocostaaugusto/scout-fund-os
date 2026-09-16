@@ -5,7 +5,7 @@ import { Section } from "@/components/detail/section";
 import { StatTile } from "@/components/detail/stat-tile";
 import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { CarryCalculator } from "@/components/incentives/carry-calculator";
-import { AllocationUtilization } from "@/components/incentives/allocation-utilization";
+import { PoolActivity } from "@/components/incentives/pool-activity";
 
 export const metadata: Metadata = {
   title: "Incentive Engine · Scout Fund OS",
@@ -24,7 +24,7 @@ export default function IncentivesPage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile label="Carry rate" value="10–15%" hint="of Fund II's carry on the scout's own deals" />
-        <StatTile label="Personal allocation" value="$150K–$300K" hint="across 2–4 companies per scout" />
+        <StatTile label="Ticket size" value="$10K–$50K" hint="per deal, from the shared evergreen pool" />
         <StatTile label="Compensation form" value="Carry only" hint="no cash success fees, ever" emphasis />
         <StatTile label="Attribution" value="Deal-by-deal" hint="never pooled across the cohort" />
       </div>
@@ -52,10 +52,10 @@ export default function IncentivesPage() {
           </div>
           <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5">
             <Handshake className="size-4 text-primary" />
-            <div className="text-sm font-semibold text-foreground">Deal-by-deal, not pooled</div>
+            <div className="text-sm font-semibold text-foreground">Deal-by-deal, not shared</div>
             <p className="text-xs leading-relaxed text-muted-foreground">
-              Attribution is per company, not a shared pool. The scout who found the outlier keeps the upside from
-              that outlier — no free-riding across the cohort.
+              The capital comes from one shared pool, but carry attribution never does — it&apos;s per company. The
+              scout who found the outlier keeps the upside from that outlier, no free-riding across the cohort.
             </p>
           </div>
         </div>
@@ -81,10 +81,10 @@ export default function IncentivesPage() {
       </div>
 
       <Section
-        title="Personal allocation"
-        subtitle="How much of each scout's $150K–$300K ceiling is actually deployed this cohort."
+        title="Pool activity"
+        subtitle="Every scout draws from the same $6M evergreen pool — this is who's actually put tickets to work, not a ceiling utilization chart."
       >
-        <AllocationUtilization />
+        <PoolActivity />
       </Section>
 
       <ConnectionCallout slug="incentives" />
