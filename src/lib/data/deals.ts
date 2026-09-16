@@ -134,13 +134,13 @@ function checkSizeFor(scoutAllocation: number): number {
   return Math.round(rng.float(perCompanyMin, perCompanyMax, 0) / 1000) * 1000;
 }
 
-function slaHoursFor(stage: DealStage): { hours: number | null; firstLookAt: string | null; breached: boolean } {
-  if (stage === "submitted") return { hours: null, firstLookAt: null, breached: false };
-  // Most first-looks land comfortably inside the 48h SLA; a small tail
-  // breaches it — used later to power the "partner bandwidth" risk callout.
-  const breached = rng.bool(0.09);
-  const hours = breached ? rng.float(49, 76, 1) : rng.float(6, 47, 1);
-  return { hours, firstLookAt: null, breached };
+function responseHoursFor(stage: DealStage): { hours: number | null; firstLookAt: string | null; late: boolean } {
+  if (stage === "submitted") return { hours: null, firstLookAt: null, late: false };
+  // Most first-looks land comfortably inside the 48h target; a small tail
+  // runs late — used later to power the "partner bandwidth" callout.
+  const late = rng.bool(0.09);
+  const hours = late ? rng.float(49, 76, 1) : rng.float(6, 47, 1);
+  return { hours, firstLookAt: null, late };
 }
 
 const used = new Set<string>();
@@ -152,7 +152,7 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
   const stage = rng.weighted(STAGE_WEIGHTS);
   const recentBias = stage === "submitted" || stage === "under_review";
   const submittedAt = randomSubmittedAt(recentBias);
-  const { hours, breached } = slaHoursFor(stage);
+  const { hours, late } = responseHoursFor(stage);
   const firstLookAt = hours != null ? new Date(submittedAt.getTime() + hours * 3600_000).toISOString() : null;
 
   const funded = stage === "check_written" || stage === "follow_on_watch" || stage === "exited" || stage === "dead";
@@ -175,8 +175,8 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     checkSizeUsd,
     submittedAt: submittedAt.toISOString(),
     firstLookAt,
-    slaHours: hours,
-    slaBreached: breached,
+    responseHours: hours,
+    isLate: late,
     reviewingPartner: rng.pick(PARTNERS),
     partnerNotes: rng.pick(partnerNotesByStage[stage]),
     rightOfFirstLook: funded,

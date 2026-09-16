@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 const COLUMNS: { stage: DealStage; label: string; hint: string }[] = [
   { stage: "submitted", label: "Submitted", hint: "Awaiting first look" },
-  { stage: "under_review", label: "Under Review", hint: "48h SLA clock running" },
+  { stage: "under_review", label: "Under Review", hint: "48h response window" },
   { stage: "approved", label: "Approved", hint: "Cleared, check pending" },
   { stage: "declined", label: "Declined", hint: "Passed at first look" },
   { stage: "check_written", label: "Check Written", hint: "SAFE / convertible closed" },
@@ -66,9 +66,9 @@ export function KanbanBoard() {
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-foreground">{d.companyName}</span>
-                        {d.slaBreached ? (
+                        {d.isLate ? (
                           <span className="rounded-full bg-critical/15 px-1.5 py-0.5 text-[9px] font-medium text-critical">
-                            SLA
+                            Late
                           </span>
                         ) : null}
                       </div>

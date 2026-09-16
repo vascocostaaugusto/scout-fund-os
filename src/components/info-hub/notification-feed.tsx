@@ -12,7 +12,7 @@ import { randomLiveEvent } from "@/lib/live-events";
 const KIND_STYLE: Record<NotificationEvent["kind"], { icon: typeof FileText; className: string }> = {
   submission: { icon: FileText, className: "bg-accent text-accent-foreground" },
   status_change: { icon: RefreshCw, className: "bg-primary/15 text-primary" },
-  sla_warning: { icon: AlertTriangle, className: "bg-critical/15 text-critical" },
+  late_response: { icon: AlertTriangle, className: "bg-critical/15 text-critical" },
   digest: { icon: Newspaper, className: "bg-warning/15 text-warning" },
 };
 

@@ -35,18 +35,33 @@ for (const deal of deals) {
     events.push({
       id: nextId(),
       ts: deal.firstLookAt,
-      kind: deal.slaBreached ? "sla_warning" : "status_change",
+      kind: deal.isLate ? "late_response" : "status_change",
       dealId: deal.id,
       actor: deal.reviewingPartner,
-      text: deal.slaBreached
-        ? `SLA breached: ${deal.companyName} sat ${deal.slaHours?.toFixed(0)}h before first look from ${deal.reviewingPartner}.`
-        : `${deal.companyName} ${verb} — ${deal.reviewingPartner}, ${deal.slaHours?.toFixed(0)}h response.`,
+      text: deal.isLate
+        ? `Response ran late: ${deal.companyName} sat ${deal.responseHours?.toFixed(0)}h before first look from ${deal.reviewingPartner}.`
+        : `${deal.companyName} ${verb} — ${deal.reviewingPartner}, ${deal.responseHours?.toFixed(0)}h response.`,
     });
   }
 }
 
-// Quarterly digests — one every ~13 weeks from cohort start through today.
-const digestDates = ["2025-04-20", "2025-07-20", "2025-10-20", "2026-01-20", "2026-04-20", "2026-07-20"];
+// Monthly scout summaries — one per month from a month after cohort start
+// through the current month. Each scout gets a personal recap of their own
+// pipeline that month (built in the Scout Portal); this program-level entry
+// is the aggregate "digest sent" event in the shared feed.
+const COHORT_START = new Date("2025-01-20T09:00:00Z");
+const TODAY = new Date("2026-09-16T09:00:00Z");
+
+const digestDates: string[] = [];
+{
+  const cursor = new Date(COHORT_START);
+  cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+  while (cursor < TODAY) {
+    digestDates.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+  }
+}
+
 for (const d of digestDates) {
   events.push({
     id: nextId(),
@@ -54,10 +69,11 @@ for (const d of digestDates) {
     kind: "digest",
     dealId: null,
     actor: "Info Hub",
-    text: `Quarterly scout digest generated and shared to the ${digestDates.indexOf(d) + 1 === digestDates.length ? "full" : "active"} cohort.`,
+    text: "Monthly scout summaries generated and sent — a personal recap for each active scout, or a quick check-in where there was nothing new to report.",
   });
 }
 
 events = events.sort((a, b) => new Date(b.ts).getTime() - new Date(a.ts).getTime());
 
 export const notifications = events;
+export const monthlyDigestCount = digestDates.length;

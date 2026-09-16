@@ -13,7 +13,6 @@ export const SCOUT_POOL_PCT_OF_FUND = SCOUT_POOL_SIZE / FUND_II_TARGET_MID;
 // ---- Roster-derived ---------------------------------------------------------
 export const totalScouts = scouts.length;
 export const activeScouts = scouts.filter((s) => s.status !== "alumni").length;
-export const vpTrackScouts = scouts.filter((s) => s.status === "vp-track").length;
 export const capitalAllocatedUsd = scouts.reduce((sum, s) => sum + s.allocationUsd, 0);
 
 // ---- Deal-derived ------------------------------------------------------------
@@ -26,11 +25,11 @@ export const fundedConversionRate = totalFunded / totalMemos;
 
 export const capitalDeployedUsd = fundedDeals.reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0);
 
-const dealsWithSla = deals.filter((d) => d.slaHours != null);
-export const avgSlaHours =
-  dealsWithSla.reduce((sum, d) => sum + (d.slaHours ?? 0), 0) / (dealsWithSla.length || 1);
-export const slaBreachedCount = deals.filter((d) => d.slaBreached).length;
-export const slaBreachRate = slaBreachedCount / (dealsWithSla.length || 1);
+const dealsWithResponse = deals.filter((d) => d.responseHours != null);
+export const avgResponseHours =
+  dealsWithResponse.reduce((sum, d) => sum + (d.responseHours ?? 0), 0) / (dealsWithResponse.length || 1);
+export const lateResponseCount = deals.filter((d) => d.isLate).length;
+export const lateResponseRate = lateResponseCount / (dealsWithResponse.length || 1);
 
 export const pipelineByStage: Record<DealStage, number> = {
   submitted: 0,
@@ -58,7 +57,7 @@ export interface ScoutStats {
   memosSubmitted: number;
   dealsFunded: number;
   capitalDeployedUsd: number;
-  avgSlaHours: number | null;
+  avgResponseHours: number | null;
   conversionRate: number;
 }
 
@@ -66,7 +65,7 @@ export const scoutStats: Map<string, ScoutStats> = new Map(
   scouts.map((s) => {
     const own = deals.filter((d) => d.scoutId === s.id);
     const ownFunded = own.filter((d) => FUNDED_STAGES.includes(d.stage));
-    const ownSla = own.filter((d) => d.slaHours != null);
+    const ownResponses = own.filter((d) => d.responseHours != null);
     return [
       s.id,
       {
@@ -74,14 +73,18 @@ export const scoutStats: Map<string, ScoutStats> = new Map(
         memosSubmitted: own.length,
         dealsFunded: ownFunded.length,
         capitalDeployedUsd: ownFunded.reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0),
-        avgSlaHours: ownSla.length
-          ? ownSla.reduce((sum, d) => sum + (d.slaHours ?? 0), 0) / ownSla.length
+        avgResponseHours: ownResponses.length
+          ? ownResponses.reduce((sum, d) => sum + (d.responseHours ?? 0), 0) / ownResponses.length
           : null,
         conversionRate: own.length ? ownFunded.length / own.length : 0,
       },
     ];
   }),
 );
+
+// A scout with 2+ funded deals has proven repeatable sourcing, not a
+// one-time introduction — the medium-term signal that the network compounds.
+export const repeatFunderScouts = [...scoutStats.values()].filter((s) => s.dealsFunded >= 2).length;
 
 // ---- Coverage map (vertical/geography tags with memo counts) --------------
 export interface CoverageTag {
@@ -151,14 +154,14 @@ export const retentionByCohort: CohortRetention[] = [
   { cohort: "Cohort 2 ('26–'27)", retentionPct: 86, projected: true },
 ];
 
-// ---- Near-term SLA trend (last 8 "weeks" of the cohort, synthetic but
-// consistent with avgSlaHours) ------------------------------------------------
-const slaRng = makeRng(4471);
-export interface SlaWeek {
+// ---- Near-term response-time trend (last 8 "weeks" of the cohort, synthetic
+// but consistent with avgResponseHours) --------------------------------------
+const responseRng = makeRng(4471);
+export interface ResponseWeek {
   week: string;
   avgHours: number;
 }
-export const slaTrend: SlaWeek[] = Array.from({ length: 8 }, (_, i) => ({
+export const responseTimeTrend: ResponseWeek[] = Array.from({ length: 8 }, (_, i) => ({
   week: `W${i + 1}`,
-  avgHours: Math.round(slaRng.float(avgSlaHours - 9, avgSlaHours + 9, 1) * 10) / 10,
+  avgHours: Math.round(responseRng.float(avgResponseHours - 9, avgResponseHours + 9, 1) * 10) / 10,
 }));

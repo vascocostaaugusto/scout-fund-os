@@ -6,7 +6,6 @@ import {
   Database,
   Building2,
   LineChart,
-  ShieldAlert,
 } from "lucide-react";
 
 export interface NavNode {
@@ -59,13 +58,6 @@ export const NAV_NODES: NavNode[] = [
     title: "Success Dashboard",
     oneLiner: "KPIs and performance tracking",
     icon: LineChart,
-  },
-  {
-    slug: "risk",
-    href: "/risk",
-    title: "Risk & Compliance",
-    oneLiner: "Risk register and mitigations",
-    icon: ShieldAlert,
   },
 ];
 

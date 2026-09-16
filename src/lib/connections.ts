@@ -25,14 +25,9 @@ export const CONNECTIONS: Record<string, Connection[]> = {
   ],
   structure: [
     { slug: "incentives", note: "Carve-out vs. SPV changes how — and when — scout carry is paid out." },
-    { slug: "risk", note: "Structure choice is itself the top open item in the risk register." },
   ],
   dashboard: [
-    { slug: "workflow", note: "SLA and funnel metrics are computed live from workflow stage data." },
+    { slug: "workflow", note: "Response-time and funnel metrics are computed live from workflow stage data." },
     { slug: "network", note: "Per-scout performance rolls up from the same roster used network-wide." },
-  ],
-  risk: [
-    { slug: "incentives", note: "Carry-only compensation is the primary mitigation for compliance exposure." },
-    { slug: "workflow", note: "SLA tracking in the workflow is the mitigation for bandwidth erosion." },
   ],
 };

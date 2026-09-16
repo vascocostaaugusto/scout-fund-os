@@ -6,7 +6,7 @@ import { StatTile } from "@/components/detail/stat-tile";
 import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { HeadlineCarryChart } from "@/components/charts/headline-carry-chart";
 import { ScoutActivityChart } from "@/components/charts/scout-activity-chart";
-import { SlaTrendChart } from "@/components/charts/sla-trend-chart";
+import { ResponseTrendChart } from "@/components/charts/response-trend-chart";
 import { CoverageMap } from "@/components/charts/coverage-map";
 import { FollowOnFunnel } from "@/components/charts/follow-on-funnel";
 import { RetentionChart } from "@/components/charts/retention-chart";
@@ -14,11 +14,10 @@ import { RegulatoryProvenance } from "@/components/charts/regulatory-provenance"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   fundedConversionRate,
-  avgSlaHours,
-  vpTrackScouts,
+  avgResponseHours,
+  repeatFunderScouts,
   fundIICarryAtMaturity,
   scoutCarryAtMaturity,
-  scoutBookMoicToDate,
   coverageTags,
 } from "@/lib/data";
 import { formatPct, formatHours, formatUsdCompact } from "@/lib/format";
@@ -33,7 +32,7 @@ export default function DashboardPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
       <DetailHeader
         icon={LineChartIcon}
-        tagline="Component 6 of 7"
+        tagline="Component 6 of 6"
         title="Success Dashboard"
         description="How the program is judged, across three time horizons — sourcing velocity today, conversion and retention over the next few cohorts, and the number that actually matters to LPs: the carry this sliver of capital ends up producing."
       />
@@ -52,17 +51,17 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
               <StatTile label="% of scout deals funded" value={formatPct(fundedConversionRate, 1)} hint="of all memos submitted" />
               <StatTile
-                label="Avg. SLA response"
-                value={formatHours(avgSlaHours)}
-                deltaTone={avgSlaHours <= 48 ? "good" : "bad"}
-                delta={avgSlaHours <= 48 ? "Under 48h target" : "Over 48h target"}
+                label="Avg. first-look time"
+                value={formatHours(avgResponseHours)}
+                deltaTone={avgResponseHours <= 48 ? "good" : "bad"}
+                delta={avgResponseHours <= 48 ? "Under 48h target" : "Over 48h target"}
               />
               <StatTile label="Coverage tags added" value={`${coverageTags.length}`} hint="sub-verticals with active deal flow" />
-              <StatTile label="Reporting cadence" value="Weekly" hint="SLA + pipeline, partner-facing" />
+              <StatTile label="Reporting cadence" value="Weekly" hint="response time + pipeline, partner-facing" />
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               <ScoutActivityChart />
-              <SlaTrendChart />
+              <ResponseTrendChart />
             </div>
             <CoverageMap />
           </TabsContent>
@@ -73,9 +72,9 @@ export default function DashboardPage() {
                 <FollowOnFunnel />
               </div>
               <StatTile
-                label="Scouts on VP track"
-                value={`${vpTrackScouts}`}
-                hint="converted to Venture Partner / future GP track"
+                label="Repeat scouts"
+                value={`${repeatFunderScouts}`}
+                hint="funded 2+ deals — proven, not a one-off"
                 emphasis
               />
             </div>
@@ -83,19 +82,19 @@ export default function DashboardPage() {
           </TabsContent>
 
           <TabsContent value="long" className="flex flex-col gap-4 pt-4">
+            <p className="text-xs text-muted-foreground">
+              All four figures below are the Year-8 maturity model from the headline chart — the real,
+              marked-today numbers live there, not here.
+            </p>
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              <StatTile
-                label="Scout-book MOIC to date"
-                value={`${scoutBookMoicToDate.toFixed(2)}x`}
-                hint="actual, current quarter — not modeled"
-                emphasis
-              />
               <StatTile label="Fund II carry at maturity" value={formatUsdCompact(fundIICarryAtMaturity)} hint="modeled, whole fund, Year 8" />
               <StatTile
                 label="Scout-sourced carry"
                 value={formatUsdCompact(scoutCarryAtMaturity)}
                 hint="modeled, scout book, Year 8"
+                emphasis
               />
+              <StatTile label="Whole-fund MOIC at maturity" value="3.0x" hint="modeled, blended gross assumption" />
               <StatTile label="Scout-book MOIC at maturity" value="4.5x" hint="modeled, earlier/cheaper entry assumption" />
             </div>
             <p className="rounded-xl border border-dashed border-border bg-card p-4 text-xs leading-relaxed text-muted-foreground">

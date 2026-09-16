@@ -19,7 +19,7 @@ export default function StructurePage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
       <DetailHeader
         icon={Building2}
-        tagline="Component 5 of 7"
+        tagline="Component 5 of 6"
         title="Fund Structure"
         description="How the scout pool actually sits inside Shapers Fund II — a governance decision, not a detail. Two structural options are viable; only one fits the program's speed and the trust already built with the LP base."
       />

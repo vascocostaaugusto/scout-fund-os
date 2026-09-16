@@ -12,14 +12,14 @@ interface ScoutSeed {
   affiliation: string;
   coverage: string;
   joinedAt: string;
-  status?: "active" | "vp-track" | "alumni";
+  status?: "active" | "alumni";
 }
 
 const SEEDS: ScoutSeed[] = [
   // Tier 1 — Shapers Club Operators (8–10 scouts), existing LP-operators
   { name: "Elena Marchetti", tier: 1, title: "Co-founder & CEO", affiliation: "formerly Wise", coverage: "DACH · Banking-as-a-Service", joinedAt: "2025-01-13" },
   { name: "Jonas Aldenhoven", tier: 1, title: "Former VP Growth", affiliation: "formerly N26", coverage: "Germany · Neobanking", joinedAt: "2025-01-13" },
-  { name: "Camille Rousseau", tier: 1, title: "Co-founder & COO", affiliation: "formerly Qonto", coverage: "France · SME Fintech", joinedAt: "2025-01-13", status: "vp-track" },
+  { name: "Camille Rousseau", tier: 1, title: "Co-founder & COO", affiliation: "formerly Qonto", coverage: "France · SME Fintech", joinedAt: "2025-01-13" },
   { name: "Sofia Almeida", tier: 1, title: "Former Head of Payments", affiliation: "formerly Adyen", coverage: "Iberia · Payments Infra", joinedAt: "2025-02-03" },
   { name: "Lukas Berg", tier: 1, title: "Former VP Product", affiliation: "formerly Klarna", coverage: "Nordics · Embedded Finance", joinedAt: "2025-02-03" },
   { name: "Priya Nair", tier: 1, title: "Former Director of Strategy", affiliation: "formerly Revolut", coverage: "UK & Ireland · Open Banking", joinedAt: "2025-02-17" },
@@ -34,7 +34,7 @@ const SEEDS: ScoutSeed[] = [
   { name: "Nadia Kowalski", tier: 2, title: "Founder & CEO", affiliation: "Clearlane (Shapers portfolio)", coverage: "Credit & Lending Infra", joinedAt: "2025-05-05" },
 
   // Tier 3 — Category Specialists: crypto/stablecoins (2–3 scouts)
-  { name: "Ravi Chandrasekaran", tier: 3, title: "Former Head of Stablecoin Partnerships", affiliation: "formerly Circle", coverage: "Stablecoin Infrastructure", joinedAt: "2025-05-19", status: "vp-track" },
+  { name: "Ravi Chandrasekaran", tier: 3, title: "Former Head of Stablecoin Partnerships", affiliation: "formerly Circle", coverage: "Stablecoin Infrastructure", joinedAt: "2025-05-19" },
   { name: "Yusuf Demir", tier: 3, title: "Former Compliance Lead", affiliation: "formerly Fireblocks", coverage: "Crypto Custody & Compliance", joinedAt: "2025-06-02" },
 ];
 
@@ -62,6 +62,12 @@ function initials(name: string) {
     .toUpperCase();
 }
 
+function emailFor(name: string) {
+  const [first, last] = name.toLowerCase().split(" ");
+  const deaccented = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+  return `${deaccented(first)}.${deaccented(last)}@scouts.shapers.vc`;
+}
+
 function round5k(n: number) {
   return Math.round(n / 5000) * 5000;
 }
@@ -71,6 +77,7 @@ export const scouts: ScoutType[] = SEEDS.map((seed, i) => {
   return {
     id: `sct_${String(i + 1).padStart(2, "0")}`,
     name: seed.name,
+    email: emailFor(seed.name),
     tier: seed.tier,
     tierLabel: TIER_LABEL[seed.tier],
     title: seed.title,

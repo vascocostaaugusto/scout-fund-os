@@ -7,12 +7,12 @@ import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { KanbanBoard } from "@/components/workflow/kanban-board";
 import { ProcessSteps } from "@/components/workflow/process-steps";
 import { DecisionAuditLog } from "@/components/workflow/decision-audit-log";
-import { avgSlaHours, slaBreachRate, pipelineOpenCount, totalMemos } from "@/lib/data";
+import { avgResponseHours, lateResponseRate, pipelineOpenCount, totalMemos } from "@/lib/data";
 import { formatHours, formatPct } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Deal Workflow · Scout Fund OS",
-  description: "Intake, 48-hour SLA, and the pipeline from memo to check.",
+  description: "Intake, a 48-hour first-look response target, and the pipeline from memo to check.",
 };
 
 export default function WorkflowPage() {
@@ -20,21 +20,21 @@ export default function WorkflowPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
       <DetailHeader
         icon={GitBranch}
-        tagline="Component 3 of 7"
+        tagline="Component 3 of 6"
         title="Deal Workflow"
-        description="One intake channel, a hard 48-hour SLA on the first response, and a small check with no full diligence at this stage. The workflow is deliberately lightweight — the underwriting happens later, at the priced round."
+        description="One intake channel, a 48-hour target on the first response, and a small check with no full diligence at this stage. The workflow is deliberately lightweight — the underwriting happens later, at the priced round."
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile
-          label="Avg. first-look SLA"
-          value={formatHours(avgSlaHours)}
+          label="Avg. first-look time"
+          value={formatHours(avgResponseHours)}
           hint="target: under 48h"
-          deltaTone={avgSlaHours <= 48 ? "good" : "bad"}
-          delta={avgSlaHours <= 48 ? "On target" : "Above target"}
+          deltaTone={avgResponseHours <= 48 ? "good" : "bad"}
+          delta={avgResponseHours <= 48 ? "On target" : "Above target"}
           emphasis
         />
-        <StatTile label="SLA breach rate" value={formatPct(slaBreachRate, 1)} hint="first looks over 48h" />
+        <StatTile label="Late responses" value={formatPct(lateResponseRate, 1)} hint="first looks over 48h" />
         <StatTile label="Open pipeline" value={`${pipelineOpenCount}`} hint={`of ${totalMemos} memos submitted`} />
         <StatTile label="Diligence at this stage" value="None" hint="reserved for the priced follow-on round" />
       </div>
@@ -52,7 +52,7 @@ export default function WorkflowPage() {
 
       <Section
         title="Decision audit trail"
-        subtitle="Every reviewed deal, logged with who made the call, when, and why — the compliance-facing view of the same kanban above."
+        subtitle="Every reviewed deal, logged with who made the call, when, and why — the accountability-facing view of the same kanban above."
       >
         <DecisionAuditLog />
       </Section>

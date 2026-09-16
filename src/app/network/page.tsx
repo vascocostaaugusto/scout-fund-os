@@ -14,8 +14,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { scouts, scoutStats, totalScouts, activeScouts, vpTrackScouts } from "@/lib/data";
-import { formatUsd, formatPct } from "@/lib/format";
+import { scouts, scoutStats, totalScouts, activeScouts, capitalAllocatedUsd } from "@/lib/data";
+import { formatUsd, formatUsdCompact, formatPct } from "@/lib/format";
 
 const TIER_COPY = [
   {
@@ -53,7 +53,7 @@ export default function NetworkPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
       <DetailHeader
         icon={Users}
-        tagline="Component 1 of 7"
+        tagline="Component 1 of 6"
         title="Scout Network"
         description="A three-tier recruiting model that converts the Shapers Club's existing operator relationships into a structured sourcing engine, patched with dedicated coverage where the core team's network runs thin."
       />
@@ -61,7 +61,7 @@ export default function NetworkPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile label="Active scouts" value={`${activeScouts}`} hint={`of ${totalScouts} total in Cohort 1`} />
         <StatTile label="Cohort target" value="12–15" hint="active scouts per 18–24 month cohort" />
-        <StatTile label="VP-track conversions" value={`${vpTrackScouts}`} hint="scouts promoted to Venture Partner track" emphasis />
+        <StatTile label="Capital allocated" value={formatUsdCompact(capitalAllocatedUsd)} hint="sum of all scout ceilings" emphasis />
         <StatTile label="Tiers" value="3" hint="operators · founders · specialists" />
       </div>
 
@@ -101,14 +101,7 @@ export default function NetworkPage() {
                   <TableRow key={s.id}>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="font-medium text-foreground">
-                          {s.name}
-                          {s.status === "vp-track" ? (
-                            <span className="ml-2 rounded-full bg-success/15 px-1.5 py-0.5 text-[10px] font-medium text-success">
-                              VP track
-                            </span>
-                          ) : null}
-                        </span>
+                        <span className="font-medium text-foreground">{s.name}</span>
                         <span className="text-xs text-muted-foreground">{s.title} · {s.affiliation}</span>
                       </div>
                     </TableCell>

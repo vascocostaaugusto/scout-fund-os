@@ -1,10 +1,11 @@
 export type ScoutTier = 1 | 2 | 3;
 
-export type ScoutStatus = "active" | "vp-track" | "alumni";
+export type ScoutStatus = "active" | "alumni";
 
 export interface Scout {
   id: string;
   name: string;
+  email: string;
   tier: ScoutTier;
   tierLabel: string;
   title: string;
@@ -37,8 +38,8 @@ export interface Deal {
   checkSizeUsd: number | null; // null until a check is written
   submittedAt: string; // ISO date
   firstLookAt: string | null; // ISO date-time of partner first response
-  slaHours: number | null; // hours to first response, null if still pending
-  slaBreached: boolean;
+  responseHours: number | null; // hours to first response, null if still pending
+  isLate: boolean; // response took longer than the 48h target
   reviewingPartner: string;
   partnerNotes: string;
   rightOfFirstLook: boolean;
@@ -48,20 +49,8 @@ export interface Deal {
 export interface NotificationEvent {
   id: string;
   ts: string; // ISO date-time
-  kind: "submission" | "status_change" | "digest" | "sla_warning";
+  kind: "submission" | "status_change" | "digest" | "late_response";
   dealId: string | null;
   actor: string;
   text: string;
-}
-
-export type RiskLikelihood = "Low" | "Medium" | "High";
-export type RiskImpact = "Low" | "Medium" | "High" | "Critical";
-
-export interface RiskItem {
-  id: string;
-  category: string;
-  risk: string;
-  likelihood: RiskLikelihood;
-  impact: RiskImpact;
-  mitigation: string;
 }

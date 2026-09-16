@@ -17,7 +17,7 @@ export default function IncentivesPage() {
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
       <DetailHeader
         icon={Coins}
-        tagline="Component 2 of 7"
+        tagline="Component 2 of 6"
         title="Incentive Engine"
         description="Scouts are compensated entirely in carry, attributed deal-by-deal to the capital they personally source and deploy — never pooled, never cash. It's the structure that keeps the program legally defensible and aligns every incentive with founder outcomes, not activity."
       />
@@ -26,7 +26,7 @@ export default function IncentivesPage() {
         <StatTile label="Carry rate" value="10–15%" hint="of Fund II's carry on the scout's own deals" />
         <StatTile label="Personal allocation" value="$150K–$300K" hint="across 2–4 companies per scout" />
         <StatTile label="Compensation form" value="Carry only" hint="no cash success fees, ever" emphasis />
-        <StatTile label="Non-financial track" value="Venture Partner" hint="formal pipeline into future GP track" />
+        <StatTile label="Attribution" value="Deal-by-deal" hint="never pooled across the cohort" />
       </div>
 
       <Section
