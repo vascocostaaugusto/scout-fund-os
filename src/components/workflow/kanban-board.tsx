@@ -28,13 +28,17 @@ const STAGE_DOT: Record<DealStage, string> = {
 export function KanbanBoard() {
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
-      {COLUMNS.map((col) => {
+      {COLUMNS.map((col, colIndex) => {
         const items = deals
           .filter((d) => d.stage === col.stage)
           .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
 
         return (
-          <div key={col.stage} className="flex w-60 shrink-0 flex-col gap-2.5 rounded-xl border border-border bg-card p-3">
+          <div
+            key={col.stage}
+            className="flex w-60 shrink-0 animate-in fade-in slide-in-from-bottom-2 flex-col gap-2.5 rounded-xl border border-border bg-card p-3 fill-mode-both"
+            style={{ animationDelay: `${colIndex * 60}ms`, animationDuration: "320ms" }}
+          >
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-1.5">
                 <span className={cn("size-1.5 rounded-full", STAGE_DOT[col.stage])} />
@@ -52,10 +56,14 @@ export function KanbanBoard() {
                   No deals in this stage
                 </div>
               ) : (
-                items.map((d) => {
+                items.map((d, i) => {
                   const scout = scoutById.get(d.scoutId);
                   return (
-                    <div key={d.id} className="flex flex-col gap-1 rounded-lg border border-border bg-background p-2.5">
+                    <div
+                      key={d.id}
+                      className="flex animate-in fade-in slide-in-from-bottom-1 flex-col gap-1 rounded-lg border border-border bg-background p-2.5 fill-mode-both transition-colors hover:border-primary/40"
+                      style={{ animationDelay: `${colIndex * 60 + Math.min(i, 8) * 25}ms`, animationDuration: "260ms" }}
+                    >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-foreground">{d.companyName}</span>
                         {d.slaBreached ? (
