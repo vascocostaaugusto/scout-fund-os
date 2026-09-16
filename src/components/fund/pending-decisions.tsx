@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, X, RotateCcw, ShieldAlert } from "lucide-react";
-import { scoutById, TICKET_SIZE_MIN, TICKET_SIZE_MAX } from "@/lib/data";
+import { scoutById } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
 import { formatDate, formatUsd, timeAgo } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -103,13 +103,12 @@ export function PendingDecisions() {
                     If approved, ticket
                     <input
                       type="number"
-                      min={TICKET_SIZE_MIN}
-                      max={TICKET_SIZE_MAX}
                       step={1000}
                       value={tickets[d.id] ?? DEFAULT_TICKET}
                       onChange={(e) => setTickets((prev) => ({ ...prev, [d.id]: Number(e.target.value) }))}
                       className="w-24 rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
                     />
+                    <span className="text-muted-foreground/60">(typical $10K–$50K — outliers OK)</span>
                   </label>
                   <div className="ml-auto flex gap-2">
                     <Button size="sm" variant="ghost" className="text-critical hover:bg-critical/10 hover:text-critical" onClick={() => decide(d.id, "declined")}>

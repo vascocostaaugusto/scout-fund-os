@@ -89,14 +89,21 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
 
   const decideDeal = useCallback(
     (dealId: string, decision: "approved" | "declined", partner: string, note: string, ticketUsd?: number) => {
-      const base = seedDeals.find((d) => d.id === dealId);
-      if (!base) return;
-      const responseHours = Math.round(((REFERENCE_NOW.getTime() - new Date(base.submittedAt).getTime()) / 3600_000) * 10) / 10;
+      const current = snapshot(dealId);
+      if (!current) return;
+      // "under_review" deals already had their first look — that response
+      // time is a fixed historical fact and shouldn't shift just because
+      // the *final* decision comes later. Only a deal still sitting in
+      // "submitted" (no look yet) gets its first-look time set here.
+      const isFirstLook = current.stage === "submitted" || current.responseHours == null;
+      const responseHours = isFirstLook
+        ? Math.round(((REFERENCE_NOW.getTime() - new Date(current.submittedAt).getTime()) / 3600_000) * 10) / 10
+        : current.responseHours!;
       const patch: Partial<Deal> = {
         stage: decision,
         partnerNotes: note || (decision === "approved" ? "Approved, SAFE drafting to start." : "Declined."),
         reviewingPartner: partner,
-        firstLookAt: REFERENCE_NOW.toISOString(),
+        firstLookAt: isFirstLook ? REFERENCE_NOW.toISOString() : current.firstLookAt,
         responseHours,
         isLate: responseHours > 48,
         rightOfFirstLook: decision === "approved",
@@ -110,7 +117,7 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       }
       applyPatch(dealId, patch, { isDecision: true });
     },
-    [applyPatch],
+    [snapshot, applyPatch],
   );
 
   const resetDeal = useCallback(

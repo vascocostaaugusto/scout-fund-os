@@ -1,5 +1,7 @@
-import { deals } from "@/lib/data";
+"use client";
+
 import type { DealStage } from "@/lib/data";
+import { useDealStore } from "@/lib/deal-store";
 import { formatUsd, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
@@ -34,6 +36,7 @@ const STAGE_BADGE: Record<DealStage, string> = {
 };
 
 export function MyDealsTable({ scoutId }: { scoutId: string }) {
+  const { deals } = useDealStore();
   const rows = deals
     .filter((d) => d.scoutId === scoutId)
     .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());

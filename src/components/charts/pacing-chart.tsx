@@ -1,19 +1,32 @@
 "use client";
 
+import { useMemo } from "react";
 import { Line, LineChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, ReferenceLine, Legend } from "recharts";
-import { deploymentPacing, SCOUT_POOL_SIZE, PACING_TARGET_MONTHS } from "@/lib/data";
+import { SCOUT_POOL_SIZE, PACING_TARGET_MONTHS, PROGRAM_START, TODAY_REF } from "@/lib/data";
+import { computeDeploymentPacing } from "@/lib/data/derive";
+import { useDealStore } from "@/lib/deal-store";
 import { formatUsdCompact } from "@/lib/format";
 import { ChartTooltip } from "./chart-tooltip";
 
-const data = deploymentPacing.map((p) => ({
-  month: p.monthIndex,
-  Actual: p.actualCumulativeUsd,
-  Target: p.targetCumulativeUsd,
-}));
-
-const todayMonthIndex = deploymentPacing.filter((p) => p.actualCumulativeUsd != null).length - 1;
-
 export function PacingChart() {
+  const { deals } = useDealStore();
+  const deploymentPacing = useMemo(
+    () =>
+      computeDeploymentPacing(deals, {
+        poolSize: SCOUT_POOL_SIZE,
+        targetMonths: PACING_TARGET_MONTHS,
+        programStart: PROGRAM_START,
+        todayRef: TODAY_REF,
+      }),
+    [deals],
+  );
+  const data = deploymentPacing.map((p) => ({
+    month: p.monthIndex,
+    Actual: p.actualCumulativeUsd,
+    Target: p.targetCumulativeUsd,
+  }));
+  const todayMonthIndex = deploymentPacing.filter((p) => p.actualCumulativeUsd != null).length - 1;
+
   return (
     <div className="flex h-80 w-full flex-col rounded-xl border border-border bg-card p-4">
       <div className="mb-1 flex items-center justify-between">

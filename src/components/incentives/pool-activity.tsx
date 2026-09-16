@@ -1,9 +1,13 @@
-import { scouts, scoutStats } from "@/lib/data";
+"use client";
+
+import { scouts } from "@/lib/data";
+import { useLiveStats } from "@/lib/use-live-stats";
 import { formatUsd } from "@/lib/format";
 
 const DISPLAY_LIMIT = 12;
 
 export function PoolActivity() {
+  const { scoutStats } = useLiveStats();
   const ranked = [...scouts]
     .map((s) => ({ scout: s, deployed: scoutStats.get(s.id)!.capitalDeployedUsd }))
     .filter((r) => r.deployed > 0)

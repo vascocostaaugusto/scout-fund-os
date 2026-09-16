@@ -2,9 +2,7 @@ import { SummaryStrip } from "@/components/overview/summary-strip";
 import { SystemMap } from "@/components/overview/system-map";
 import { ScoutActivityChart } from "@/components/charts/scout-activity-chart";
 import { ResponseTrendChart } from "@/components/charts/response-trend-chart";
-import { StatTile } from "@/components/detail/stat-tile";
-import { fundedConversionRate, avgResponseHours, pipelineByStage } from "@/lib/data";
-import { formatPct, formatHours } from "@/lib/format";
+import { LiveOverviewStats } from "@/components/overview/live-overview-stats";
 
 export default function OverviewPage() {
   return (
@@ -29,17 +27,7 @@ export default function OverviewPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatTile label="% of scout deals funded" value={formatPct(fundedConversionRate, 1)} hint="of all memos submitted" />
-          <StatTile
-            label="Avg. first-look time"
-            value={formatHours(avgResponseHours)}
-            deltaTone={avgResponseHours <= 48 ? "good" : "bad"}
-            delta={avgResponseHours <= 48 ? "Under 48h target" : "Over 48h target"}
-          />
-          <StatTile label="Pending decision" value={`${pipelineByStage.submitted + pipelineByStage.under_review}`} hint="submitted + under review" emphasis />
-          <StatTile label="Approved, no check yet" value={`${pipelineByStage.approved}`} hint="closing docs with scout" />
-        </div>
+        <LiveOverviewStats />
         <div className="grid gap-4 lg:grid-cols-2">
           <ScoutActivityChart />
           <ResponseTrendChart />

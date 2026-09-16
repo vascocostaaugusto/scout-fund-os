@@ -1,12 +1,8 @@
+"use client";
+
 import { Users, Wallet, Landmark, GitBranch } from "lucide-react";
-import {
-  activeScouts,
-  totalScouts,
-  SCOUT_POOL_SIZE,
-  capitalDeployedUsd,
-  pipelineOpenCount,
-  totalMemos,
-} from "@/lib/data";
+import { activeScouts, totalScouts, SCOUT_POOL_SIZE, totalMemos } from "@/lib/data";
+import { useLiveStats } from "@/lib/use-live-stats";
 import { formatUsdCompact, formatPct } from "@/lib/format";
 
 interface Stat {
@@ -17,6 +13,8 @@ interface Stat {
 }
 
 export function SummaryStrip() {
+  const { capitalDeployedUsd, pipelineOpenCount } = useLiveStats();
+
   const stats: Stat[] = [
     {
       label: "Scout pool size",
@@ -33,7 +31,7 @@ export function SummaryStrip() {
     {
       label: "Capital deployed",
       value: formatUsdCompact(capitalDeployedUsd),
-      sub: `${formatPct(capitalDeployedUsd / SCOUT_POOL_SIZE, 0)} of the $6M pool`,
+      sub: `${formatPct(capitalDeployedUsd / SCOUT_POOL_SIZE, 1)} of the $6M pool`,
       icon: Landmark,
     },
     {

@@ -44,7 +44,6 @@ export function FollowOnDecisions() {
                     Follow-on check
                     <input
                       type="number"
-                      min={50_000}
                       step={10_000}
                       value={checks[d.id] ?? DEFAULT_FOLLOW_ON}
                       onChange={(e) => setChecks((prev) => ({ ...prev, [d.id]: Number(e.target.value) }))}

@@ -127,8 +127,16 @@ function buildScoutWeights() {
 }
 
 function checkSizeFor(): number {
-  // Tickets are $10K–$50K, drawn straight from the shared evergreen pool —
-  // no longer sized off a per-scout allocation ceiling.
+  // Typically $10K–$50K, drawn straight from the shared evergreen pool —
+  // a guideline, not a hard floor or ceiling. A small share of tickets are
+  // deliberate outliers: an exceptional company earns a bigger check, a
+  // smaller pilot commitment justifies a token-sized one. The fund adapts
+  // deal by deal rather than clamping every ticket to the typical band.
+  if (rng.bool(0.08)) {
+    return rng.bool(0.6)
+      ? Math.round(rng.float(55_000, 90_000, 0) / 1000) * 1000 // outsized-conviction check
+      : Math.round(rng.float(3_000, 8_000, 0) / 1000) * 1000; // small pilot/token check
+  }
   return Math.round(rng.float(10_000, 50_000, 0) / 1000) * 1000;
 }
 

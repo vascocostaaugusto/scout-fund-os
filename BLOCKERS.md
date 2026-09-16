@@ -213,6 +213,81 @@ tokens."
   than forced, since faking a mid-prep state at an arbitrary date would be
   less honest than the panel just showing what's really true today.
 
+## 14. Fixing the cross-page staleness bug (found by an explicit adversarial
+    review pass, not by the user)
+**Problem:** Every stat tile outside the Fund Portal — Overview, the top of
+Deal Workflow, Scout Network's roster stats, the Scout Portal's headline
+tiles, and the Scout Portal's own "My deals" table — read from the static
+`aggregates.ts` exports (computed once from seed data at module load).
+Fund Portal decisions read from live `useDealStore()` state. Result:
+decline 3 deals in the Fund Portal and the Fund Portal correctly shows the
+new count, but Deal Workflow's "Pending decision" tile — four inches above
+its own kanban board, which *does* update — still says the old number.
+Confirmed directly: declined 3 deals, kanban dropped from 28→25, Workflow's
+own stat tile stayed at 30 through a hard reload. Same pattern reproduced
+on the Scout Portal (wired a deal fully through SAFE+e-sign+wire, "Deals
+funded" tile stayed at the old count while the deal table beneath it
+correctly showed the deal as funded).
+**Fix:**
+- Extracted every aggregate formula out of `aggregates.ts` into pure
+  functions in `src/lib/data/derive.ts` (`computeDealDerived`,
+  `computeScoutStats`, `computeScoutUpside`, `computeDeploymentPacing`,
+  etc.) that take `deals`/`scouts` as arguments instead of closing over the
+  module-level seed arrays.
+- `aggregates.ts` now calls these once against the static seed data — same
+  export names, same shape, nothing else in the codebase had to change to
+  keep working. This is what the published docs cite and what a page shows
+  on first paint.
+- Added `src/lib/use-live-stats.ts`, a client hook that runs the identical
+  functions against `useDealStore()`'s live, session-decided deals.
+- Converted every stat tile, roster table, and deals table that a partner
+  or scout actually watches while working the app — Overview,
+  `SummaryStrip`, Deal Workflow's top tiles, Scout Network's tiles +
+  roster table, `PoolActivity`, the Scout Portal's tiles + `MyDealsTable`,
+  and the Fund Portal's `PacingChart` — to read through the live hook (or
+  `useDealStore()` directly) instead of the static export.
+- Left `responseTimeTrend` (the Overview weekly-response sparkline) static
+  — it's synthetic backfilled noise for chart texture, not a real
+  per-week history the app tracks, so there's no "live" version of it to
+  compute. Documented here rather than silently left inconsistent.
+- Left the Scout Portal's "Your month in review" digest preview reading
+  static `notifications` — that feed is itself pre-generated from the
+  seed cohort's history (see the architecture doc's outbound-notifications
+  section); making it reflect live session decisions would mean building
+  a live notification-event system, a materially bigger feature than
+  fixing the staleness bug. Noted as a real, smaller remaining gap, not
+  swept under the rug.
+- While fixing this, testing surfaced a second, related bug: declining or
+  approving a deal that was already `under_review` (i.e. had already had
+  its first look, with a real `responseHours` on file) recomputed
+  `responseHours` from scratch as "time since submission until now" —
+  overwriting a fixed historical fact with a number reflecting how long
+  the *final* decision took, not the first look. Fixed in
+  `deal-store.tsx`'s `decideDeal`: only a deal still in `submitted` (no
+  look yet) gets its response time set at decision time; an already-
+  reviewed deal keeps its original first-look timestamp and hours.
+
+## 15. Ticket sizes are a typical range, not a hard floor or ceiling
+**User correction:** "I don't want the tickets to be capped or have a
+minimum but the values we are expecting are between 10k or 50k but outlier
+companies can be different and we adapt."
+**Fix:**
+- Renamed `TICKET_SIZE_MIN`/`MAX` to `TICKET_SIZE_TYPICAL_MIN`/`MAX` and
+  reworded their comment to state plainly that this is a display/default
+  convention, never a validation constraint.
+- Removed the hard `min`/`max` HTML attributes from both the Fund Portal's
+  approval ticket-size input and its follow-on check-size input — a
+  partner can type any number; the typical band is now just a hint label
+  next to the field ("typical $10K–$50K — outliers OK").
+- Softened every place that stated the range as if it were absolute (Scout
+  Portal's paperwork note, the roster subtitle) to "typically."
+- Made this real in the seed data, not just the copy: `checkSizeFor()` now
+  has an 8% chance of generating an outlier ticket — either an outsized
+  $55K–$90K conviction check or a small $3K–$8K pilot check — so the
+  system of record actually shows a few tickets outside the typical band
+  rather than the claim being true only in the abstract. Current seed
+  landed 4 outliers (2 large, 2 small) across ~50 ticketed deals.
+
 ## 13. Follow-on decisions as their own workflow
 **Ambiguity:** `follow_on_watch` already existed as a deal stage and
 `followOnParticipated` already fed the "44.4% follow-on participation"

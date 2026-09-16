@@ -3,11 +3,9 @@ import Link from "next/link";
 import { GitBranch, ArrowRight } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
-import { StatTile } from "@/components/detail/stat-tile";
 import { KanbanBoard } from "@/components/workflow/kanban-board";
 import { DecisionAuditLog } from "@/components/workflow/decision-audit-log";
-import { avgResponseHours, lateResponseRate, pipelineOpenCount, totalMemos, pipelineByStage } from "@/lib/data";
-import { formatHours, formatPct } from "@/lib/format";
+import { LiveWorkflowStats } from "@/components/workflow/live-workflow-stats";
 
 export const metadata: Metadata = {
   title: "Deal Workflow · Scout Fund OS",
@@ -15,8 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default function WorkflowPage() {
-  const pendingCount = pipelineByStage.submitted + pipelineByStage.under_review;
-
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -35,19 +31,7 @@ export default function WorkflowPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatTile
-          label="Avg. first-look time"
-          value={formatHours(avgResponseHours)}
-          hint="target: under 48h"
-          deltaTone={avgResponseHours <= 48 ? "good" : "bad"}
-          delta={avgResponseHours <= 48 ? "On target" : "Above target"}
-          emphasis
-        />
-        <StatTile label="Late responses" value={formatPct(lateResponseRate, 1)} hint="first looks over 48h" />
-        <StatTile label="Open pipeline" value={`${pipelineOpenCount}`} hint={`of ${totalMemos} memos submitted`} />
-        <StatTile label="Pending decision" value={`${pendingCount}`} hint="submitted + under review" emphasis />
-      </div>
+      <LiveWorkflowStats />
 
       <Section
         title="Live pipeline"
