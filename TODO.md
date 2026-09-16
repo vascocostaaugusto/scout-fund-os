@@ -5,13 +5,13 @@
 - [x] Data layer: seeded PRNG, scouts, deals, notifications, risks, aggregates
 - [x] App shell: theme tokens, sidebar, topbar, layout wiring
 - [x] Overview: summary strip + system map
-- [ ] Detail: Scout Network
-- [ ] Detail: Incentive Engine
-- [ ] Detail: Deal Workflow
-- [ ] Detail: Info Hub
-- [ ] Detail: Fund Structure
-- [ ] Detail: Success Dashboard
-- [ ] Detail: Risk & Compliance
+- [x] Detail: Scout Network
+- [x] Detail: Incentive Engine
+- [x] Detail: Deal Workflow
+- [x] Detail: Info Hub
+- [x] Detail: Fund Structure
+- [x] Detail: Success Dashboard
+- [x] Detail: Risk & Compliance
 
 ## Polish backlog (after core complete)
 - [ ] Route transition animation polish (framer-motion AnimatePresence)

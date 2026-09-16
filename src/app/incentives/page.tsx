@@ -33,7 +33,7 @@ export default function IncentivesPage() {
             <div className="text-sm font-semibold text-foreground">Defensible by design</div>
             <p className="text-xs leading-relaxed text-muted-foreground">
               Carry-only compensation is taxed and regulated the same way GP carry already is. It sidesteps the
-              cash-for-introductions structure that draws finder's-fee scrutiny entirely.
+              cash-for-introductions structure that draws finder&apos;s-fee scrutiny entirely.
             </p>
           </div>
           <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-5">

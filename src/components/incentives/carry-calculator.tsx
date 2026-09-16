@@ -38,7 +38,7 @@ export function CarryCalculator() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium text-muted-foreground">Sourced deal</label>
-            <Select value={dealId} onValueChange={setDealId}>
+            <Select value={dealId} onValueChange={(v) => v && setDealId(v)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>

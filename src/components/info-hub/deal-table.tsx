@@ -57,7 +57,7 @@ export function DealTable() {
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">{rows.length} of {deals.length} records</span>
-        <Select value={stageFilter} onValueChange={setStageFilter}>
+        <Select value={stageFilter} onValueChange={(v) => v && setStageFilter(v)}>
           <SelectTrigger className="w-44">
             <SelectValue />
           </SelectTrigger>
