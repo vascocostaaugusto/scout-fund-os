@@ -212,3 +212,22 @@ tokens."
   quarter's filing and before the next quarter even closes) — noted rather
   than forced, since faking a mid-prep state at an arbitrary date would be
   less honest than the panel just showing what's really true today.
+
+## 13. Follow-on decisions as their own workflow
+**Ambiguity:** `follow_on_watch` already existed as a deal stage and
+`followOnParticipated` already fed the "44.4% follow-on participation"
+stat cited in the Program Brief, but neither was ever an actual decision —
+just a label baked into seed data.
+**Assumptions and judgment calls:**
+- Added `followOnDecision` (undecided/participating/passed) and
+  `followOnCheckUsd`, actionable only while a deal sits in
+  `follow_on_watch`. Deliberately did NOT touch `DealStage` or
+  `followOnParticipated` — the kanban column and the already-published
+  brief stat keep their existing meaning; this is a new, additive decision
+  layered on top, not a redefinition of an existing one.
+- Follow-on capital is modeled as coming from Fund II directly ($100K–
+  $500K range), not the scout pool — a follow-on check is a fund-level
+  conviction bet on a company already past the scout-intro stage, not a
+  scout-sourcing reward, so it shouldn't draw down the same $6M ceiling
+  the Treasury panel tracks. It does not appear in the Treasury panel's
+  "committed" figure for that reason.

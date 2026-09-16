@@ -71,6 +71,8 @@ export type LegalDocStatus =
 
 export type WireStatus = "not_initiated" | "initiated" | "confirmed";
 
+export type FollowOnDecision = "undecided" | "participating" | "passed";
+
 export interface SafeTerms {
   instrument: "Post-Money SAFE";
   valuationCapUsd: number;
@@ -99,6 +101,11 @@ export interface Deal {
   // before they can decide.
   conflictDisclosed: boolean;
   conflictNotes: string | null;
+  // A separate decision from the original scout ticket — whether the fund
+  // (from Fund II proper, not the scout pool) follows into the company's
+  // next priced round. Only actionable while stage is "follow_on_watch".
+  followOnDecision: FollowOnDecision;
+  followOnCheckUsd: number | null;
   legalDocStatus: LegalDocStatus;
   safeTerms: SafeTerms | null;
   wireStatus: WireStatus;

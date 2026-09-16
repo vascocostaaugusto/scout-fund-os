@@ -6,6 +6,7 @@ import { TreasuryPanel } from "@/components/fund/treasury-panel";
 import { PendingDecisions } from "@/components/fund/pending-decisions";
 import { ClosingQueue } from "@/components/fund/closing-queue";
 import { ExitDistributions } from "@/components/fund/exit-distributions";
+import { FollowOnDecisions } from "@/components/fund/follow-on-decisions";
 import { ScoutRecruiting } from "@/components/fund/scout-recruiting";
 import { DealTable } from "@/components/info-hub/deal-table";
 import { NotificationFeed } from "@/components/info-hub/notification-feed";
@@ -43,6 +44,13 @@ export default function FundPortalPage() {
         subtitle="An approval isn't a funded deal — every approved memo still needs a signed SAFE and a confirmed wire. Work the queue here."
       >
         <ClosingQueue />
+      </Section>
+
+      <Section
+        title="Follow-on decisions"
+        subtitle="A company signaling its next round doesn't get fund capital automatically — decide here, separate from the original scout ticket."
+      >
+        <FollowOnDecisions />
       </Section>
 
       <Section

@@ -1,6 +1,6 @@
 import { makeRng } from "./prng";
 import { scouts } from "./scouts";
-import type { Deal, DealStage, LegalDocStatus, SafeTerms, WireStatus } from "./types";
+import type { Deal, DealStage, FollowOnDecision, LegalDocStatus, SafeTerms, WireStatus } from "./types";
 
 const rng = makeRng(3333);
 
@@ -183,6 +183,20 @@ const CONFLICT_NOTES = [
   "Scout's spouse is an early employee at the company.",
 ] as const;
 
+function followOnFor(stage: DealStage): { followOnDecision: FollowOnDecision; followOnCheckUsd: number | null } {
+  // Only actionable while a deal is actively in follow-on watch — most are
+  // still undecided (that's the Fund Portal's follow-on queue), a minority
+  // already resolved one way or the other for realism.
+  if (stage !== "follow_on_watch") return { followOnDecision: "undecided", followOnCheckUsd: null };
+  const followOnDecision = rng.weighted([
+    ["undecided", 5],
+    ["participating", 3],
+    ["passed", 2],
+  ] as const);
+  const followOnCheckUsd = followOnDecision === "participating" ? Math.round(rng.float(100_000, 500_000, -4)) : null;
+  return { followOnDecision, followOnCheckUsd };
+}
+
 function conflictFor(): { conflictDisclosed: boolean; conflictNotes: string | null } {
   // Real conflicts are rare — most scout intros have none. When one exists,
   // it's disclosed up front rather than discovered later.
@@ -212,6 +226,7 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
       ? new Date(new Date(firstLookAt).getTime() + rng.int(2, 10) * 24 * 3600_000).toISOString()
       : null;
   const { conflictDisclosed, conflictNotes } = conflictFor();
+  const { followOnDecision, followOnCheckUsd } = followOnFor(stage);
 
   const geography = rng.bool(0.72)
     ? scout.coverage.split(" · ")[0]
@@ -238,6 +253,8 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     followOnParticipated: stage === "follow_on_watch" || stage === "exited",
     conflictDisclosed,
     conflictNotes,
+    followOnDecision,
+    followOnCheckUsd,
     legalDocStatus,
     safeTerms,
     wireStatus,

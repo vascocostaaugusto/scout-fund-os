@@ -37,6 +37,7 @@ interface DealStoreValue {
   initiateWire: (dealId: string) => void;
   confirmWire: (dealId: string) => void;
   markCarryPaid: (dealId: string) => void;
+  decideFollowOn: (dealId: string, decision: "participating" | "passed", checkUsd?: number) => void;
 }
 
 const DealStoreContext = createContext<DealStoreValue | null>(null);
@@ -188,6 +189,20 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
     [applyPatch],
   );
 
+  const decideFollowOn = useCallback(
+    (dealId: string, decision: "participating" | "passed", checkUsd?: number) => {
+      applyPatch(dealId, {
+        followOnDecision: decision,
+        followOnCheckUsd: decision === "participating" ? (checkUsd ?? 150_000) : null,
+        partnerNotes:
+          decision === "participating"
+            ? `Following on ${checkUsd ? `$${checkUsd.toLocaleString()}` : "$150,000"} from Fund II.`
+            : "Passing on the follow-on round — scout ticket stands as-is.",
+      });
+    },
+    [applyPatch],
+  );
+
   const mergedDeals = useMemo(
     () =>
       seedDeals.map((d) => {
@@ -209,6 +224,7 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       initiateWire,
       confirmWire,
       markCarryPaid,
+      decideFollowOn,
     }),
     [
       mergedDeals,
@@ -221,6 +237,7 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       initiateWire,
       confirmWire,
       markCarryPaid,
+      decideFollowOn,
     ],
   );
 
