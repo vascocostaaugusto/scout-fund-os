@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import { navNodeByHref } from "@/lib/nav";
 import { ThemeToggle } from "./theme-toggle";
 import { SidebarNav } from "./sidebar-nav";
@@ -41,8 +41,17 @@ export function Topbar() {
           <span className="hidden text-muted-foreground sm:inline">Scout Fund OS</span>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <div className="hidden items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs text-muted-foreground sm:flex">
+      <div className="flex items-center gap-2 sm:gap-4">
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event("scout-fund-os:toggle-command-palette"))}
+          className="flex items-center gap-2 rounded-md border border-border bg-secondary/40 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+        >
+          <Search className="size-3.5" />
+          <span className="hidden sm:inline">Jump to…</span>
+          <kbd className="hidden rounded border border-border bg-background px-1 font-mono text-[10px] sm:inline">⌘K</kbd>
+        </button>
+        <div className="hidden items-center gap-2 rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs text-muted-foreground lg:flex">
           <span className="relative flex size-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
             <span className="relative inline-flex size-1.5 rounded-full bg-success" />

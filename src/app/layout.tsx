@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/app-shell";
 import { Toaster } from "@/components/ui/sonner";
 import { LiveActivityToasts } from "@/components/layout/live-activity-toasts";
+import { CommandPalette } from "@/components/layout/command-palette";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <TooltipProvider delay={150}>
             <AppShell>{children}</AppShell>
             <LiveActivityToasts />
+            <CommandPalette />
             <Toaster position="bottom-right" />
           </TooltipProvider>
         </ThemeProvider>
