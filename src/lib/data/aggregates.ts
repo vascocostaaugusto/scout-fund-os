@@ -138,6 +138,35 @@ export const scoutProfitAtMaturity = SCOUT_POOL_SIZE * (MATURITY_SCOUT_BOOK_MOIC
 export const scoutCarryAtMaturity = scoutProfitAtMaturity * CARRY_RATE;
 export const scoutCarryShareOfFund = scoutCarryAtMaturity / fundIICarryAtMaturity;
 
+// ---- Per-scout estimated upside (Scout Portal) ------------------------------
+// Same mark-to-market convention as the fund-wide figure above, scoped to one
+// scout's own funded deals. Carry rate is a blended midpoint of the 10–15%
+// range (the exact rate is negotiated per scout; the portal shows a fair
+// estimate, not a contractual figure — labeled as such in the UI).
+export const SCOUT_CARRY_RATE_ASSUMPTION = 0.125;
+
+export interface ScoutUpside {
+  scoutId: string;
+  deployedUsd: number;
+  markedValueUsd: number;
+  profitUsd: number;
+  estimatedCarryUsd: number;
+}
+
+export const scoutUpside: Map<string, ScoutUpside> = new Map(
+  scouts.map((s) => {
+    const ownFunded = fundedDeals.filter((d) => d.scoutId === s.id);
+    const deployedUsd = ownFunded.reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0);
+    const markedValueUsd = ownFunded.reduce(
+      (sum, d) => sum + (d.checkSizeUsd ?? 0) * (STAGE_MARK_MULTIPLE[d.stage] ?? 1),
+      0,
+    );
+    const profitUsd = Math.max(markedValueUsd - deployedUsd, 0);
+    const estimatedCarryUsd = profitUsd * CARRY_RATE * SCOUT_CARRY_RATE_ASSUMPTION;
+    return [s.id, { scoutId: s.id, deployedUsd, markedValueUsd, profitUsd, estimatedCarryUsd }];
+  }),
+);
+
 // ---- Retention across cohorts (line chart) ---------------------------------
 // The program's first formal cohort is still active, so cohort-over-cohort
 // retention before 2025 reflects the informal Shapers Club pilot; the final

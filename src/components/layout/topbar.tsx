@@ -17,7 +17,7 @@ import {
 export function Topbar() {
   const pathname = usePathname();
   const node = navNodeByHref.get(pathname);
-  const title = node ? node.title : "Overview";
+  const title = node ? node.title : pathname.startsWith("/portal") ? "Scout Portal" : "Overview";
 
   return (
     <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background/80 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-6">

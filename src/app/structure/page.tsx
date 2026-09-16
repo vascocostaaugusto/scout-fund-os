@@ -21,19 +21,19 @@ export default function StructurePage() {
         icon={Building2}
         tagline="Component 5 of 6"
         title="Fund Structure"
-        description="How the scout pool actually sits inside Shapers Fund II — a governance decision, not a detail. Two structural options are viable; only one fits the program's speed and the trust already built with the LP base."
+        description="How the scout pool actually sits inside Shapers Fund II — a governance decision, not a detail. One structure fits the program's speed and the trust already built with the LP base; the alternative was considered and set aside."
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatTile label="Fund II target" value={`${formatUsdCompact(FUND_II_TARGET_LOW)}–${formatUsdCompact(FUND_II_TARGET_HIGH)}`} hint="target raise" />
         <StatTile label="Scout pool" value={formatUsdCompact(SCOUT_POOL_SIZE)} hint={`${formatPct(SCOUT_POOL_PCT_OF_FUND, 1)} of Fund II`} />
-        <StatTile label="Structural options" value="2" hint="carve-out vs. fund-seeded SPVs" />
         <StatTile label="Recommendation" value="Option A" hint="in-fund carve-out" emphasis />
+        <StatTile label="Settle by" value="Fund II close" hint="not retrofittable after" />
       </div>
 
       <Section
-        title="Two viable structures"
-        subtitle="Both keep the capital inside Fund II — they differ in how carry and cap-table exposure are isolated per deal."
+        title="The structure"
+        subtitle="Capital stays inside Fund II either way — the question was ever only how carry and cap-table exposure get isolated per deal, and Option A wins that on every axis that matters at this scale."
       >
         <ComparisonTable />
       </Section>

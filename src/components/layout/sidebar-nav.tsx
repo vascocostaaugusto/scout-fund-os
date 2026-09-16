@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid } from "lucide-react";
+import { LayoutGrid, Compass } from "lucide-react";
 import { NAV_NODES } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +52,29 @@ export function SidebarNav() {
           </Link>
         );
       })}
+
+      <div className="mt-3 mb-1 px-3 text-[11px] font-medium uppercase tracking-wider text-sidebar-foreground/40">
+        Scout-facing
+      </div>
+      <Link
+        href="/portal"
+        className={cn(
+          "group flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+          pathname.startsWith("/portal")
+            ? "bg-sidebar-accent text-sidebar-accent-foreground"
+            : "text-sidebar-foreground/70 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+        )}
+      >
+        <Compass
+          className={cn(
+            "size-4 shrink-0",
+            pathname.startsWith("/portal")
+              ? "text-sidebar-primary"
+              : "text-sidebar-foreground/40 group-hover:text-sidebar-foreground/70",
+          )}
+        />
+        <span className="truncate">Scout Portal</span>
+      </Link>
     </nav>
   );
 }
