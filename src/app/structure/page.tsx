@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Building2 } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
@@ -7,6 +8,11 @@ import { ComparisonTable } from "@/components/structure/comparison-table";
 import { UrgencyTimeline } from "@/components/structure/urgency-timeline";
 import { FUND_II_TARGET_LOW, FUND_II_TARGET_HIGH, SCOUT_POOL_SIZE, SCOUT_POOL_PCT_OF_FUND } from "@/lib/data";
 import { formatUsdCompact, formatPct } from "@/lib/format";
+
+export const metadata: Metadata = {
+  title: "Fund Structure · Scout Fund OS",
+  description: "In-fund carve-out vs. SPV governance for the Shapers Scout Fund.",
+};
 
 export default function StructurePage() {
   return (

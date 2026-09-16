@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ShieldAlert } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
@@ -7,6 +8,11 @@ import { RiskRegisterTable } from "@/components/risk/risk-register-table";
 import { RiskMatrix } from "@/components/risk/risk-matrix";
 import { risks, slaBreachRate } from "@/lib/data";
 import { formatPct } from "@/lib/format";
+
+export const metadata: Metadata = {
+  title: "Risk & Compliance · Scout Fund OS",
+  description: "The scout program's risk register and mitigations.",
+};
 
 export default function RiskPage() {
   const highOrCritical = risks.filter((r) => r.impact === "High" || r.impact === "Critical").length;

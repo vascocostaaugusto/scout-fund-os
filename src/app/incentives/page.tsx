@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Coins, ShieldCheck, TrendingUp, Handshake } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
@@ -5,6 +6,11 @@ import { StatTile } from "@/components/detail/stat-tile";
 import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { CarryCalculator } from "@/components/incentives/carry-calculator";
 import { AllocationUtilization } from "@/components/incentives/allocation-utilization";
+
+export const metadata: Metadata = {
+  title: "Incentive Engine · Scout Fund OS",
+  description: "Carry structure and compensation mechanics for the Shapers Scout Fund.",
+};
 
 export default function IncentivesPage() {
   return (

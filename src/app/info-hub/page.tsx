@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Database } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
@@ -6,6 +7,11 @@ import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { DealTable } from "@/components/info-hub/deal-table";
 import { NotificationFeed } from "@/components/info-hub/notification-feed";
 import { totalMemos, notifications } from "@/lib/data";
+
+export const metadata: Metadata = {
+  title: "Info Hub · Scout Fund OS",
+  description: "The centralized tracking system and integrations behind the scout pipeline.",
+};
 
 export default function InfoHubPage() {
   const digestCount = notifications.filter((n) => n.kind === "digest").length;

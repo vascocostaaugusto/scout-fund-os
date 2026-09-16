@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { GitBranch } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
@@ -7,6 +8,11 @@ import { KanbanBoard } from "@/components/workflow/kanban-board";
 import { ProcessSteps } from "@/components/workflow/process-steps";
 import { avgSlaHours, slaBreachRate, pipelineOpenCount, totalMemos } from "@/lib/data";
 import { formatHours, formatPct } from "@/lib/format";
+
+export const metadata: Metadata = {
+  title: "Deal Workflow · Scout Fund OS",
+  description: "Intake, 48-hour SLA, and the pipeline from memo to check.",
+};
 
 export default function WorkflowPage() {
   return (

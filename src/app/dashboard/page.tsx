@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { LineChart as LineChartIcon } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
@@ -19,6 +20,11 @@ import {
   coverageTags,
 } from "@/lib/data";
 import { formatPct, formatHours, formatUsdCompact } from "@/lib/format";
+
+export const metadata: Metadata = {
+  title: "Success Dashboard · Scout Fund OS",
+  description: "KPIs and performance tracking across near, medium, and long-term horizons.",
+};
 
 export default function DashboardPage() {
   return (

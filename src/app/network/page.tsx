@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Users } from "lucide-react";
 import { DetailHeader } from "@/components/detail/detail-header";
 import { Section } from "@/components/detail/section";
@@ -39,6 +40,11 @@ const TIER_COPY = [
       "Dedicated scouts in crypto and stablecoin infrastructure — the one vertical where the core team's network is thinnest today. A deliberate patch, not a general-purpose tier.",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Scout Network · Scout Fund OS",
+  description: "The tiered scout recruiting model behind the Shapers Scout Fund.",
+};
 
 export default function NetworkPage() {
   const roster = [...scouts].sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
