@@ -6,6 +6,7 @@ import { StatTile } from "@/components/detail/stat-tile";
 import { ConnectionCallout } from "@/components/detail/connection-callout";
 import { ComparisonTable } from "@/components/structure/comparison-table";
 import { UrgencyTimeline } from "@/components/structure/urgency-timeline";
+import { CapitalFunnel } from "@/components/overview/capital-funnel";
 import { FUND_II_TARGET_LOW, FUND_II_TARGET_HIGH, SCOUT_POOL_SIZE, SCOUT_POOL_PCT_OF_FUND } from "@/lib/data";
 import { formatUsdCompact, formatPct } from "@/lib/format";
 
@@ -30,6 +31,8 @@ export default function StructurePage() {
         <StatTile label="Recommendation" value="Option A" hint="in-fund carve-out" emphasis />
         <StatTile label="Settle by" value="Fund II close" hint="not retrofittable after" />
       </div>
+
+      <CapitalFunnel />
 
       <Section
         title="The structure"

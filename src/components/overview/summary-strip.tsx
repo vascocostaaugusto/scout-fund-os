@@ -22,7 +22,7 @@ export function SummaryStrip() {
     {
       label: "Scout pool size",
       value: formatUsdCompact(SCOUT_POOL_SIZE),
-      sub: "<5% of Fund II target",
+      sub: `<5% of Fund II · ${formatUsdCompact(capitalAllocatedUsd)} allocated to Cohort 1`,
       icon: Wallet,
     },
     {

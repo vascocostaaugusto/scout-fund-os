@@ -1,5 +1,6 @@
 import { SummaryStrip } from "@/components/overview/summary-strip";
 import { SystemMap } from "@/components/overview/system-map";
+import { CapitalFunnel } from "@/components/overview/capital-funnel";
 
 export default function OverviewPage() {
   return (
@@ -14,12 +15,13 @@ export default function OverviewPage() {
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
           A &lt;5% carve-out of Shapers Fund II that turns the existing Shapers Club
           operator network into a structured, first-look pipeline into fintech&apos;s
-          next generation of founders. Seven components, one system — click any
+          next generation of founders. Six components, one system — click any
           node to see how it works.
         </p>
       </div>
 
       <SummaryStrip />
+      <CapitalFunnel />
 
       <div className="flex flex-col gap-3">
         <div className="flex items-baseline justify-between">

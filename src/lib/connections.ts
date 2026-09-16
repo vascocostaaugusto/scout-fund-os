@@ -1,4 +1,4 @@
-// The relationship graph between the 7 program components. Used to draw
+// The relationship graph between the 6 program components. Used to draw
 // cross-links on the system map and to power each detail page's "how this
 // connects" callout — single source of truth so the two never drift apart.
 export interface Connection {
