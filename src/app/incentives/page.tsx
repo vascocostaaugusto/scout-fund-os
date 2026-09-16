@@ -68,9 +68,21 @@ export default function IncentivesPage() {
         <CarryCalculator />
       </Section>
 
+      <div className="flex items-start gap-3 rounded-xl border border-dashed border-primary/30 bg-accent/40 p-5">
+        <Handshake className="mt-0.5 size-4 shrink-0 text-primary" />
+        <div>
+          <div className="text-sm font-semibold text-foreground">Co-investment perk</div>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+            If a scout also invests personal capital alongside their sourced deal through a side SPV, Shapers
+            waives its own carry on that personal check — the only place in the program where a scout can earn
+            founder-level upside instead of a carry share.
+          </p>
+        </div>
+      </div>
+
       <Section
-        title="Co-investment perk"
-        subtitle="If a scout also invests personal capital alongside their sourced deal through a side SPV, Shapers waives its own carry on that personal check — the only place in the program where a scout can earn founder-level upside."
+        title="Personal allocation"
+        subtitle="How much of each scout's $150K–$300K ceiling is actually deployed this cohort."
       >
         <AllocationUtilization />
       </Section>
