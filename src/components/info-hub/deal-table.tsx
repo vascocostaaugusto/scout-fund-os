@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { deals, scoutById } from "@/lib/data";
 import type { DealStage } from "@/lib/data";
 import { formatUsd, formatDate } from "@/lib/format";
@@ -45,13 +46,36 @@ const STAGE_BADGE: Record<DealStage, string> = {
 
 const STAGES = Object.keys(STAGE_LABEL) as DealStage[];
 
+type SortKey = "company" | "check" | "submitted";
+type SortDir = "asc" | "desc";
+
+const SORTABLE: { key: SortKey; label: string; className?: string }[] = [
+  { key: "company", label: "Company" },
+  { key: "check", label: "Check", className: "text-right" },
+  { key: "submitted", label: "Submitted" },
+];
+
 export function DealTable() {
   const [stageFilter, setStageFilter] = useState<string>("all");
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({ key: "submitted", dir: "desc" });
+
+  function toggleSort(key: SortKey) {
+    setSort((prev) =>
+      prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "desc" },
+    );
+  }
 
   const rows = useMemo(() => {
     const filtered = stageFilter === "all" ? deals : deals.filter((d) => d.stage === stageFilter);
-    return [...filtered].sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
-  }, [stageFilter]);
+    const sorted = [...filtered].sort((a, b) => {
+      let cmp = 0;
+      if (sort.key === "company") cmp = a.companyName.localeCompare(b.companyName);
+      else if (sort.key === "check") cmp = (a.checkSizeUsd ?? -1) - (b.checkSizeUsd ?? -1);
+      else cmp = new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime();
+      return sort.dir === "asc" ? cmp : -cmp;
+    });
+    return sorted;
+  }, [stageFilter, sort]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -77,12 +101,32 @@ export function DealTable() {
           <Table>
             <TableHeader className="sticky top-0 z-10 bg-card">
               <TableRow className="hover:bg-transparent">
-                <TableHead>Company</TableHead>
+                {SORTABLE.map((col) => (
+                  <TableHead key={col.key} className={col.className}>
+                    <button
+                      type="button"
+                      onClick={() => toggleSort(col.key)}
+                      className={cn(
+                        "inline-flex items-center gap-1 transition-colors hover:text-foreground",
+                        col.className === "text-right" && "flex-row-reverse",
+                      )}
+                    >
+                      {col.label}
+                      {sort.key === col.key ? (
+                        sort.dir === "asc" ? (
+                          <ArrowUp className="size-3" />
+                        ) : (
+                          <ArrowDown className="size-3" />
+                        )
+                      ) : (
+                        <ArrowUpDown className="size-3 opacity-30" />
+                      )}
+                    </button>
+                  </TableHead>
+                ))}
                 <TableHead>Scout</TableHead>
                 <TableHead>Sector</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="text-right">Check</TableHead>
-                <TableHead>Submitted</TableHead>
                 <TableHead>Partner notes</TableHead>
               </TableRow>
             </TableHeader>
@@ -96,25 +140,25 @@ export function DealTable() {
                 </TableRow>
               ) : (
                 rows.map((d) => (
-                <TableRow key={d.id}>
-                  <TableCell className="font-medium text-foreground">{d.companyName}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {scoutById.get(d.scoutId)?.name}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{d.sector}</TableCell>
-                  <TableCell>
-                    <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STAGE_BADGE[d.stage])}>
-                      {STAGE_LABEL[d.stage]}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums text-sm">
-                    {d.checkSizeUsd ? formatUsd(d.checkSizeUsd) : "—"}
-                  </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{formatDate(d.submittedAt)}</TableCell>
-                  <TableCell className="max-w-56 truncate text-xs text-muted-foreground" title={d.partnerNotes}>
-                    {d.partnerNotes}
-                  </TableCell>
-                </TableRow>
+                  <TableRow key={d.id}>
+                    <TableCell className="font-medium text-foreground">{d.companyName}</TableCell>
+                    <TableCell className="text-right tabular-nums text-sm">
+                      {d.checkSizeUsd ? formatUsd(d.checkSizeUsd) : "—"}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{formatDate(d.submittedAt)}</TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {scoutById.get(d.scoutId)?.name}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground">{d.sector}</TableCell>
+                    <TableCell>
+                      <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-medium", STAGE_BADGE[d.stage])}>
+                        {STAGE_LABEL[d.stage]}
+                      </span>
+                    </TableCell>
+                    <TableCell className="max-w-56 truncate text-xs text-muted-foreground" title={d.partnerNotes}>
+                      {d.partnerNotes}
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
             </TableBody>
