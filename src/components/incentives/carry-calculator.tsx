@@ -40,7 +40,12 @@ export function CarryCalculator() {
             <label className="text-xs font-medium text-muted-foreground">Sourced deal</label>
             <Select value={dealId} onValueChange={(v) => v && setDealId(v)}>
               <SelectTrigger className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {(v: string) => {
+                    const d = fundedDeals.find((x) => x.id === v);
+                    return d ? `${d.companyName} — ${formatUsd(d.checkSizeUsd ?? 0)}` : v;
+                  }}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {fundedDeals.map((d) => (
@@ -56,7 +61,7 @@ export function CarryCalculator() {
             <label className="text-xs font-medium text-muted-foreground">Exit multiple (MOIC)</label>
             <Select value={String(multiple)} onValueChange={(v) => setMultiple(Number(v))}>
               <SelectTrigger className="w-full">
-                <SelectValue />
+                <SelectValue>{(v: string) => `${v}x`}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {MULTIPLES.map((m) => (
@@ -72,7 +77,7 @@ export function CarryCalculator() {
             <label className="text-xs font-medium text-muted-foreground">Scout carry rate</label>
             <Select value={String(scoutRate)} onValueChange={(v) => setScoutRate(Number(v))}>
               <SelectTrigger className="w-full">
-                <SelectValue />
+                <SelectValue>{(v: string) => `${(Number(v) * 100).toFixed(1)}%`}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {SCOUT_CARRY_RATES.map((r) => (

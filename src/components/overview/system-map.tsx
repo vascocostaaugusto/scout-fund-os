@@ -6,13 +6,14 @@ import { NAV_NODES } from "@/lib/nav";
 import { CONNECTIONS } from "@/lib/connections";
 import { cn } from "@/lib/utils";
 
-const RADIUS = 40; // percent of container
+const RADIUS = 42; // percent of container — the container's own wide aspect
+// ratio does the ellipse-flattening, so this stays a true circle in logical space
 const CENTER = 50;
 
 function positionFor(index: number, total: number) {
   const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
   const x = CENTER + RADIUS * Math.cos(angle);
-  const y = CENTER + RADIUS * Math.sin(angle) * 0.82; // slight ellipse for widescreen
+  const y = CENTER + RADIUS * Math.sin(angle);
   return { x, y };
 }
 
@@ -29,7 +30,7 @@ export function SystemMap() {
   }
 
   return (
-    <div className="relative mx-auto aspect-[16/10] w-full max-w-5xl select-none">
+    <div className="relative mx-auto aspect-[16/6.5] w-full max-w-5xl select-none">
       <svg
         className="absolute inset-0 h-full w-full overflow-visible"
         viewBox="0 0 100 100"

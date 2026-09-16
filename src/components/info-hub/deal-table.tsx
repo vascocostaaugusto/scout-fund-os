@@ -59,7 +59,7 @@ export function DealTable() {
         <span className="text-xs text-muted-foreground">{rows.length} of {deals.length} records</span>
         <Select value={stageFilter} onValueChange={(v) => v && setStageFilter(v)}>
           <SelectTrigger className="w-44">
-            <SelectValue />
+            <SelectValue>{(v: string) => (v === "all" ? "All stages" : STAGE_LABEL[v as DealStage])}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All stages</SelectItem>

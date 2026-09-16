@@ -3,8 +3,8 @@ import { SystemMap } from "@/components/overview/system-map";
 
 export default function OverviewPage() {
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-10">
-      <div className="flex flex-col gap-2">
+    <div className="mx-auto flex max-w-6xl flex-col gap-7 px-6 py-8">
+      <div className="flex flex-col gap-1.5">
         <span className="text-xs font-medium uppercase tracking-wider text-primary">
           Program architecture
         </span>

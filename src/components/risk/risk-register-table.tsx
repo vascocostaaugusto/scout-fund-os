@@ -12,28 +12,28 @@ import {
 export function RiskRegisterTable() {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <Table>
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[15%]">Category</TableHead>
-            <TableHead className="w-[35%]">Risk</TableHead>
-            <TableHead>Likelihood</TableHead>
-            <TableHead>Impact</TableHead>
-            <TableHead className="w-[30%]">Mitigation</TableHead>
+            <TableHead className="w-[13%]">Category</TableHead>
+            <TableHead className="w-[32%]">Risk</TableHead>
+            <TableHead className="w-[11%]">Likelihood</TableHead>
+            <TableHead className="w-[11%]">Impact</TableHead>
+            <TableHead className="w-[33%]">Mitigation</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {risks.map((r) => (
             <TableRow key={r.id}>
-              <TableCell className="text-xs font-medium text-muted-foreground">{r.category}</TableCell>
-              <TableCell className="text-sm text-foreground">{r.risk}</TableCell>
+              <TableCell className="whitespace-normal text-xs font-medium text-muted-foreground">{r.category}</TableCell>
+              <TableCell className="whitespace-normal text-sm leading-relaxed text-foreground">{r.risk}</TableCell>
               <TableCell>
                 <SeverityBadge level={r.likelihood} />
               </TableCell>
               <TableCell>
                 <SeverityBadge level={r.impact} />
               </TableCell>
-              <TableCell className="text-xs leading-relaxed text-muted-foreground">{r.mitigation}</TableCell>
+              <TableCell className="whitespace-normal text-xs leading-relaxed text-muted-foreground">{r.mitigation}</TableCell>
             </TableRow>
           ))}
         </TableBody>
