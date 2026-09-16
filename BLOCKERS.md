@@ -1,0 +1,77 @@
+# Blockers & Assumptions Log
+
+Per working instructions: no stopping to ask questions. Anything ambiguous gets
+a reasonable, documented assumption and I keep moving. Logged here as they came
+up, not just at the end.
+
+## 1. Exact fund-level dollar figures
+**Ambiguity:** Brief gives ranges (Fund II $100–150M, scout pool <5% → $5–7.5M)
+but no single numbers to build consistent mock data around.
+**Assumption:** Fund II target midpoint $125M. Scout pool $6.0M (4.8% of
+Fund II — comfortably under the 5% ceiling). Capital allocated to the current
+cohort's 15 scouts sums to ~$3.49M (tier-weighted $150K–$300K ceilings),
+leaving headroom in the $6.0M pool for cohort growth. All committed to
+`src/lib/data/aggregates.ts` as named constants, not scattered magic numbers.
+
+## 2. Deal/scout volume and funnel shape
+**Ambiguity:** Brief's example numbers ("37 memos, 9 funded") are explicitly
+illustrative, not a spec.
+**Assumption:** 47 memos across 15 scouts (seeded PRNG, `seed=5150` chosen
+after sampling ~10 seeds for a distribution with no zero-activity scouts),
+13 funded (27.7% conversion), avg SLA 31.7h. Every downstream number (summary
+strip, per-scout stats, dashboard charts) derives from this one `deals` array
+— see `src/lib/data/deals.ts` and `aggregates.ts`.
+
+## 3. Zero exited/dead deals in the current snapshot
+**Observation, not really a blocker:** The seeded data landed with 0 "Exited"
+and 1 "Dead" deal. Initially read as a data-realism gap; on reflection this is
+actually correct behavior — the cohort is ~20 months into an 18–24 month
+window, and real venture exits take years. Left as-is; called out explicitly
+in the Workflow/Dashboard copy rather than forcing fake exits into the data.
+
+## 4. The "carry vs. capital" headline model (Success Dashboard, long-term)
+**Ambiguity:** Brief asks for "scout-sourced capital's share of Fund II's
+overall carry vs. the <5% capital it represents" as the headline proof chart,
+but a $1M-deployed scout book can't organically outperform a $125M fund's
+carry pool at today's snapshot — venture carry realizes over a fund's full
+life, not in year 1.7.
+**Assumption:** Explicitly modeled at Fund II maturity (Year 8), with stated
+assumptions: whole-fund blended gross MOIC 3.0x vs. scout-book blended MOIC
+4.5x (the "earlier, cheaper entry into the same eventual winners" thesis),
+20% carry rate applied fund-wide. Yields scout carry share ≈ 8.4% against a
+4.8% capital share (~1.75x). All assumptions are surfaced in the UI copy
+directly under the chart so it's defensible if a partner asks about it live.
+See `MATURITY_WHOLE_FUND_MOIC` / `MATURITY_SCOUT_BOOK_MOIC` in
+`src/lib/data/aggregates.ts`.
+
+## 5. Scout retention "across cohorts" with only one active cohort
+**Ambiguity:** Brief asks for a cohort-over-cohort retention line chart, but
+the program (as pitched) has only one formal cohort running.
+**Assumption:** Framed as Pilot (informal Shapers Club pre-2025) → Cohort 1
+(current, real) → Cohort 2 (2026–27, explicitly labeled "projected" in the
+UI, dashed line segment). Keeps the chart honest about what's real vs. modeled.
+
+## 6. Individual scout/founder names
+**Ambiguity:** Source content references real companies (Qonto, Wise, N26,
+Bitpanda) as flavor for scout backgrounds, but no real individuals are named.
+**Assumption:** Company names kept (they're the user's own brief content,
+common in scout-bio framing), but all scout/founder names are invented
+fictional people — avoids fabricating statements or affiliations for real
+individuals while keeping the company-pedigree realism the brief asked for.
+
+## 7. Design system / accent color
+**Ambiguity:** Brief says "avoid default shadcn blue, pick a considered accent
+in the deep green/navy/amber family" with no further spec.
+**Assumption:** Ran the `dataviz` skill's palette validator to build a
+CVD-safe deep-emerald ordinal ramp for both light and dark chart surfaces,
+kept the skill's fixed status palette (good/warning/serious/critical — amber
+lands naturally on "warning," satisfying the "amber for risk/SLA attention"
+ask) untouched since status colors are meant to stay invariant across brands.
+Documented in `PLAN.md` and `globals.css` comments.
+
+## 8. No per-scout or per-deal drill-down detail pages
+**Ambiguity:** Brief specifies exactly 7 detail views (one per program
+component), not a page per scout or per deal.
+**Assumption:** Kept to the 7 specified routes. Scout/deal-level detail is
+surfaced inline (tables, kanban cards, tooltips) rather than as separate
+routes, to stay inside the specified information architecture.
