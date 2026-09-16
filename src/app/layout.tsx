@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/layout/app-shell";
+import { Toaster } from "@/components/ui/sonner";
+import { LiveActivityToasts } from "@/components/layout/live-activity-toasts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +39,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <TooltipProvider delay={150}>
             <AppShell>{children}</AppShell>
+            <LiveActivityToasts />
+            <Toaster position="bottom-right" />
           </TooltipProvider>
         </ThemeProvider>
       </body>
