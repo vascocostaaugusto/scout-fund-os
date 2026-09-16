@@ -98,11 +98,15 @@ export function SystemMap() {
           <Link
             key={node.slug}
             href={node.href}
+            aria-label={`${node.title} — ${node.oneLiner}`}
             onMouseEnter={() => setHovered(node.slug)}
             onMouseLeave={() => setHovered(null)}
+            onFocus={() => setHovered(node.slug)}
+            onBlur={() => setHovered(null)}
             className={cn(
               "group absolute w-44 -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-card p-3.5 shadow-sm transition-all duration-200",
               "hover:-translate-y-[calc(50%+3px)] hover:border-primary/50 hover:shadow-lg",
+              "focus-visible:-translate-y-[calc(50%+3px)] focus-visible:border-primary/60 focus-visible:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
               dim ? "opacity-40" : "opacity-100",
               hovered === node.slug ? "border-primary/60 shadow-lg" : "border-border",
             )}
