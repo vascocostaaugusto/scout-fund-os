@@ -1,38 +1,17 @@
 "use client";
 
 import { scoutById } from "@/lib/data";
-import type { DealStage } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
 import { formatUsd, timeAgo } from "@/lib/format";
 import { cn } from "@/lib/utils";
-
-const COLUMNS: { stage: DealStage; label: string; hint: string }[] = [
-  { stage: "submitted", label: "Submitted", hint: "Awaiting first look" },
-  { stage: "under_review", label: "Under Review", hint: "48h response window" },
-  { stage: "approved", label: "Approved", hint: "Cleared, check pending" },
-  { stage: "declined", label: "Declined", hint: "Passed at first look" },
-  { stage: "check_written", label: "Check Written", hint: "SAFE / convertible closed" },
-  { stage: "follow_on_watch", label: "Follow-on Watch", hint: "Right-of-first-look active" },
-  { stage: "exited", label: "Exited", hint: "Return realized" },
-  { stage: "dead", label: "Dead", hint: "Written off" },
-];
-
-const STAGE_DOT: Record<DealStage, string> = {
-  submitted: "bg-muted-foreground",
-  under_review: "bg-warning",
-  approved: "bg-primary",
-  declined: "bg-critical",
-  check_written: "bg-primary",
-  follow_on_watch: "bg-primary",
-  exited: "bg-success",
-  dead: "bg-critical",
-};
+import { STAGE_LABEL, STAGE_DOT, STAGE_HINT, STAGE_ORDER } from "@/lib/stage-labels";
 
 export function KanbanBoard() {
   const { deals } = useDealStore();
   return (
     <div className="flex gap-3 overflow-x-auto pb-2">
-      {COLUMNS.map((col, colIndex) => {
+      {STAGE_ORDER.map((stage, colIndex) => {
+        const col = { stage, label: STAGE_LABEL[stage], hint: STAGE_HINT[stage] };
         const items = deals
           .filter((d) => d.stage === col.stage)
           .sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());

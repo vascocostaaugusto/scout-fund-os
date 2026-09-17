@@ -1,9 +1,9 @@
 "use client";
 
-import type { DealStage } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
 import { formatUsd, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { STAGE_LABEL, STAGE_BADGE } from "@/lib/stage-labels";
 import {
   Table,
   TableBody,
@@ -12,28 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const STAGE_LABEL: Record<DealStage, string> = {
-  submitted: "Submitted",
-  under_review: "Under Review",
-  approved: "Approved",
-  declined: "Declined",
-  check_written: "Check Written",
-  follow_on_watch: "Follow-on Watch",
-  exited: "Exited",
-  dead: "Dead",
-};
-
-const STAGE_BADGE: Record<DealStage, string> = {
-  submitted: "bg-secondary text-secondary-foreground",
-  under_review: "bg-warning/15 text-warning",
-  approved: "bg-primary/15 text-primary",
-  declined: "bg-critical/15 text-critical",
-  check_written: "bg-primary/15 text-primary",
-  follow_on_watch: "bg-primary/15 text-primary",
-  exited: "bg-success/15 text-success",
-  dead: "bg-critical/15 text-critical",
-};
 
 export function MyDealsTable({ scoutId }: { scoutId: string }) {
   const { deals } = useDealStore();

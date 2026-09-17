@@ -20,7 +20,7 @@ export function LiveWorkflowStats() {
       />
       <StatTile label="Late responses" value={formatPct(lateResponseRate, 1)} hint="first looks over 48h" />
       <StatTile label="Open pipeline" value={`${pipelineOpenCount}`} hint={`of ${totalMemos} memos submitted`} />
-      <StatTile label="Pending decision" value={`${pendingCount}`} hint="submitted + under review" emphasis />
+      <StatTile label="Pending decision" value={`${pendingCount}`} hint="awaiting first look + under review" emphasis />
     </div>
   );
 }

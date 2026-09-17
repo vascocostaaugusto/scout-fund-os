@@ -8,15 +8,26 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Deal } from "@/lib/data";
 
-const LEGAL_STEPS = [
-  { key: "not_started", label: "Draft SAFE", icon: FileText },
-  { key: "draft_generated", label: "Send for signature", icon: Send },
-  { key: "sent_for_signature", label: "Mark executed", icon: Stamp },
-  { key: "executed", label: "Executed", icon: CheckCircle2 },
+// The full chain from an approved decision to money actually leaving the
+// account. Labels are states ("Drafted"), not actions ("Draft SAFE") —
+// the tracker says where the deal *is*; the button below says what to do
+// next.
+const CLOSING_STEPS = [
+  { key: "drafted", label: "SAFE drafted", icon: FileText },
+  { key: "sent", label: "Sent to sign", icon: Send },
+  { key: "executed", label: "Executed", icon: Stamp },
+  { key: "wire_sent", label: "Wire sent", icon: Landmark },
+  { key: "wired", label: "Wire confirmed", icon: CheckCircle2 },
 ] as const;
 
-function legalStepIndex(status: Deal["legalDocStatus"]) {
-  return LEGAL_STEPS.findIndex((s) => s.key === status);
+// -1 = nothing done yet; 4 = fully wired.
+function closingStepIndex(d: Deal): number {
+  if (d.wireStatus === "confirmed") return 4;
+  if (d.wireStatus === "initiated") return 3;
+  if (d.legalDocStatus === "executed") return 2;
+  if (d.legalDocStatus === "sent_for_signature") return 1;
+  if (d.legalDocStatus === "draft_generated") return 0;
+  return -1;
 }
 
 export function ClosingQueue() {
@@ -34,8 +45,8 @@ export function ClosingQueue() {
   return (
     <div className="flex flex-col gap-4">
       <span className="text-xs text-muted-foreground">
-        {closing.length} approved deal{closing.length === 1 ? "" : "s"} moving through SAFE + wire before
-        they&apos;re check_written
+        {closing.length} approved deal{closing.length === 1 ? "" : "s"} moving through SAFE and wire — none
+        of them count as funded until the wire clears
       </span>
 
       {closing.length === 0 ? (
@@ -46,7 +57,7 @@ export function ClosingQueue() {
         <div className="flex flex-col gap-3">
           {closing.map((d) => {
             const scout = scoutById.get(d.scoutId);
-            const stepIdx = legalStepIndex(d.legalDocStatus);
+            const stepIdx = closingStepIndex(d);
             const legalDone = d.legalDocStatus === "executed";
 
             return (
@@ -66,26 +77,35 @@ export function ClosingQueue() {
                   ) : null}
                 </div>
 
-                {/* Legal step tracker */}
-                <div className="flex items-center gap-1.5">
-                  {LEGAL_STEPS.map((step, i) => {
+                {/* Closing tracker: SAFE drafted → sent → executed → wire sent → wired */}
+                <div className="relative flex items-start pt-1">
+                  {/* connector track, spanning first icon centre (10%) to last (90%) */}
+                  <div className="absolute left-[10%] right-[10%] top-4 h-px bg-border" />
+                  <div
+                    className="absolute left-[10%] top-4 h-px bg-primary transition-all duration-300"
+                    style={{ width: `${(Math.max(stepIdx, 0) / (CLOSING_STEPS.length - 1)) * 80}%` }}
+                  />
+                  {CLOSING_STEPS.map((step, i) => {
                     const Icon = step.icon;
                     const reached = i <= stepIdx;
                     return (
-                      <div key={step.key} className="flex flex-1 items-center gap-1.5">
+                      <div key={step.key} className="relative z-10 flex flex-1 flex-col items-center gap-1.5">
                         <div
                           className={cn(
-                            "flex size-6 shrink-0 items-center justify-center rounded-full border text-[10px]",
-                            reached
-                              ? "border-primary bg-primary/15 text-primary"
-                              : "border-border bg-secondary/30 text-muted-foreground",
+                            "flex size-6 shrink-0 items-center justify-center rounded-full border bg-card transition-colors",
+                            reached ? "border-primary text-primary" : "border-border text-muted-foreground/50",
                           )}
                         >
                           <Icon className="size-3" />
                         </div>
-                        {i < LEGAL_STEPS.length - 1 ? (
-                          <div className={cn("h-px flex-1", i < stepIdx ? "bg-primary" : "bg-border")} />
-                        ) : null}
+                        <span
+                          className={cn(
+                            "text-center text-[10px] leading-tight",
+                            reached ? "text-foreground" : "text-muted-foreground/60",
+                          )}
+                        >
+                          {step.label}
+                        </span>
                       </div>
                     );
                   })}
@@ -123,17 +143,8 @@ export function ClosingQueue() {
                     </Button>
                   ) : null}
                   {legalDone && d.wireStatus === "confirmed" ? (
-                    <span className="text-xs text-success">Wired — moving to check_written.</span>
+                    <span className="text-xs text-success">Wired — moving to Check written.</span>
                   ) : null}
-                  <span className="ml-auto text-[11px] text-muted-foreground">
-                    {legalDone
-                      ? d.wireStatus === "not_initiated"
-                        ? "SAFE executed — awaiting wire"
-                        : d.wireStatus === "initiated"
-                          ? "Wire sent — awaiting bank confirmation"
-                          : "Wire confirmed"
-                      : "Legal not yet executed"}
-                  </span>
                 </div>
               </div>
             );

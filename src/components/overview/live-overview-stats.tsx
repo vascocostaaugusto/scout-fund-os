@@ -19,7 +19,7 @@ export function LiveOverviewStats() {
       <StatTile
         label="Pending decision"
         value={`${pipelineByStage.submitted + pipelineByStage.under_review}`}
-        hint="submitted + under review"
+        hint="awaiting first look + under review"
         emphasis
       />
       <StatTile label="Approved, closing" value={`${pipelineByStage.approved}`} hint="SAFE + wire in progress" />

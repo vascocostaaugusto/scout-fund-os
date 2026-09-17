@@ -13,6 +13,7 @@ import { NotificationFeed } from "@/components/info-hub/notification-feed";
 import { MonthlyEmailStatus } from "@/components/fund/monthly-email-status";
 import { LpReportingStatus } from "@/components/fund/lp-reporting-status";
 import { PacingChart } from "@/components/charts/pacing-chart";
+import { PortalIndex } from "@/components/fund/portal-index";
 import { totalMemos, notifications } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -32,14 +33,18 @@ export default function FundPortalPage() {
 
       <TreasuryPanel />
 
+      <PortalIndex />
+
       <Section
+        id="pending-decisions"
         title="Pending decisions"
-        subtitle="Every submitted memo waiting on a first look. Decide here — it updates the kanban and audit trail immediately."
+        subtitle="Every memo waiting on a first look. Decide here — it updates the kanban and audit trail immediately."
       >
         <PendingDecisions />
       </Section>
 
       <Section
+        id="legal-closing"
         title="Legal & closing"
         subtitle="An approval isn't a funded deal — every approved memo still needs a signed SAFE and a confirmed wire. Work the queue here."
       >
@@ -47,6 +52,7 @@ export default function FundPortalPage() {
       </Section>
 
       <Section
+        id="follow-on"
         title="Follow-on decisions"
         subtitle="A company signaling its next round doesn't get fund capital automatically — decide here, separate from the original scout ticket."
       >
@@ -54,17 +60,19 @@ export default function FundPortalPage() {
       </Section>
 
       <Section
+        id="exit-distributions"
         title="Exit distributions"
         subtitle="When a deal exits, the scout's carry share doesn't pay itself — work it here, blocked automatically until their paperwork is on file."
       >
         <ExitDistributions />
       </Section>
 
-      <Section title="Deployment pacing" subtitle="Cumulative capital deployed vs. the pace needed to fully deploy the pool in 24 months.">
+      <Section id="deployment-pacing" title="Deployment pacing" subtitle="Cumulative capital deployed vs. the pace needed to fully deploy the pool in 24 months.">
         <PacingChart />
       </Section>
 
       <Section
+        id="scout-recruiting"
         title="Scout recruiting"
         subtitle="The network doesn't stay at 30 scouts on its own — nominate, vet, and sign new scouts here."
       >
@@ -72,13 +80,14 @@ export default function FundPortalPage() {
       </Section>
 
       <Section
+        id="system-of-record"
         title="System of record"
         subtitle={`All ${totalMemos} records — company, scout, sector, check size, status, partner notes.`}
       >
         <DealTable />
       </Section>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div id="comms" className="grid scroll-mt-6 gap-4 lg:grid-cols-3">
         <Section title="Notifications" subtitle="Simulated — the real integration posts to Slack.">
           <NotificationFeed limit={12} />
         </Section>
