@@ -108,6 +108,11 @@ export interface ScoutStats {
   memosSubmitted: number;
   dealsFunded: number;
   capitalDeployedUsd: number;
+  // Deployment on deals the fund hadn't already seen. This is the figure the
+  // carry milestones run off — an intro to a company already in the pipeline
+  // still gets funded, it just doesn't count as sourced.
+  attributedDeployedUsd: number;
+  unattributedDeals: number;
   avgResponseHours: number | null;
   conversionRate: number;
 }
@@ -125,6 +130,10 @@ export function computeScoutStats(deals: Deal[], scouts: Scout[]): Map<string, S
           memosSubmitted: own.length,
           dealsFunded: ownFunded.length,
           capitalDeployedUsd: ownFunded.reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0),
+          attributedDeployedUsd: ownFunded
+            .filter((d) => d.scoutAttributed)
+            .reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0),
+          unattributedDeals: own.filter((d) => !d.scoutAttributed).length,
           avgResponseHours: ownResponses.length
             ? ownResponses.reduce((sum, d) => sum + (d.responseHours ?? 0), 0) / ownResponses.length
             : null,

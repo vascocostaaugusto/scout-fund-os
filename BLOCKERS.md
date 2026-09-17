@@ -328,3 +328,40 @@ fit the program it was describing.
 someone. This removes the modelled control rather than solving it, on the
 basis that naming the wrong forms was worse than leaving it to the
 participation agreement.
+
+## 17. Fund-level carry milestones, and what "sourced" means
+**User decision:** Three deployment milestones — $500K, $1M, $1.5M — that
+unlock a share of *fund-level* carry, with the percentages left to me and
+required to be small. Plus an attribution rule: an intro to a company the
+fund had already had contact with does not count as sourced.
+**Assumptions and judgment calls:**
+- **Percentages: 0.10% / 0.25% / 0.50% of the fund's carry, stepping up
+  rather than stacking.** A scout at the third rung holds 0.50%, not the
+  0.85% sum. On a $125M fund at 20% carry and a 3x gross return, the whole
+  carry pool is ~$50M, so the rungs are worth roughly $50K / $125K / $250K
+  if the fund performs. Small enough that granting one isn't a partnership
+  event; large enough that a scout changes behaviour to reach it.
+- **This carry dilutes the partners, and the model says so out loud.**
+  Per-deal scout carry comes out of the carry on that single deal. Fund-level
+  carry comes out of the GP's side of the whole pool — every point granted
+  here is a point the partnership no longer holds. That is the actual cost of
+  the ladder and it belongs in the brief, not in a footnote.
+- **The thresholds are lifetime, not per-cohort — deliberately, and they are
+  unreachable in Cohort 1.** Measured against the seeded cohort: the entire
+  scout book is $1.35M deployed across 26 scouts, the best individual scout is
+  at $148K attributed, the median is $34K. Zero scouts reach even the first
+  rung. Rather than shrink the thresholds to make the demo light up, they're
+  framed as cumulative across cohorts — which is the retention mechanism the
+  ladder exists to buy, and which makes the first rung a rare event rather
+  than a default. The Scout Portal states this in plain language so no scout
+  reads a progress bar as a promise.
+- **Attribution is a partner's explicit call, not an inference.** A checkbox
+  on the decision card ("We'd already met this company") flips
+  `scoutAttributed` to false. The deal still gets decided, funded and tracked
+  as normal — it just stops earning carry and stops counting toward the
+  milestone ladder. Seed data generates prior contact at 7% (10 of 150), so
+  the case is visible in the demo rather than theoretical.
+- **Unattributed still shows in the scout's own funnel.** Their memo count,
+  their conversion rate and their capital-deployed tile all still include it;
+  only the carry-bearing figure (`attributedDeployedUsd`) excludes it. Hiding
+  the deal entirely would make a scout's own numbers unauditable to them.

@@ -244,6 +244,9 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
       ? new Date(new Date(firstLookAt).getTime() + rng.int(2, 10) * 24 * 3600_000).toISOString()
       : null;
   const { conflictDisclosed, conflictNotes } = conflictFor();
+  // A minority of intros turn out to be companies the fund already knew —
+  // those still get worked, they just do not count as scout-sourced.
+  const priorContact = rng.bool(0.07);
   const { followOnDecision, followOnCheckUsd } = followOnFor(stage);
   const companyName = makeCompanyName(used);
 
@@ -277,6 +280,8 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     followOnParticipated: stage === "follow_on_watch" || stage === "exited",
     conflictDisclosed,
     conflictNotes,
+    scoutAttributed: !priorContact,
+    priorContactNote: priorContact ? "Already in the pipeline — partner had met the founder before the intro." : null,
     followOnDecision,
     followOnCheckUsd,
     legalDocStatus,

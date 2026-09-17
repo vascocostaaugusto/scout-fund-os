@@ -1,6 +1,7 @@
 export * from "./types";
 export * from "./scouts";
 export * from "./partners";
+export * from "./milestones";
 export * from "./deals";
 export * from "./candidates";
 export * from "./lp-reports";

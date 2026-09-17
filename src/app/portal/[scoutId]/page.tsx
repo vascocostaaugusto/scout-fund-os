@@ -3,6 +3,7 @@ import { scoutById } from "@/lib/data";
 import { PortalHeader } from "@/components/portal/portal-header";
 import { LiveScoutStats } from "@/components/portal/live-scout-stats";
 import { SubmitIntro } from "@/components/portal/submit-intro";
+import { CarryMilestones } from "@/components/portal/carry-milestones";
 import { NeedsYourReply } from "@/components/portal/needs-your-reply";
 import { MyDealsTable } from "@/components/portal/my-deals-table";
 import { MonthInReview } from "@/components/portal/month-in-review";
@@ -38,6 +39,8 @@ export default async function ScoutPortalDashboard({
         <span className="text-sm font-medium text-foreground">My deals</span>
         <MyDealsTable scoutId={scoutId} />
       </div>
+
+      <CarryMilestones scoutId={scoutId} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <MonthInReview scoutId={scoutId} />
