@@ -20,11 +20,18 @@ export function formatHours(n: number): string {
   return `${n.toFixed(1)}h`;
 }
 
+// Timezone is pinned to UTC deliberately. Without it the server renders in
+// its own zone (UTC on Vercel) and the browser renders in the visitor's,
+// producing different text for the same timestamp and a hydration mismatch.
+// It never shows up locally, where both sides share a timezone. Every date
+// in this app is authored in UTC against a frozen reference clock, so UTC
+// is also the semantically correct zone to display.
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   });
 }
 
@@ -34,6 +41,7 @@ export function formatDateTime(iso: string): string {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZone: "UTC",
   });
 }
 

@@ -1,5 +1,7 @@
 # Scout Fund OS
 
+**[Open the live app →](https://scout-fund-os.vercel.app)**
+
 A working prototype of the operating system for a venture scout program — built as a proposal for the Shapers Fund II scout fund.
 
 It's three things:
