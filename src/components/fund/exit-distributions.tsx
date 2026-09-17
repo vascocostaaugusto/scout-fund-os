@@ -1,7 +1,8 @@
 "use client";
 
 import { AlertTriangle, CircleDollarSign } from "lucide-react";
-import { STAGE_MARK_MULTIPLE, CARRY_RATE, SCOUT_CARRY_RATE_ASSUMPTION } from "@/lib/data";
+import { CARRY_RATE, SCOUT_CARRY_RATE_ASSUMPTION } from "@/lib/data";
+import { markMultipleFor } from "@/lib/data/derive";
 import { useDealStore } from "@/lib/deal-store";
 import { useScoutOnboarding } from "@/lib/scout-onboarding-store";
 import { formatUsd, formatDate } from "@/lib/format";
@@ -16,11 +17,12 @@ export function ExitDistributions() {
     .map((d) => {
       const scout = scouts.find((s) => s.id === d.scoutId);
       const checkSizeUsd = d.checkSizeUsd ?? 0;
-      const exitValueUsd = checkSizeUsd * (STAGE_MARK_MULTIPLE.exited ?? 1);
+      const multiple = markMultipleFor(d);
+      const exitValueUsd = checkSizeUsd * multiple;
       const profitUsd = Math.max(exitValueUsd - checkSizeUsd, 0);
       const carryOwedUsd = profitUsd * CARRY_RATE * SCOUT_CARRY_RATE_ASSUMPTION;
       const paperworkReady = scout?.taxFormStatus === "submitted" && scout?.payoutAccountStatus === "linked";
-      return { deal: d, scout, checkSizeUsd, exitValueUsd, profitUsd, carryOwedUsd, paperworkReady };
+      return { deal: d, scout, checkSizeUsd, multiple, exitValueUsd, profitUsd, carryOwedUsd, paperworkReady };
     });
 
   if (exited.length === 0) {
@@ -33,14 +35,14 @@ export function ExitDistributions() {
 
   return (
     <div className="flex flex-col gap-3">
-      {exited.map(({ deal, scout, checkSizeUsd, exitValueUsd, profitUsd, carryOwedUsd, paperworkReady }) => (
+      {exited.map(({ deal, scout, checkSizeUsd, multiple, exitValueUsd, profitUsd, carryOwedUsd, paperworkReady }) => (
         <div key={deal.id} className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <div className="text-sm font-semibold text-foreground">{deal.companyName}</div>
               <div className="text-xs text-muted-foreground">
-                {scout?.name} · ticket {formatUsd(checkSizeUsd)} → exit value {formatUsd(exitValueUsd)} (
-                {STAGE_MARK_MULTIPLE.exited}x)
+                {scout?.name} · ticket {formatUsd(checkSizeUsd)} → exit value {formatUsd(exitValueUsd)} ({multiple}x
+                {deal.exitMultiple == null ? ", standard interim mark" : ""})
               </div>
             </div>
             {deal.carryPaidAt ? (

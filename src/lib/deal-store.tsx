@@ -38,6 +38,9 @@ interface DealStoreValue {
   confirmWire: (dealId: string) => void;
   markCarryPaid: (dealId: string) => void;
   decideFollowOn: (dealId: string, decision: "participating" | "passed", checkUsd?: number) => void;
+  flagFollowOnWatch: (dealId: string, note?: string) => void;
+  markExited: (dealId: string, multiple: number, note?: string) => void;
+  writeOff: (dealId: string, note: string) => void;
 }
 
 const DealStoreContext = createContext<DealStoreValue | null>(null);
@@ -210,6 +213,43 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
     [applyPatch],
   );
 
+  // ---- Portfolio outcomes: what happens to a company after the check ------
+  const flagFollowOnWatch = useCallback(
+    (dealId: string, note?: string) => {
+      applyPatch(dealId, {
+        stage: "follow_on_watch" as DealStage,
+        followOnParticipated: true,
+        outcomeNote: note || null,
+        partnerNotes: note || "Flagged for follow-on watch — next round signaled.",
+      });
+    },
+    [applyPatch],
+  );
+
+  const markExited = useCallback(
+    (dealId: string, multiple: number, note?: string) => {
+      applyPatch(dealId, {
+        stage: "exited" as DealStage,
+        exitMultiple: multiple,
+        outcomeNote: note || null,
+        partnerNotes: note || `Exited at ${multiple}x.`,
+      });
+    },
+    [applyPatch],
+  );
+
+  const writeOff = useCallback(
+    (dealId: string, note: string) => {
+      applyPatch(dealId, {
+        stage: "dead" as DealStage,
+        exitMultiple: 0,
+        outcomeNote: note,
+        partnerNotes: note || "Written off — company ceased operations.",
+      });
+    },
+    [applyPatch],
+  );
+
   const mergedDeals = useMemo(
     () =>
       seedDeals.map((d) => {
@@ -232,6 +272,9 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       confirmWire,
       markCarryPaid,
       decideFollowOn,
+      flagFollowOnWatch,
+      markExited,
+      writeOff,
     }),
     [
       mergedDeals,
@@ -245,6 +288,9 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       confirmWire,
       markCarryPaid,
       decideFollowOn,
+      flagFollowOnWatch,
+      markExited,
+      writeOff,
     ],
   );
 

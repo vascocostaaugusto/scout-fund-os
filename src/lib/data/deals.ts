@@ -270,6 +270,8 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     // Distribution processing lags an exit in real funds (marks, waterfall
     // calc, wire) — none of this cohort's exits have been distributed yet.
     carryPaidAt: null,
+    exitMultiple: null,
+    outcomeNote: null,
   } satisfies Deal;
 }).sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime())
   .map((d, i) => ({ ...d, id: `dl_${String(i + 1).padStart(3, "0")}` }));

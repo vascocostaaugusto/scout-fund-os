@@ -13,6 +13,7 @@ import {
   UserPlus,
   Table2,
   Bell,
+  Boxes,
 } from "lucide-react";
 import { useLiveStats } from "@/lib/use-live-stats";
 import { useCandidateStore } from "@/lib/candidate-store";
@@ -27,6 +28,9 @@ export function PortalIndex() {
     (d) => d.stage === "follow_on_watch" && d.followOnDecision === "undecided",
   ).length;
   const unpaidExits = fundedDeals.filter((d) => d.stage === "exited" && !d.carryPaidAt).length;
+  const liveCompanies = fundedDeals.filter(
+    (d) => d.stage === "check_written" || d.stage === "follow_on_watch",
+  ).length;
   const openCandidates = candidates.filter((c) => c.stage !== "signed" && c.stage !== "declined").length;
 
   const items = [
@@ -53,6 +57,14 @@ export function PortalIndex() {
       count: openFollowOns,
       sub: "next rounds awaiting a call",
       urgent: openFollowOns > 0,
+    },
+    {
+      href: "#portfolio",
+      icon: Boxes,
+      label: "Portfolio outcomes",
+      count: liveCompanies,
+      sub: "funded companies still live",
+      urgent: false,
     },
     {
       href: "#exit-distributions",

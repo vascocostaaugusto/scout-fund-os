@@ -10,6 +10,7 @@ import { CommandPalette } from "@/components/layout/command-palette";
 import { DealStoreProvider } from "@/lib/deal-store";
 import { ScoutOnboardingProvider } from "@/lib/scout-onboarding-store";
 import { CandidateStoreProvider } from "@/lib/candidate-store";
+import { InboxStoreProvider } from "@/lib/inbox-store";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,8 +46,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <DealStoreProvider>
               <ScoutOnboardingProvider>
                 <CandidateStoreProvider>
-                  <AppShell>{children}</AppShell>
-                  <LiveActivityToasts />
+                  <InboxStoreProvider>
+                    <AppShell>{children}</AppShell>
+                    <LiveActivityToasts />
+                  </InboxStoreProvider>
                 </CandidateStoreProvider>
               </ScoutOnboardingProvider>
             </DealStoreProvider>

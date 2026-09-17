@@ -7,6 +7,7 @@ import { PendingDecisions } from "@/components/fund/pending-decisions";
 import { ClosingQueue } from "@/components/fund/closing-queue";
 import { ExitDistributions } from "@/components/fund/exit-distributions";
 import { FollowOnDecisions } from "@/components/fund/follow-on-decisions";
+import { PortfolioOutcomes } from "@/components/fund/portfolio-outcomes";
 import { ScoutRecruiting } from "@/components/fund/scout-recruiting";
 import { DealTable } from "@/components/info-hub/deal-table";
 import { NotificationFeed } from "@/components/info-hub/notification-feed";
@@ -14,6 +15,7 @@ import { MonthlyEmailStatus } from "@/components/fund/monthly-email-status";
 import { LpReportingStatus } from "@/components/fund/lp-reporting-status";
 import { PacingChart } from "@/components/charts/pacing-chart";
 import { PortalIndex } from "@/components/fund/portal-index";
+import { MorningInbox } from "@/components/fund/morning-inbox";
 import { totalMemos, notifications } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -30,6 +32,8 @@ export default function FundPortalPage() {
         title="Fund Portal"
         description="Where the fund actually works the pipeline — decide on pending memos, browse the system of record, and see what scouts have been told."
       />
+
+      <MorningInbox />
 
       <TreasuryPanel />
 
@@ -57,6 +61,14 @@ export default function FundPortalPage() {
         subtitle="A company signaling its next round doesn't get fund capital automatically — decide here, separate from the original scout ticket."
       >
         <FollowOnDecisions />
+      </Section>
+
+      <Section
+        id="portfolio"
+        title="Portfolio outcomes"
+        subtitle="What happened to the companies you funded — raising again, exited, or written off. Recording an exit here flows straight through to the scout's carry."
+      >
+        <PortfolioOutcomes />
       </Section>
 
       <Section

@@ -18,6 +18,13 @@ export const STAGE_MARK_MULTIPLE: Partial<Record<DealStage, number>> = {
 export const CARRY_RATE = 0.2;
 export const SCOUT_CARRY_RATE_ASSUMPTION = 0.125;
 
+// A recorded exit multiple always wins over the stage's standard interim
+// mark — once a partner books an actual outcome, that's the real number and
+// every downstream figure (scout upside, book MOIC, carry owed) follows it.
+export function markMultipleFor(d: Deal): number {
+  return d.exitMultiple ?? STAGE_MARK_MULTIPLE[d.stage] ?? 1;
+}
+
 export interface DealDerived {
   totalMemos: number;
   fundedDeals: Deal[];
@@ -147,7 +154,7 @@ export function computeScoutUpside(deals: Deal[], scouts: Scout[]): Map<string, 
       const ownFunded = fundedDeals.filter((d) => d.scoutId === s.id);
       const deployedUsd = ownFunded.reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0);
       const markedValueUsd = ownFunded.reduce(
-        (sum, d) => sum + (d.checkSizeUsd ?? 0) * (STAGE_MARK_MULTIPLE[d.stage] ?? 1),
+        (sum, d) => sum + (d.checkSizeUsd ?? 0) * markMultipleFor(d),
         0,
       );
       const profitUsd = Math.max(markedValueUsd - deployedUsd, 0);
@@ -161,7 +168,7 @@ export function computeScoutBookMoic(deals: Deal[]): number {
   const fundedDeals = deals.filter((d) => FUNDED_STAGES.includes(d.stage));
   const capitalDeployedUsd = fundedDeals.reduce((sum, d) => sum + (d.checkSizeUsd ?? 0), 0);
   const markedValueUsd = fundedDeals.reduce(
-    (sum, d) => sum + (d.checkSizeUsd ?? 0) * (STAGE_MARK_MULTIPLE[d.stage] ?? 1),
+    (sum, d) => sum + (d.checkSizeUsd ?? 0) * markMultipleFor(d),
     0,
   );
   return capitalDeployedUsd ? markedValueUsd / capitalDeployedUsd : 0;
