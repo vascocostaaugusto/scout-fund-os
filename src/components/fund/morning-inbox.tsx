@@ -90,8 +90,9 @@ export function MorningInbox() {
 
             {p.kind === "new_intro" ? (
               <span className="text-[11px] text-muted-foreground/70">
-                Creating a memo from an email needs the scout intake form, which isn&apos;t built in this
-                prototype — this one is here to show what the job would surface.
+                Creating a record needs fields an email doesn&apos;t reliably carry — sector, geography, a
+                conflict declaration. The scout submits it from their own portal instead, so the
+                disclosure comes from the person making it.
               </span>
             ) : null}
           </div>
