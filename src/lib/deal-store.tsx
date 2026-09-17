@@ -14,10 +14,11 @@
 // signature — without one action clobbering another's field.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { deals as seedDeals, safeTermsFor } from "@/lib/data";
+import { deals as seedDeals, safeTermsFor, pitchFor } from "@/lib/data";
 import type { Deal, DealStage, LegalDocStatus } from "@/lib/data";
 
 const STORAGE_KEY = "scout-fund-os:deal-overrides";
+const CREATED_KEY = "scout-fund-os:deals-created";
 const REFERENCE_NOW = new Date("2026-09-16T09:00:00Z");
 
 interface DealOverrideEntry {
@@ -26,9 +27,21 @@ interface DealOverrideEntry {
   lastActionAt: string;
 }
 
+export interface NewIntroInput {
+  scoutId: string;
+  companyName: string;
+  sector: string;
+  geography: string;
+  pitch: string;
+  conflictNotes?: string;
+}
+
 interface DealStoreValue {
   deals: Deal[];
   overrides: Record<string, DealOverrideEntry>;
+  submitIntro: (input: NewIntroInput) => Deal;
+  requestInfo: (dealId: string, question: string, partner: string) => void;
+  respondToInfo: (dealId: string, response: string) => void;
   decideDeal: (dealId: string, decision: "approved" | "declined", partner: string, note: string, ticketUsd?: number) => void;
   resetDeal: (dealId: string) => void;
   generateSafe: (dealId: string) => void;
@@ -47,12 +60,19 @@ const DealStoreContext = createContext<DealStoreValue | null>(null);
 
 export function DealStoreProvider({ children }: { children: ReactNode }) {
   const [overrides, setOverridesState] = useState<Record<string, DealOverrideEntry>>({});
+  // Intros submitted through the Scout Portal this session. Kept separately
+  // from the patch map because these are whole new records, not edits to a
+  // seeded one — but they're otherwise ordinary deals, and every patch
+  // action below works on them identically.
+  const [created, setCreatedState] = useState<Deal[]>([]);
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring session-local decisions after mount, not derivable from props/state
       if (raw) setOverridesState(JSON.parse(raw));
+      const rawCreated = window.localStorage.getItem(CREATED_KEY);
+      if (rawCreated) setCreatedState(JSON.parse(rawCreated));
     } catch {
       // localStorage unavailable or corrupt — start clean
     }
@@ -67,14 +87,25 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const persistCreated = useCallback((next: Deal[]) => {
+    setCreatedState(next);
+    try {
+      window.localStorage.setItem(CREATED_KEY, JSON.stringify(next));
+    } catch {
+      // best-effort only
+    }
+  }, []);
+
+  const allBase = useMemo(() => [...created, ...seedDeals], [created]);
+
   const snapshot = useCallback(
     (dealId: string): Deal | undefined => {
-      const base = seedDeals.find((d) => d.id === dealId);
+      const base = allBase.find((d) => d.id === dealId);
       if (!base) return undefined;
       const existing = overrides[dealId]?.patch;
       return existing ? { ...base, ...existing } : base;
     },
-    [overrides],
+    [allBase, overrides],
   );
 
   const applyPatch = useCallback(
@@ -88,6 +119,73 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       persist({ ...overrides, [dealId]: entry });
     },
     [overrides, persist],
+  );
+
+  // ---- Scout-side: submit an intro, answer a partner's question ----------
+  const submitIntro = useCallback(
+    (input: NewIntroInput): Deal => {
+      const id = `usr_${String(created.length + 1).padStart(3, "0")}`;
+      const deal: Deal = {
+        id,
+        scoutId: input.scoutId,
+        companyName: input.companyName.trim(),
+        sector: input.sector,
+        geography: input.geography,
+        stage: "submitted",
+        checkSizeUsd: null,
+        submittedAt: REFERENCE_NOW.toISOString(),
+        firstLookAt: null,
+        responseHours: null,
+        isLate: false,
+        reviewingPartner: "",
+        partnerNotes: "Memo received, queued for rotation.",
+        pitch: input.pitch.trim() || pitchFor(input.companyName, input.sector),
+        rightOfFirstLook: false,
+        followOnParticipated: false,
+        conflictDisclosed: Boolean(input.conflictNotes?.trim()),
+        conflictNotes: input.conflictNotes?.trim() || null,
+        followOnDecision: "undecided",
+        followOnCheckUsd: null,
+        legalDocStatus: "not_started",
+        safeTerms: null,
+        wireStatus: "not_initiated",
+        wireConfirmedAt: null,
+        carryPaidAt: null,
+        exitMultiple: null,
+        outcomeNote: null,
+        infoRequest: null,
+        infoRequestedAt: null,
+        infoResponse: null,
+        submittedByScout: true,
+      };
+      persistCreated([deal, ...created]);
+      return deal;
+    },
+    [created, persistCreated],
+  );
+
+  const requestInfo = useCallback(
+    (dealId: string, question: string, partner: string) => {
+      applyPatch(dealId, {
+        stage: "under_review" as DealStage,
+        reviewingPartner: partner,
+        infoRequest: question,
+        infoRequestedAt: REFERENCE_NOW.toISOString(),
+        infoResponse: null,
+        partnerNotes: `Waiting on the scout: ${question}`,
+      });
+    },
+    [applyPatch],
+  );
+
+  const respondToInfo = useCallback(
+    (dealId: string, response: string) => {
+      applyPatch(dealId, {
+        infoResponse: response,
+        partnerNotes: "Scout answered — back in the decision queue.",
+      });
+    },
+    [applyPatch],
   );
 
   const decideDeal = useCallback(
@@ -128,8 +226,13 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       const next = { ...overrides };
       delete next[dealId];
       persist(next);
+      // Undoing a scout-submitted intro removes the record entirely — there
+      // is no seeded version underneath it to fall back to.
+      if (created.some((d) => d.id === dealId)) {
+        persistCreated(created.filter((d) => d.id !== dealId));
+      }
     },
-    [overrides, persist],
+    [overrides, persist, created, persistCreated],
   );
 
   // ---- Closing steps: SAFE drafting → signature → execution → wire --------
@@ -252,17 +355,20 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
 
   const mergedDeals = useMemo(
     () =>
-      seedDeals.map((d) => {
+      allBase.map((d) => {
         const o = overrides[d.id];
         return o ? ({ ...d, ...o.patch } satisfies Deal) : d;
       }),
-    [overrides],
+    [allBase, overrides],
   );
 
   const value = useMemo(
     () => ({
       deals: mergedDeals,
       overrides,
+      submitIntro,
+      requestInfo,
+      respondToInfo,
       decideDeal,
       resetDeal,
       generateSafe,
@@ -279,6 +385,9 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
     [
       mergedDeals,
       overrides,
+      submitIntro,
+      requestInfo,
+      respondToInfo,
       decideDeal,
       resetDeal,
       generateSafe,

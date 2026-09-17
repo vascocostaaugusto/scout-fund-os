@@ -93,6 +93,14 @@ export interface Deal {
   isLate: boolean; // response took longer than the 48h target
   reviewingPartner: string;
   partnerNotes: string;
+  pitch: string; // the scout's own one-line case for the company — the memo itself
+  // The "more info" arm of the first-look response. A partner can send a
+  // question back instead of deciding; the deal waits on the scout until
+  // they answer, then returns to the decision queue.
+  infoRequest: string | null;
+  infoRequestedAt: string | null;
+  infoResponse: string | null;
+  submittedByScout: boolean; // true for intros submitted through the Scout Portal this session
   rightOfFirstLook: boolean;
   followOnParticipated: boolean;
   // Declared by the scout at submission — does the scout have an existing

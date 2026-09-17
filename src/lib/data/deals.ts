@@ -150,6 +150,23 @@ function hashSeed(key: string): number {
   return h;
 }
 
+// A one-line case for the company, in the scout's voice. Derived from a hash
+// of the company name rather than the shared sequential rng, so adding this
+// doesn't reshuffle every other generated field in the dataset.
+const PITCH_SHAPES = [
+  "Ex-operator team building %s for mid-market — already live with three design partners.",
+  "Second-time founders in %s; the wedge is distribution, not tech, and they have it.",
+  "Doing %s properly for the first time in this market — incumbents are a decade behind.",
+  "Strong early pull in %s: usage doubling month over month off a standing start.",
+  "Unusually technical team in %s — they've solved the part everyone else outsources.",
+  "%s, but priced for companies that have never been able to afford it.",
+] as const;
+
+export function pitchFor(companyName: string, sector: string): string {
+  const local = makeRng(hashSeed(`pitch:${companyName}`));
+  return local.pick(PITCH_SHAPES).replace("%s", sector.toLowerCase());
+}
+
 export function safeTermsFor(checkSizeUsd: number, seedKey: string): SafeTerms {
   const local = makeRng(hashSeed(seedKey));
   return {
@@ -235,6 +252,7 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
       : null;
   const { conflictDisclosed, conflictNotes } = conflictFor();
   const { followOnDecision, followOnCheckUsd } = followOnFor(stage);
+  const companyName = makeCompanyName(used);
 
   const geography = rng.bool(0.72)
     ? scout.coverage.split(" · ")[0]
@@ -246,7 +264,7 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
   return {
     id: `dl_${String(i + 1).padStart(3, "0")}`,
     scoutId,
-    companyName: makeCompanyName(used),
+    companyName,
     sector,
     geography,
     stage,
@@ -257,6 +275,11 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     isLate: late,
     reviewingPartner: rng.pick(PARTNERS),
     partnerNotes: rng.pick(partnerNotesByStage[stage]),
+    pitch: pitchFor(companyName, sector),
+    infoRequest: null,
+    infoRequestedAt: null,
+    infoResponse: null,
+    submittedByScout: false,
     rightOfFirstLook: hasTicket,
     followOnParticipated: stage === "follow_on_watch" || stage === "exited",
     conflictDisclosed,

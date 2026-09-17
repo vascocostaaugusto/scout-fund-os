@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, RotateCcw, ShieldAlert } from "lucide-react";
+import { Check, X, RotateCcw, ShieldAlert, MessageCircleQuestion } from "lucide-react";
 import { scoutById } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
 import { formatDate, formatUsd, timeAgo } from "@/lib/format";
@@ -18,14 +18,21 @@ const PARTNERS = [
 const DEFAULT_TICKET = 25_000;
 
 export function PendingDecisions() {
-  const { deals, overrides, decideDeal, resetDeal } = useDealStore();
+  const { deals, overrides, decideDeal, resetDeal, requestInfo } = useDealStore();
   const [actingAs, setActingAs] = useState<string>(PARTNERS[0]);
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [tickets, setTickets] = useState<Record<string, number>>({});
+  const [askingId, setAskingId] = useState<string | null>(null);
+  const [question, setQuestion] = useState("");
 
+  // A deal with an unanswered question is parked with the scout, not
+  // waiting on a partner — it drops out of the queue until they reply.
   const pending = deals
     .filter((d) => d.stage === "submitted" || d.stage === "under_review")
+    .filter((d) => !(d.infoRequest && !d.infoResponse))
     .sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime());
+
+  const waitingOnScouts = deals.filter((d) => d.infoRequest && !d.infoResponse).length;
 
   const decidedThisSession = Object.entries(overrides)
     .filter(([, o]) => o.patch.stage === "approved" || o.patch.stage === "declined")
@@ -45,6 +52,7 @@ export function PendingDecisions() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <span className="text-xs text-muted-foreground">
           {pending.length} deal{pending.length === 1 ? "" : "s"} awaiting a decision
+          {waitingOnScouts > 0 ? ` · ${waitingOnScouts} parked with scouts` : ""}
         </span>
         <label className="flex items-center gap-2 text-xs text-muted-foreground">
           Acting as
@@ -83,12 +91,54 @@ export function PendingDecisions() {
                     {d.stage === "submitted" ? "Awaiting first look" : "Under review"}
                   </span>
                 </div>
+                <p className="border-l-2 border-border pl-3 text-xs leading-relaxed text-muted-foreground">
+                  {d.pitch}
+                </p>
+
                 {d.conflictDisclosed ? (
                   <div className="flex items-start gap-2 rounded-lg border border-critical/30 bg-critical/10 px-3 py-2 text-[11px] text-critical">
                     <ShieldAlert className="mt-0.5 size-3.5 shrink-0" />
                     <span>
                       <strong className="font-semibold">Conflict disclosed by scout —</strong> {d.conflictNotes}
                     </span>
+                  </div>
+                ) : null}
+
+                {d.infoResponse ? (
+                  <div className="flex flex-col gap-1 rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-[11px]">
+                    <span className="text-muted-foreground">You asked: {d.infoRequest}</span>
+                    <span className="text-foreground">
+                      <span className="text-success">Scout replied:</span> {d.infoResponse}
+                    </span>
+                  </div>
+                ) : null}
+
+                {askingId === d.id ? (
+                  <div className="flex flex-col gap-2 rounded-lg border border-warning/40 bg-warning/[0.06] p-3">
+                    <textarea
+                      value={question}
+                      onChange={(e) => setQuestion(e.target.value)}
+                      rows={2}
+                      autoFocus
+                      placeholder="What do you need from the scout before deciding?"
+                      className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary/50"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        disabled={question.trim().length < 4}
+                        onClick={() => {
+                          requestInfo(d.id, question.trim(), actingAs);
+                          setQuestion("");
+                          setAskingId(null);
+                        }}
+                      >
+                        Send to scout
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setAskingId(null)}>
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 ) : null}
                 <textarea
@@ -111,6 +161,18 @@ export function PendingDecisions() {
                     <span className="text-muted-foreground/60">(typical $10K–$50K — outliers OK)</span>
                   </label>
                   <div className="ml-auto flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-warning hover:bg-warning/10 hover:text-warning"
+                      onClick={() => {
+                        setAskingId(askingId === d.id ? null : d.id);
+                        setQuestion("");
+                      }}
+                    >
+                      <MessageCircleQuestion className="size-3.5" />
+                      Ask for info
+                    </Button>
                     <Button size="sm" variant="ghost" className="text-critical hover:bg-critical/10 hover:text-critical" onClick={() => decide(d.id, "declined")}>
                       <X className="size-3.5" />
                       Decline

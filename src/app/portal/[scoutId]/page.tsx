@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { scoutById } from "@/lib/data";
 import { PortalHeader } from "@/components/portal/portal-header";
 import { LiveScoutStats } from "@/components/portal/live-scout-stats";
+import { SubmitIntro } from "@/components/portal/submit-intro";
+import { NeedsYourReply } from "@/components/portal/needs-your-reply";
 import { MyDealsTable } from "@/components/portal/my-deals-table";
 import { MonthInReview } from "@/components/portal/month-in-review";
 import { ProgramPaperwork } from "@/components/portal/program-paperwork";
@@ -27,6 +29,10 @@ export default async function ScoutPortalDashboard({
         upside is marked using the same convention the fund uses for its own quarterly filing — not a contractual
         number, and it changes as deals re-mark. Actual carry is only ever realized on exit.
       </p>
+
+      <SubmitIntro scoutId={scoutId} />
+
+      <NeedsYourReply scoutId={scoutId} />
 
       <div className="flex flex-col gap-4">
         <span className="text-sm font-medium text-foreground">My deals</span>
