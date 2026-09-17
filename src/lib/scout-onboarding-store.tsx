@@ -13,7 +13,6 @@ const STORAGE_KEY = "scout-fund-os:scout-onboarding-overrides";
 
 interface ScoutOnboardingValue {
   scouts: Scout[];
-  completeTaxForm: (scoutId: string) => void;
   linkPayoutAccount: (scoutId: string) => void;
 }
 
@@ -41,13 +40,6 @@ export function ScoutOnboardingProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const completeTaxForm = useCallback(
-    (scoutId: string) => {
-      persist({ ...overrides, [scoutId]: { ...overrides[scoutId], taxFormStatus: "submitted" } });
-    },
-    [overrides, persist],
-  );
-
   const linkPayoutAccount = useCallback(
     (scoutId: string) => {
       persist({ ...overrides, [scoutId]: { ...overrides[scoutId], payoutAccountStatus: "linked" } });
@@ -61,8 +53,8 @@ export function ScoutOnboardingProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ scouts: mergedScouts, completeTaxForm, linkPayoutAccount }),
-    [mergedScouts, completeTaxForm, linkPayoutAccount],
+    () => ({ scouts: mergedScouts, linkPayoutAccount }),
+    [mergedScouts, linkPayoutAccount],
   );
 
   return <ScoutOnboardingContext.Provider value={value}>{children}</ScoutOnboardingContext.Provider>;

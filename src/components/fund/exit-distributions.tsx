@@ -21,7 +21,7 @@ export function ExitDistributions() {
       const exitValueUsd = checkSizeUsd * multiple;
       const profitUsd = Math.max(exitValueUsd - checkSizeUsd, 0);
       const carryOwedUsd = profitUsd * CARRY_RATE * SCOUT_CARRY_RATE_ASSUMPTION;
-      const paperworkReady = scout?.taxFormStatus === "submitted" && scout?.payoutAccountStatus === "linked";
+      const paperworkReady = scout?.payoutAccountStatus === "linked";
       return { deal: d, scout, checkSizeUsd, multiple, exitValueUsd, profitUsd, carryOwedUsd, paperworkReady };
     });
 
@@ -80,14 +80,8 @@ export function ExitDistributions() {
             ) : (
               <div className="flex items-center gap-2 rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-[11px] text-warning">
                 <AlertTriangle className="size-3.5 shrink-0" />
-                Blocked — {scout?.name} is missing{" "}
-                {[
-                  scout?.taxFormStatus !== "submitted" ? "a tax form" : null,
-                  scout?.payoutAccountStatus !== "linked" ? "a linked payout account" : null,
-                ]
-                  .filter(Boolean)
-                  .join(" and ")}
-                . Can&apos;t distribute until that&apos;s on file.
+                Blocked — {scout?.name} hasn&apos;t linked a payout account. Can&apos;t distribute until
+                that&apos;s on file.
               </div>
             )
           ) : null}

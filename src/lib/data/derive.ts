@@ -179,7 +179,7 @@ export function computeScoutsBlockedForPayout(deals: Deal[], scouts: Scout[]): n
   return new Set(
     exitedDeals
       .map((d) => scouts.find((s) => s.id === d.scoutId)!)
-      .filter((s) => s.taxFormStatus === "not_submitted" || s.payoutAccountStatus === "not_linked")
+      .filter((s) => s.payoutAccountStatus === "not_linked")
       .map((s) => s.id),
   ).size;
 }

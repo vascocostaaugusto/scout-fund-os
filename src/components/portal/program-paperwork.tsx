@@ -6,11 +6,11 @@ import { formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 
 export function ProgramPaperwork({ scoutId }: { scoutId: string }) {
-  const { scouts, completeTaxForm, linkPayoutAccount } = useScoutOnboarding();
+  const { scouts, linkPayoutAccount } = useScoutOnboarding();
   const scout = scouts.find((s) => s.id === scoutId);
   if (!scout) return null;
 
-  const allDone = scout.taxFormStatus === "submitted" && scout.payoutAccountStatus === "linked";
+  const allDone = scout.payoutAccountStatus === "linked";
 
   return (
     <div className="rounded-xl border border-border bg-card p-5">
@@ -31,23 +31,6 @@ export function ProgramPaperwork({ scoutId }: { scoutId: string }) {
             </div>
           </div>
           <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">On file</span>
-        </div>
-
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/40 px-3 py-2.5">
-          <div className="flex items-center gap-2.5">
-            <FileCheck2 className={`size-3.5 shrink-0 ${scout.taxFormStatus === "submitted" ? "text-success" : "text-warning"}`} />
-            <div className="flex flex-col">
-              <span className="text-xs font-medium text-foreground">Tax form (W-9 / W-8BEN)</span>
-              <span className="text-[11px] text-muted-foreground">Required to receive any carry payout</span>
-            </div>
-          </div>
-          {scout.taxFormStatus === "submitted" ? (
-            <span className="rounded-full bg-success/15 px-2 py-0.5 text-[10px] font-medium text-success">On file</span>
-          ) : (
-            <Button size="sm" variant="outline" onClick={() => completeTaxForm(scoutId)}>
-              Complete now
-            </Button>
-          )}
         </div>
 
         <div className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/40 px-3 py-2.5">

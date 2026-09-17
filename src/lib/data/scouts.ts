@@ -90,11 +90,10 @@ export const scouts: ScoutType[] = SEEDS.map((seed, i) => ({
   // scouting can't start before it, so it's always on file for every active
   // scout, dated to the day they joined.
   agreementSignedAt: seed.joinedAt,
-  // Tax form (W-9/W-8BEN) and payout bank details are a separate step from
-  // onboarding — real people procrastinate on paperwork with no immediate
-  // payoff, so a realistic minority haven't filed either yet. This is what
-  // blocks a carry payout on exit even after the deal itself has closed.
-  taxFormStatus: onboardingRng.bool(0.82) ? "submitted" : "not_submitted",
+  // Payout bank details are a separate step from onboarding — real people
+  // procrastinate on paperwork with no immediate payoff, so a realistic
+  // minority haven't done it yet. This is what blocks a carry payout on
+  // exit even after the deal itself has closed.
   payoutAccountStatus: onboardingRng.bool(0.78) ? "linked" : "not_linked",
 }));
 

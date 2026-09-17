@@ -27,8 +27,7 @@ export type ScoutStatus = "active" | "alumni";
 
 // Onboarding paperwork every scout needs on file before capital can be
 // deployed on their intro (agreement) or before carry can ever be paid out
-// to them (tax form, payout account) — see BLOCKERS #11.
-export type TaxFormStatus = "not_submitted" | "submitted";
+// to them (payout account) — see BLOCKERS #11 and #16.
 export type PayoutAccountStatus = "not_linked" | "linked";
 
 export interface Scout {
@@ -45,7 +44,6 @@ export interface Scout {
   status: ScoutStatus;
   joinedAt: string; // ISO date
   agreementSignedAt: string; // ISO date — scout participation & carry agreement
-  taxFormStatus: TaxFormStatus; // W-9 / W-8BEN on file
   payoutAccountStatus: PayoutAccountStatus; // bank details on file for carry payout
 }
 

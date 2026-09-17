@@ -306,3 +306,25 @@ just a label baked into seed data.
   scout-sourcing reward, so it shouldn't draw down the same $6M ceiling
   the Treasury panel tracks. It does not appear in the Treasury panel's
   "committed" figure for that reason.
+
+## 16. Dropping the tax form from scout onboarding
+**User decision:** Remove it entirely — from the scout-facing terms document
+and from the app.
+**Context:** The paperwork gate was modelled as two items, a tax form
+(labelled W-9 / W-8BEN) and a linked payout account. The W-9 and W-8BEN are
+US IRS forms, which is the wrong instrument for a European fund paying
+European scouts — so the field was carrying US-specific detail that didn't
+fit the program it was describing.
+**What changed:**
+- `taxFormStatus` and `TaxFormStatus` removed from the Scout model, the
+  seed generator, the onboarding store, the Scout Portal's paperwork panel,
+  and the Fund Portal's blocked-payout message.
+- The carry payout gate still exists — it now turns on the linked payout
+  account alone, which is the part that's jurisdiction-neutral and still
+  genuinely blocks a wire.
+- The program brief and architecture note were updated to match, so all
+  four surfaces describe the same requirement.
+**Worth noting:** a real fund does need tax information before paying
+someone. This removes the modelled control rather than solving it, on the
+basis that naming the wrong forms was worse than leaving it to the
+participation agreement.
