@@ -33,11 +33,11 @@ export default function FundPortalPage() {
         description="Where the fund actually works the pipeline — decide on pending memos, browse the system of record, and see what scouts have been told."
       />
 
+      <PortalIndex />
+
       <MorningInbox />
 
       <TreasuryPanel />
-
-      <PortalIndex />
 
       <Section
         id="pending-decisions"
@@ -99,7 +99,7 @@ export default function FundPortalPage() {
         <DealTable />
       </Section>
 
-      <div id="comms" className="grid scroll-mt-6 gap-4 lg:grid-cols-3">
+      <div id="comms" className="grid scroll-mt-20 gap-4 lg:grid-cols-3">
         <Section title="Notifications" subtitle="Simulated — the real integration posts to Slack.">
           <NotificationFeed limit={12} />
         </Section>

@@ -1,19 +1,20 @@
 "use client";
 
-// The Fund Portal is one long working page. This is its index: every
-// section, what's waiting in it right now, and a click to jump straight
-// there — so a partner opening the portal sees where the work is instead
-// of scrolling to find out.
+// The Fund Portal is one long working page, so its index sticks to the top
+// of the scroll container and stays there. That constrains the design: at
+// three rows of tiles it would eat a third of the viewport permanently, so
+// it collapses to a single scrollable row — count, label, and a green
+// outline on anything with work waiting.
 import {
   Gavel,
   FileSignature,
   TrendingUp,
+  Boxes,
   CircleDollarSign,
   LineChart,
   UserPlus,
   Table2,
   Bell,
-  Boxes,
 } from "lucide-react";
 import { useLiveStats } from "@/lib/use-live-stats";
 import { useCandidateStore } from "@/lib/candidate-store";
@@ -34,115 +35,49 @@ export function PortalIndex() {
   const openCandidates = candidates.filter((c) => c.stage !== "signed" && c.stage !== "declined").length;
 
   const items = [
-    {
-      href: "#pending-decisions",
-      icon: Gavel,
-      label: "Pending decisions",
-      count: pendingDecisions,
-      sub: "memos awaiting a first look",
-      urgent: pendingDecisions > 0,
-    },
-    {
-      href: "#legal-closing",
-      icon: FileSignature,
-      label: "Legal & closing",
-      count: closingQueueCount,
-      sub: "approved, not yet wired",
-      urgent: closingQueueCount > 0,
-    },
-    {
-      href: "#follow-on",
-      icon: TrendingUp,
-      label: "Follow-on decisions",
-      count: openFollowOns,
-      sub: "next rounds awaiting a call",
-      urgent: openFollowOns > 0,
-    },
-    {
-      href: "#portfolio",
-      icon: Boxes,
-      label: "Portfolio outcomes",
-      count: liveCompanies,
-      sub: "funded companies still live",
-      urgent: false,
-    },
-    {
-      href: "#exit-distributions",
-      icon: CircleDollarSign,
-      label: "Exit distributions",
-      count: unpaidExits,
-      sub: "carry not yet paid out",
-      urgent: unpaidExits > 0,
-    },
-    {
-      href: "#scout-recruiting",
-      icon: UserPlus,
-      label: "Scout recruiting",
-      count: openCandidates,
-      sub: "candidates in the pipeline",
-      urgent: false,
-    },
-    {
-      href: "#deployment-pacing",
-      icon: LineChart,
-      label: "Deployment pacing",
-      count: null,
-      sub: "vs. the 24-month target",
-      urgent: false,
-    },
-    {
-      href: "#system-of-record",
-      icon: Table2,
-      label: "System of record",
-      count: totalMemos,
-      sub: "every deal, searchable",
-      urgent: false,
-    },
-    {
-      href: "#comms",
-      icon: Bell,
-      label: "Notifications & reporting",
-      count: null,
-      sub: "scout emails, LP filings",
-      urgent: false,
-    },
+    { href: "#pending-decisions", icon: Gavel, label: "Pending decisions", count: pendingDecisions, urgent: pendingDecisions > 0 },
+    { href: "#legal-closing", icon: FileSignature, label: "Legal & closing", count: closingQueueCount, urgent: closingQueueCount > 0 },
+    { href: "#follow-on", icon: TrendingUp, label: "Follow-on", count: openFollowOns, urgent: openFollowOns > 0 },
+    { href: "#portfolio", icon: Boxes, label: "Portfolio", count: liveCompanies, urgent: false },
+    { href: "#exit-distributions", icon: CircleDollarSign, label: "Exits", count: unpaidExits, urgent: unpaidExits > 0 },
+    { href: "#scout-recruiting", icon: UserPlus, label: "Recruiting", count: openCandidates, urgent: false },
+    { href: "#deployment-pacing", icon: LineChart, label: "Pacing", count: null, urgent: false },
+    { href: "#system-of-record", icon: Table2, label: "All deals", count: totalMemos, urgent: false },
+    { href: "#comms", icon: Bell, label: "Reporting", count: null, urgent: false },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-      {items.map((item) => {
-        const Icon = item.icon;
-        return (
-          <a
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "group flex items-center gap-3 rounded-xl border bg-card px-3 py-2.5 transition-colors",
-              item.urgent ? "border-primary/40 hover:border-primary" : "border-border hover:border-primary/40",
-            )}
-          >
-            <div
+    <div className="sticky top-0 z-20 -mx-6 border-b border-border bg-background/85 px-6 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+      <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <a
+              key={item.href}
+              href={item.href}
               className={cn(
-                "flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors",
+                "group flex shrink-0 items-center gap-2 rounded-lg border px-2.5 py-1.5 transition-colors",
                 item.urgent
-                  ? "bg-primary/15 text-primary"
-                  : "bg-secondary/60 text-muted-foreground group-hover:text-foreground",
+                  ? "border-primary/40 bg-primary/[0.07] hover:border-primary"
+                  : "border-border bg-card hover:border-primary/40",
               )}
             >
-              <Icon className="size-4" />
-            </div>
-            <div className="flex min-w-0 flex-col">
-              <div className="flex items-baseline gap-1.5">
-                {item.count !== null ? (
-                  <span className="text-sm font-semibold tabular-nums text-foreground">{item.count}</span>
-                ) : null}
-                <span className="truncate text-xs font-medium text-foreground">{item.label}</span>
-              </div>
-              <span className="truncate text-[11px] text-muted-foreground">{item.sub}</span>
-            </div>
-          </a>
-        );
-      })}
+              <Icon
+                className={cn(
+                  "size-3.5 shrink-0 transition-colors",
+                  item.urgent ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
+                )}
+              />
+              {item.count !== null ? (
+                <span className="text-xs font-semibold tabular-nums text-foreground">{item.count}</span>
+              ) : null}
+              <span className="whitespace-nowrap text-xs text-muted-foreground group-hover:text-foreground">
+                {item.label}
+              </span>
+            </a>
+          );
+        })}
+      </div>
     </div>
   );
 }

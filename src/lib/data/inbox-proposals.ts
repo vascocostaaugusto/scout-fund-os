@@ -23,6 +23,7 @@ export interface InboxProposal {
   kind: ProposalKind;
   summary: string; // the change being proposed, in plain language
   exitMultiple?: number;
+  scoutName?: string; // for intros the system can't file itself — who to nudge
   confidence: "high" | "needs review";
 }
 
@@ -105,7 +106,8 @@ proposals.push({
   receivedAt: at(3),
   dealId: null,
   kind: "new_intro",
-  summary: "Create a new memo for Kestrel, sourced by Priya Nair",
+  summary: "Kestrel isn't in the pipeline yet — it needs a memo from Priya",
+  scoutName: "Priya Nair",
   confidence: "needs review",
 });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MessageSquare, Check, X, RotateCcw, Sparkles } from "lucide-react";
+import { Mail, MessageSquare, Check, X, RotateCcw, Sparkles, Send } from "lucide-react";
 import { INBOX_LAST_RUN } from "@/lib/data";
 import type { InboxProposal } from "@/lib/data";
 import { useInboxStore } from "@/lib/inbox-store";
@@ -74,25 +74,35 @@ export function MorningInbox() {
 
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs text-foreground">
-                <span className="text-muted-foreground">Proposed:</span> {p.summary}
+                <span className="text-muted-foreground">
+                  {p.kind === "new_intro" ? "Not in the pipeline:" : "Proposed:"}
+                </span>{" "}
+                {p.summary}
               </span>
               <div className="ml-auto flex gap-1.5">
                 <Button size="sm" variant="ghost" onClick={() => resolve(p.id, "dismissed")}>
                   <X className="size-3.5" />
                   Dismiss
                 </Button>
-                <Button size="sm" onClick={() => confirm(p)} disabled={p.kind === "new_intro"}>
-                  <Check className="size-3.5" />
-                  {p.kind === "new_intro" ? "Needs the intake form" : "Confirm"}
-                </Button>
+                {p.kind === "new_intro" ? (
+                  <Button size="sm" onClick={() => confirm(p)}>
+                    <Send className="size-3.5" />
+                    Ask {p.scoutName?.split(" ")[0] ?? "the scout"} to submit it
+                  </Button>
+                ) : (
+                  <Button size="sm" onClick={() => confirm(p)}>
+                    <Check className="size-3.5" />
+                    Confirm
+                  </Button>
+                )}
               </div>
             </div>
 
             {p.kind === "new_intro" ? (
               <span className="text-[11px] text-muted-foreground/70">
-                Creating a record needs fields an email doesn&apos;t reliably carry — sector, geography, a
-                conflict declaration. The scout submits it from their own portal instead, so the
-                disclosure comes from the person making it.
+                Filing it from this email would guess at sector, geography and whether there&apos;s a
+                conflict. The scout submits it from their portal so the disclosure comes from the person
+                making it.
               </span>
             ) : null}
           </div>
@@ -105,9 +115,16 @@ export function MorningInbox() {
             <div key={proposal.id} className="flex items-center justify-between gap-3 text-[11px]">
               <span className="truncate text-muted-foreground">
                 <span className={resolution === "confirmed" ? "text-success" : "text-muted-foreground"}>
-                  {resolution === "confirmed" ? "Applied" : "Dismissed"}
+                  {resolution === "dismissed"
+                    ? "Dismissed"
+                    : proposal.kind === "new_intro"
+                      ? "Nudge sent"
+                      : "Applied"}
                 </span>{" "}
-                — {proposal.summary}
+                —{" "}
+                {resolution === "confirmed" && proposal.kind === "new_intro"
+                  ? `${proposal.scoutName ?? "The scout"} asked to submit ${proposal.subject.replace(/^Intro — /, "").replace(/ \(.*\)$/, "")} through the portal`
+                  : proposal.summary}
               </span>
               <button
                 type="button"
