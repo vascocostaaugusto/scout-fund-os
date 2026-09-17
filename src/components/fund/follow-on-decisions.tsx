@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TrendingUp, X } from "lucide-react";
 import { scoutById } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
+import { useDecisionOwner } from "@/lib/decision-owner-store";
 import { formatUsd } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +12,7 @@ const DEFAULT_FOLLOW_ON = 150_000;
 
 export function FollowOnDecisions() {
   const { deals, decideFollowOn } = useDealStore();
+  const { owner } = useDecisionOwner();
   const [checks, setChecks] = useState<Record<string, number>>({});
 
   const undecided = deals.filter((d) => d.stage === "follow_on_watch" && d.followOnDecision === "undecided");
@@ -55,12 +57,12 @@ export function FollowOnDecisions() {
                       size="sm"
                       variant="ghost"
                       className="text-critical hover:bg-critical/10 hover:text-critical"
-                      onClick={() => decideFollowOn(d.id, "passed")}
+                      onClick={() => decideFollowOn(d.id, "passed", owner)}
                     >
                       <X className="size-3.5" />
                       Pass
                     </Button>
-                    <Button size="sm" onClick={() => decideFollowOn(d.id, "participating", checks[d.id] ?? DEFAULT_FOLLOW_ON)}>
+                    <Button size="sm" onClick={() => decideFollowOn(d.id, "participating", owner, checks[d.id] ?? DEFAULT_FOLLOW_ON)}>
                       <TrendingUp className="size-3.5" />
                       Follow on
                     </Button>

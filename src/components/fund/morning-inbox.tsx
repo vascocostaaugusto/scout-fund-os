@@ -5,6 +5,7 @@ import { INBOX_LAST_RUN } from "@/lib/data";
 import type { InboxProposal } from "@/lib/data";
 import { useInboxStore } from "@/lib/inbox-store";
 import { useDealStore } from "@/lib/deal-store";
+import { useDecisionOwner } from "@/lib/decision-owner-store";
 import { formatDateTime, timeAgo } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -12,13 +13,14 @@ import { cn } from "@/lib/utils";
 export function MorningInbox() {
   const { pending, resolved, resolve, reopen } = useInboxStore();
   const { flagFollowOnWatch, markExited, writeOff } = useDealStore();
+  const { owner } = useDecisionOwner();
 
   function confirm(p: InboxProposal) {
     // Apply the proposed change to the real record, then mark it resolved.
     if (p.dealId) {
-      if (p.kind === "write_off") writeOff(p.dealId, `Written off — ${p.subject}.`);
-      if (p.kind === "mark_exited") markExited(p.dealId, p.exitMultiple ?? 1, `Exit confirmed — ${p.subject}.`);
-      if (p.kind === "follow_on_watch") flagFollowOnWatch(p.dealId, `Next round signaled — ${p.subject}.`);
+      if (p.kind === "write_off") writeOff(p.dealId, `Written off — ${p.subject}.`, owner);
+      if (p.kind === "mark_exited") markExited(p.dealId, p.exitMultiple ?? 1, owner, `Exit confirmed — ${p.subject}.`);
+      if (p.kind === "follow_on_watch") flagFollowOnWatch(p.dealId, owner, `Next round signaled — ${p.subject}.`);
     }
     resolve(p.id, "confirmed");
   }

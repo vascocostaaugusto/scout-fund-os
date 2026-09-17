@@ -4,12 +4,14 @@ import { AlertTriangle, CircleDollarSign } from "lucide-react";
 import { CARRY_RATE, SCOUT_CARRY_RATE_ASSUMPTION } from "@/lib/data";
 import { markMultipleFor } from "@/lib/data/derive";
 import { useDealStore } from "@/lib/deal-store";
+import { useDecisionOwner } from "@/lib/decision-owner-store";
 import { useScoutOnboarding } from "@/lib/scout-onboarding-store";
 import { formatUsd, formatDate } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 
 export function ExitDistributions() {
   const { deals, markCarryPaid } = useDealStore();
+  const { owner } = useDecisionOwner();
   const { scouts } = useScoutOnboarding();
 
   const exited = deals
@@ -73,7 +75,7 @@ export function ExitDistributions() {
 
           {!deal.carryPaidAt ? (
             paperworkReady ? (
-              <Button size="sm" className="self-start" onClick={() => markCarryPaid(deal.id)}>
+              <Button size="sm" className="self-start" onClick={() => markCarryPaid(deal.id, owner)}>
                 <CircleDollarSign className="size-3.5" />
                 Mark carry distribution paid
               </Button>

@@ -16,6 +16,7 @@ import { LpReportingStatus } from "@/components/fund/lp-reporting-status";
 import { PacingChart } from "@/components/charts/pacing-chart";
 import { PortalIndex } from "@/components/fund/portal-index";
 import { MorningInbox } from "@/components/fund/morning-inbox";
+import { DecisionOwner } from "@/components/fund/decision-owner";
 import { totalMemos, notifications } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -34,6 +35,8 @@ export default function FundPortalPage() {
       />
 
       <PortalIndex />
+
+      <DecisionOwner />
 
       <MorningInbox />
 

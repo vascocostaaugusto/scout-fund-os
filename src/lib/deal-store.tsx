@@ -49,11 +49,11 @@ interface DealStoreValue {
   markExecuted: (dealId: string) => void;
   initiateWire: (dealId: string) => void;
   confirmWire: (dealId: string) => void;
-  markCarryPaid: (dealId: string) => void;
-  decideFollowOn: (dealId: string, decision: "participating" | "passed", checkUsd?: number) => void;
-  flagFollowOnWatch: (dealId: string, note?: string) => void;
-  markExited: (dealId: string, multiple: number, note?: string) => void;
-  writeOff: (dealId: string, note: string) => void;
+  markCarryPaid: (dealId: string, partner: string) => void;
+  decideFollowOn: (dealId: string, decision: "participating" | "passed", partner: string, checkUsd?: number) => void;
+  flagFollowOnWatch: (dealId: string, partner: string, note?: string) => void;
+  markExited: (dealId: string, multiple: number, partner: string, note?: string) => void;
+  writeOff: (dealId: string, note: string, partner: string) => void;
 }
 
 const DealStoreContext = createContext<DealStoreValue | null>(null);
@@ -293,18 +293,20 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
   );
 
   const markCarryPaid = useCallback(
-    (dealId: string) => {
+    (dealId: string, partner: string) => {
       applyPatch(dealId, {
         carryPaidAt: REFERENCE_NOW.toISOString(),
-        partnerNotes: "Carry distribution wired to scout.",
+        reviewingPartner: partner,
+        partnerNotes: `Carry distribution wired to scout by ${partner}.`,
       });
     },
     [applyPatch],
   );
 
   const decideFollowOn = useCallback(
-    (dealId: string, decision: "participating" | "passed", checkUsd?: number) => {
+    (dealId: string, decision: "participating" | "passed", partner: string, checkUsd?: number) => {
       applyPatch(dealId, {
+        reviewingPartner: partner,
         followOnDecision: decision,
         followOnCheckUsd: decision === "participating" ? (checkUsd ?? 150_000) : null,
         partnerNotes:
@@ -318,9 +320,10 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
 
   // ---- Portfolio outcomes: what happens to a company after the check ------
   const flagFollowOnWatch = useCallback(
-    (dealId: string, note?: string) => {
+    (dealId: string, partner: string, note?: string) => {
       applyPatch(dealId, {
         stage: "follow_on_watch" as DealStage,
+        reviewingPartner: partner,
         followOnParticipated: true,
         outcomeNote: note || null,
         partnerNotes: note || "Flagged for follow-on watch — next round signaled.",
@@ -330,9 +333,10 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
   );
 
   const markExited = useCallback(
-    (dealId: string, multiple: number, note?: string) => {
+    (dealId: string, multiple: number, partner: string, note?: string) => {
       applyPatch(dealId, {
         stage: "exited" as DealStage,
+        reviewingPartner: partner,
         exitMultiple: multiple,
         outcomeNote: note || null,
         partnerNotes: note || `Exited at ${multiple}x.`,
@@ -342,9 +346,10 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
   );
 
   const writeOff = useCallback(
-    (dealId: string, note: string) => {
+    (dealId: string, note: string, partner: string) => {
       applyPatch(dealId, {
         stage: "dead" as DealStage,
+        reviewingPartner: partner,
         exitMultiple: 0,
         outcomeNote: note,
         partnerNotes: note || "Written off — company ceased operations.",

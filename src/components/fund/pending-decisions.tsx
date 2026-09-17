@@ -4,22 +4,15 @@ import { useState } from "react";
 import { Check, X, RotateCcw, ShieldAlert, MessageCircleQuestion } from "lucide-react";
 import { scoutById } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
+import { useDecisionOwner } from "@/lib/decision-owner-store";
 import { formatDate, formatUsd, timeAgo } from "@/lib/format";
 import { Button } from "@/components/ui/button";
-
-const PARTNERS = [
-  "Nils Haverkamp",
-  "Beatriz Coelho",
-  "Simon Whitfield",
-  "Katarzyna Wolski",
-  "Marcus Lindqvist",
-] as const;
 
 const DEFAULT_TICKET = 25_000;
 
 export function PendingDecisions() {
   const { deals, overrides, decideDeal, resetDeal, requestInfo } = useDealStore();
-  const [actingAs, setActingAs] = useState<string>(PARTNERS[0]);
+  const { owner: actingAs } = useDecisionOwner();
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [tickets, setTickets] = useState<Record<string, number>>({});
   const [askingId, setAskingId] = useState<string | null>(null);
@@ -54,20 +47,9 @@ export function PendingDecisions() {
           {pending.length} deal{pending.length === 1 ? "" : "s"} awaiting a decision
           {waitingOnScouts > 0 ? ` · ${waitingOnScouts} parked with scouts` : ""}
         </span>
-        <label className="flex items-center gap-2 text-xs text-muted-foreground">
-          Acting as
-          <select
-            value={actingAs}
-            onChange={(e) => setActingAs(e.target.value)}
-            className="rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground"
-          >
-            {PARTNERS.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))}
-          </select>
-        </label>
+        <span className="text-xs text-muted-foreground">
+          Deciding as <span className="font-medium text-foreground">{actingAs}</span>
+        </span>
       </div>
 
       {pending.length === 0 ? (

@@ -1,5 +1,6 @@
 import { makeRng } from "./prng";
 import { scouts } from "./scouts";
+import { PARTNERS } from "./partners";
 import type { Deal, DealStage, FollowOnDecision, LegalDocStatus, SafeTerms, WireStatus } from "./types";
 
 const rng = makeRng(3333);
@@ -30,14 +31,6 @@ const GEOGRAPHIES = [
   "Austria & CEE",
   "Southern Europe",
   "Pan-European",
-] as const;
-
-const PARTNERS = [
-  "Nils Haverkamp",
-  "Beatriz Coelho",
-  "Simon Whitfield",
-  "Katarzyna Wolski",
-  "Marcus Lindqvist",
 ] as const;
 
 const NAME_PREFIX = [

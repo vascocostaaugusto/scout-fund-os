@@ -11,6 +11,7 @@ import { DealStoreProvider } from "@/lib/deal-store";
 import { ScoutOnboardingProvider } from "@/lib/scout-onboarding-store";
 import { CandidateStoreProvider } from "@/lib/candidate-store";
 import { InboxStoreProvider } from "@/lib/inbox-store";
+import { DecisionOwnerProvider } from "@/lib/decision-owner-store";
 
 // Archivo — the closest Google-hosted match to the Shapers wordmark: a
 // geometric grotesque with flat terminals and a straight-legged R. Used for
@@ -51,8 +52,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <ScoutOnboardingProvider>
                 <CandidateStoreProvider>
                   <InboxStoreProvider>
-                    <AppShell>{children}</AppShell>
-                    <LiveActivityToasts />
+                    <DecisionOwnerProvider>
+                      <AppShell>{children}</AppShell>
+                      <LiveActivityToasts />
+                    </DecisionOwnerProvider>
                   </InboxStoreProvider>
                 </CandidateStoreProvider>
               </ScoutOnboardingProvider>

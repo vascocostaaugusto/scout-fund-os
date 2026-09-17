@@ -10,6 +10,7 @@ import { useState } from "react";
 import { TrendingUp, Trophy, Skull, ChevronDown } from "lucide-react";
 import { scoutById } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
+import { useDecisionOwner } from "@/lib/decision-owner-store";
 import { formatUsd, timeAgo } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ const DEFAULT_EXIT_MULTIPLE = 3;
 
 export function PortfolioOutcomes() {
   const { deals, flagFollowOnWatch, markExited, writeOff } = useDealStore();
+  const { owner } = useDecisionOwner();
   const [openId, setOpenId] = useState<string | null>(null);
   const [mode, setMode] = useState<"exit" | "writeoff" | null>(null);
   const [multiple, setMultiple] = useState<number>(DEFAULT_EXIT_MULTIPLE);
@@ -42,8 +44,8 @@ export function PortfolioOutcomes() {
   }
 
   function submit(dealId: string) {
-    if (mode === "exit") markExited(dealId, multiple, note.trim() || undefined);
-    if (mode === "writeoff") writeOff(dealId, note.trim() || "Company ceased operations.");
+    if (mode === "exit") markExited(dealId, multiple, owner, note.trim() || undefined);
+    if (mode === "writeoff") writeOff(dealId, note.trim() || "Company ceased operations.", owner);
     close();
   }
 
@@ -86,7 +88,7 @@ export function PortfolioOutcomes() {
 
                 <div className="flex shrink-0 flex-wrap gap-1.5">
                   {d.stage === "check_written" ? (
-                    <Button size="sm" variant="ghost" onClick={() => flagFollowOnWatch(d.id)}>
+                    <Button size="sm" variant="ghost" onClick={() => flagFollowOnWatch(d.id, owner)}>
                       <TrendingUp className="size-3.5" />
                       Raising again
                     </Button>
