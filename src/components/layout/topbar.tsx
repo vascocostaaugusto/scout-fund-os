@@ -42,7 +42,7 @@ export function Topbar() {
           </SheetContent>
         </Sheet>
         <div className="flex items-center gap-2 text-sm">
-          <span className="font-medium text-foreground">{title}</span>
+          <span className="font-display font-semibold tracking-[-0.01em] text-foreground">{title}</span>
           <span className="hidden text-muted-foreground/50 sm:inline">/</span>
           <span className="hidden text-muted-foreground sm:inline">Scout Fund OS</span>
         </div>

@@ -48,9 +48,11 @@ export function SummaryStrip() {
         <div key={s.label} className="flex flex-col gap-2.5 bg-card px-5 py-4">
           <div className="flex items-center gap-2 text-muted-foreground">
             <s.icon className="size-3.5" />
-            <span className="text-xs font-medium uppercase tracking-wide">{s.label}</span>
+            <span className="text-[11px] font-medium uppercase tracking-[0.1em]">{s.label}</span>
           </div>
-          <div className="text-2xl font-semibold tabular-nums text-foreground">{s.value}</div>
+          <div className="font-display text-2xl font-bold tabular-nums tracking-[-0.02em] text-foreground">
+            {s.value}
+          </div>
           <div className="text-xs text-muted-foreground">{s.sub}</div>
         </div>
       ))}

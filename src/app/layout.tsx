@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,9 +12,13 @@ import { ScoutOnboardingProvider } from "@/lib/scout-onboarding-store";
 import { CandidateStoreProvider } from "@/lib/candidate-store";
 import { InboxStoreProvider } from "@/lib/inbox-store";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Archivo — the closest Google-hosted match to the Shapers wordmark: a
+// geometric grotesque with flat terminals and a straight-legged R. Used for
+// both UI text and display, with weight and tracking doing the work.
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const geistMono = Geist_Mono({
@@ -33,7 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${archivo.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full">
         <ThemeProvider

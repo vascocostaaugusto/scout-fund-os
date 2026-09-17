@@ -17,9 +17,11 @@ export function StatTile({ label, value, delta, deltaTone = "neutral", hint, emp
         emphasis ? "border-primary/40 bg-accent/50" : "border-border bg-card",
       )}
     >
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <span className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground">{label}</span>
       <div className="flex items-baseline gap-2">
-        <span className="text-2xl font-semibold tabular-nums text-foreground">{value}</span>
+        <span className="font-display text-2xl font-bold tabular-nums tracking-[-0.02em] text-foreground">
+          {value}
+        </span>
         {delta ? (
           <span
             className={cn(

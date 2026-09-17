@@ -24,8 +24,8 @@ export function DetailHeader({ icon: Icon, title, tagline, description }: Detail
           <Icon className="size-5" />
         </div>
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-medium uppercase tracking-wider text-primary">{tagline}</span>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+          <span className="brand-eyebrow text-primary">{tagline}</span>
+          <h1 className="text-2xl text-foreground">{title}</h1>
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">{description}</p>
         </div>
       </div>

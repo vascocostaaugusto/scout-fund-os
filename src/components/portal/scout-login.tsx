@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Compass, Check } from "lucide-react";
+import { Check } from "lucide-react";
+import { ShapersWordmark } from "@/components/brand/shapers-wordmark";
 import { scouts } from "@/lib/data";
 import { TierBadge } from "@/components/network/tier-badge";
 import { Button } from "@/components/ui/button";
@@ -35,12 +36,10 @@ export function ScoutLogin() {
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-8 px-6 py-16">
-      <div className="flex flex-col items-center gap-3 text-center">
-        <div className="flex size-12 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
-          <Compass className="size-6" />
-        </div>
+      <div className="flex flex-col items-center gap-4 text-center">
+        <ShapersWordmark className="text-3xl text-foreground" />
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Scout Portal</h1>
+          <h1 className="text-xl text-foreground">Scout Portal</h1>
           <p className="mt-1 text-sm text-muted-foreground">Shapers Fund II · Cohort 1 (2025–26)</p>
         </div>
       </div>
