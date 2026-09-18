@@ -47,7 +47,7 @@ proposal:
 7. **Success Dashboard** — the headline "proof it earns its place" chart
    (most visually prominent element in the app, per the brief), plus
    near/medium/long-term tabs with 5 more charts (scout activity, SLA
-   trend, coverage tag cloud, follow-on funnel, cohort retention).
+   trend, coverage tag cloud, follow-on funnel, retention).
 8. **Risk & Compliance** — a 4-item risk register table plus a
    likelihood × impact severity matrix.
 
@@ -76,7 +76,7 @@ simulation layer — all running on one internally-consistent seeded dataset
 
 Full log in `BLOCKERS.md`. Summary: every "blocker" was a genuinely
 ambiguous requirement (exact dollar figures, funnel shape, the carry-vs-
-capital methodology, retention chart with only one real cohort, deciding
+capital methodology, retention with no second intake to compare, deciding
 against real people's names). Each was resolved with a documented,
 defensible assumption and the build kept moving — none of them stopped
 work or required a guess that isn't traceable back to reasoning in that file.

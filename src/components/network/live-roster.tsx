@@ -1,7 +1,7 @@
 "use client";
 
 import { useLiveStats } from "@/lib/use-live-stats";
-import { scouts, totalScouts, activeScouts, scoutCountByTier } from "@/lib/data";
+import { scouts, totalScouts, scoutCountByTier } from "@/lib/data";
 import { StatTile } from "@/components/detail/stat-tile";
 import { TierBadge } from "@/components/network/tier-badge";
 import {
@@ -15,11 +15,11 @@ import {
 import { formatUsd, formatUsdCompact, formatPct } from "@/lib/format";
 
 export function LiveRosterStats() {
-  const { repeatFunderScouts, capitalDeployedUsd } = useLiveStats();
+  const { repeatFunderScouts, capitalDeployedUsd, activeSubmitters } = useLiveStats();
 
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-      <StatTile label="Active scouts" value={`${activeScouts}`} hint={`of ${totalScouts} total in Cohort 1`} />
+      <StatTile label="Still submitting" value={`${activeSubmitters}`} hint={`of ${totalScouts} scouts, last 90 days`} />
       <StatTile
         label="Tier split"
         value={`${scoutCountByTier[1]} / ${scoutCountByTier[2]} / ${scoutCountByTier[3]}`}

@@ -5,7 +5,7 @@ import { Menu, Search } from "lucide-react";
 import { navNodeByHref } from "@/lib/nav";
 import { ThemeToggle } from "./theme-toggle";
 import { SidebarNav } from "./sidebar-nav";
-import { COHORT_LABEL } from "@/lib/data";
+import { PROGRAM_LABEL } from "@/lib/data";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -62,7 +62,7 @@ export function Topbar() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75" />
             <span className="relative inline-flex size-1.5 rounded-full bg-success" />
           </span>
-          {COHORT_LABEL} · Live
+          {PROGRAM_LABEL} · Live
         </div>
         <ThemeToggle />
       </div>

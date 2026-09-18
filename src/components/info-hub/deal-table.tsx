@@ -115,7 +115,7 @@ export function DealTable() {
               {rows.length === 0 ? (
                 <TableRow className="hover:bg-transparent">
                   <TableCell colSpan={7} className="py-10 text-center text-sm text-muted-foreground">
-                    No records in this stage yet — the cohort is 20 months into an 18–24 month
+                    No records in this stage yet — the program is 20 months into its 24-month
                     window, so exits in particular are still early.
                   </TableCell>
                 </TableRow>

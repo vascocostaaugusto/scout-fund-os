@@ -23,7 +23,7 @@ export default function NetworkPage() {
 
       <LiveRosterStats />
 
-      <Section title="Roster" subtitle="Every scout and their sourcing activity this cohort — aggregated live from the deal pipeline. Tickets draw from the shared pool, not a personal ceiling.">
+      <Section title="Roster" subtitle="Every scout and their sourcing activity across the program — aggregated live from the deal pipeline. Tickets draw from the shared pool, not a personal ceiling.">
         <LiveRosterTable />
       </Section>
 

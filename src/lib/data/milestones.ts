@@ -9,12 +9,14 @@
 //    point the partnership no longer holds.
 // 2. The tiers step up — they don't stack. A scout at the third milestone
 //    holds 0.50% of fund carry, not 0.85%.
-// 3. These are LIFETIME thresholds, not per-cohort ones. Cohort 1's whole
-//    scout book is $1.35M deployed across 26 scouts; its best individual
-//    scout is at $148K. Nobody reaches $500K inside one cohort, and that's
-//    intentional — the ladder is what a scout climbs by staying with the
-//    program across cohorts, which is exactly the retention it's there to
-//    buy. Sized so the first rung is a genuinely rare event, not a default.
+// 3. Thresholds are measured over the program's full 24 months, and they are
+//    deliberately set against the pool rather than against today's run-rate.
+//    If the $6M pool deploys to target, the average scout accounts for ~$200K
+//    and a top-decile scout plausibly clears $500K — so the first rung is a
+//    real but rare outcome. Against the current book it is not close: $1.35M
+//    deployed at month 20, best scout $148K, median $34K, nobody on the
+//    ladder. That gap is a pacing problem, not a milestone problem, and the
+//    Scout Portal says so rather than showing a bar that reads as a promise.
 export interface CarryMilestone {
   id: string;
   tier: 1 | 2 | 3;

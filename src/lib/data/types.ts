@@ -40,7 +40,6 @@ export interface Scout {
   affiliation: string;
   coverage: string; // vertical or geography they own
   initials: string;
-  cohort: string; // e.g. "Cohort 1 (2025–26)"
   status: ScoutStatus;
   joinedAt: string; // ISO date
   agreementSignedAt: string; // ISO date — scout participation & carry agreement
@@ -125,7 +124,7 @@ export interface Deal {
   carryPaidAt: string | null; // set once the scout's carry share on this exit has actually been distributed
   // Set when a partner records an actual exit. Null means "use the stage's
   // standard interim mark" (STAGE_MARK_MULTIPLE) — which is what the seeded
-  // cohort does, since none of its exits have a negotiated outcome on file.
+  // book does, since none of its exits have a negotiated outcome on file.
   exitMultiple: number | null;
   outcomeNote: string | null; // why a deal was written off, or how it exited
 }

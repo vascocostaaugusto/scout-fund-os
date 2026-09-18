@@ -54,15 +54,15 @@ function makeCompanyName(used: Set<string>): string {
   return name;
 }
 
-const COHORT_START = new Date("2025-01-20T09:00:00Z").getTime();
+const PROGRAM_START = new Date("2025-01-20T09:00:00Z").getTime();
 const TODAY = new Date("2026-09-16T09:00:00Z").getTime();
 
 function randomSubmittedAt(recentBias: boolean): Date {
-  const span = TODAY - COHORT_START;
+  const span = TODAY - PROGRAM_START;
   // recentBias skews toward "now" for open pipeline stages (submitted/under_review)
   const t = recentBias
     ? TODAY - Math.pow(rng.next(), 2.2) * span * 0.12
-    : COHORT_START + rng.next() * span * 0.94;
+    : PROGRAM_START + rng.next() * span * 0.94;
   return new Date(t);
 }
 
@@ -289,7 +289,7 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     wireStatus,
     wireConfirmedAt,
     // Distribution processing lags an exit in real funds (marks, waterfall
-    // calc, wire) — none of this cohort's exits have been distributed yet.
+    // calc, wire) — none of the program's exits have been distributed yet.
     carryPaidAt: null,
     exitMultiple: null,
     outcomeNote: null,

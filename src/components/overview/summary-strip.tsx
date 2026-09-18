@@ -25,7 +25,7 @@ export function SummaryStrip() {
     {
       label: "Active scouts",
       value: `${activeScouts}`,
-      sub: `of ${totalScouts} in Cohort 1`,
+      sub: `of ${totalScouts} on the roster`,
       icon: Users,
     },
     {

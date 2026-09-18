@@ -12,7 +12,7 @@ export function LiveScoutStats({ scoutId }: { scoutId: string }) {
 
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-      <StatTile label="Memos submitted" value={`${stats.memosSubmitted}`} hint="this cohort" />
+      <StatTile label="Memos submitted" value={`${stats.memosSubmitted}`} hint="over the program" />
       <StatTile label="Deals funded" value={`${stats.dealsFunded}`} hint={`${formatPct(stats.conversionRate, 0)} conversion`} />
       <StatTile
         label="Capital deployed"

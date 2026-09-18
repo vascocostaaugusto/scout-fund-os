@@ -45,16 +45,16 @@ for (const deal of deals) {
   }
 }
 
-// Monthly scout summaries — one per month from a month after cohort start
+// Monthly scout summaries — one per month from a month after the program starts
 // through the current month. Each scout gets a personal recap of their own
 // pipeline that month (built in the Scout Portal); this program-level entry
 // is the aggregate "digest sent" event in the shared feed.
-const COHORT_START = new Date("2025-01-20T09:00:00Z");
+const PROGRAM_START = new Date("2025-01-20T09:00:00Z");
 const TODAY = new Date("2026-09-16T09:00:00Z");
 
 const digestDates: string[] = [];
 {
-  const cursor = new Date(COHORT_START);
+  const cursor = new Date(PROGRAM_START);
   cursor.setUTCMonth(cursor.getUTCMonth() + 1);
   while (cursor < TODAY) {
     digestDates.push(cursor.toISOString().slice(0, 10));

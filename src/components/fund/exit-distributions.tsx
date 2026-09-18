@@ -30,7 +30,7 @@ export function ExitDistributions() {
   if (exited.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
-        No exits yet this cohort — nothing to distribute.
+        No exits recorded yet — nothing to distribute.
       </div>
     );
   }

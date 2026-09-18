@@ -9,8 +9,8 @@ up, not just at the end.
 but no single numbers to build consistent mock data around.
 **Assumption:** Fund II target midpoint $125M. Scout pool $6.0M (4.8% of
 Fund II — comfortably under the 5% ceiling). Capital allocated to the current
-cohort's 15 scouts sums to ~$3.49M (tier-weighted $150K–$300K ceilings),
-leaving headroom in the $6.0M pool for cohort growth. All committed to
+program's 15 scouts sums to ~$3.49M (tier-weighted $150K–$300K ceilings),
+leaving headroom in the $6.0M pool for roster growth. All committed to
 `src/lib/data/aggregates.ts` as named constants, not scattered magic numbers.
 
 ## 2. Deal/scout volume and funnel shape
@@ -25,7 +25,7 @@ strip, per-scout stats, dashboard charts) derives from this one `deals` array
 ## 3. Zero exited/dead deals in the current snapshot
 **Observation, not really a blocker:** The seeded data landed with 0 "Exited"
 and 1 "Dead" deal. Initially read as a data-realism gap; on reflection this is
-actually correct behavior — the cohort is ~20 months into an 18–24 month
+actually correct behavior — the program is ~20 months into its 24-month
 window, and real venture exits take years. Left as-is; called out explicitly
 in the Workflow/Dashboard copy rather than forcing fake exits into the data.
 
@@ -44,12 +44,17 @@ directly under the chart so it's defensible if a partner asks about it live.
 See `MATURITY_WHOLE_FUND_MOIC` / `MATURITY_SCOUT_BOOK_MOIC` in
 `src/lib/data/aggregates.ts`.
 
-## 5. Scout retention "across cohorts" with only one active cohort
-**Ambiguity:** Brief asks for a cohort-over-cohort retention line chart, but
-the program (as pitched) has only one formal cohort running.
-**Assumption:** Framed as Pilot (informal Shapers Club pre-2025) → Cohort 1
-(current, real) → Cohort 2 (2026–27, explicitly labeled "projected" in the
-UI, dashed line segment). Keeps the chart honest about what's real vs. modeled.
+## 5. Scout retention, with no intakes to compare
+**Ambiguity:** Brief asks for a retention trend, but the program is a single
+fixed 24-month run — there is no second intake to measure a second point
+against, so a trend line has nothing to plot.
+**Assumption:** Retention is measured *within* the 24-month window instead:
+how many scouts onboarded at the start are still submitting at month 20.
+That's a real, computable number from the deal data rather than an invented
+curve, and it answers the question the trend was reaching for — does the
+program hold the people it recruits — without inventing intakes that don't
+exist. Superseded by a later decision to drop intake framing entirely; see
+entry 18.
 
 ## 6. Individual scout/founder names
 **Ambiguity:** Source content references real companies (Qonto, Wise, N26,
@@ -108,7 +113,7 @@ screenshots but not a field-by-field spec of exactly what moves where.
   (tables, kanban, charts, the decision queue). Treated as "doc-worthy":
   anything static/narrative that explains *why* rather than shows *what is
   happening now* (tier bios, the 4-step workflow explainer, the Fund
-  Structure comparison, the Year-8 maturity model, cohort retention
+  Structure comparison, the Year-8 maturity model, retention
   projections, the "how this connects" relationship graph).
 - Cutting Incentive Engine, Fund Structure, Success Dashboard, and Info Hub
   down to almost nothing left only 2 "program components" (Network,
@@ -252,7 +257,7 @@ correctly showed the deal as funded).
   compute. Documented here rather than silently left inconsistent.
 - Left the Scout Portal's "Your month in review" digest preview reading
   static `notifications` — that feed is itself pre-generated from the
-  seed cohort's history (see the architecture doc's outbound-notifications
+  seed data's history (see the architecture doc's outbound-notifications
   section); making it reflect live session decisions would mean building
   a live notification-event system, a materially bigger feature than
   fixing the staleness bug. Noted as a real, smaller remaining gap, not
@@ -346,15 +351,15 @@ fund had already had contact with does not count as sourced.
   carry comes out of the GP's side of the whole pool — every point granted
   here is a point the partnership no longer holds. That is the actual cost of
   the ladder and it belongs in the brief, not in a footnote.
-- **The thresholds are lifetime, not per-cohort — deliberately, and they are
-  unreachable in Cohort 1.** Measured against the seeded cohort: the entire
-  scout book is $1.35M deployed across 26 scouts, the best individual scout is
-  at $148K attributed, the median is $34K. Zero scouts reach even the first
-  rung. Rather than shrink the thresholds to make the demo light up, they're
-  framed as cumulative across cohorts — which is the retention mechanism the
-  ladder exists to buy, and which makes the first rung a rare event rather
-  than a default. The Scout Portal states this in plain language so no scout
-  reads a progress bar as a promise.
+- **Thresholds run over the program's full 24 months, and are sized against
+  the pool rather than today's run-rate.** If the $6M pool deploys to target,
+  the average scout accounts for ~$200K and a top-decile scout plausibly
+  clears $500K — so the first rung is a real but rare outcome. Against the
+  current book it is not close: $1.35M deployed at month 20, best scout $148K,
+  median $34K, zero scouts on the ladder. Rather than shrink the thresholds so
+  the demo lights up, that gap is named for what it is — a deployment-pacing
+  problem, not a milestone-calibration one. The Scout Portal says so in plain
+  language so no scout reads a progress bar as a promise.
 - **Attribution is a partner's explicit call, not an inference.** A checkbox
   on the decision card ("We'd already met this company") flips
   `scoutAttributed` to false. The deal still gets decided, funded and tracked
@@ -365,3 +370,28 @@ fund had already had contact with does not count as sourced.
   their conversion rate and their capital-deployed tile all still include it;
   only the carry-bearing figure (`attributedDeployedUsd`) excludes it. Hiding
   the deal entirely would make a scout's own numbers unauditable to them.
+
+## 18. Dropping the cohort concept entirely
+**User decision:** No mention of cohorts anywhere, in the app or the
+documents. The scout program is a single 24-month program.
+**What changed:**
+- `Scout.cohort` and `COHORT_LABEL` removed from the model. The topbar chip
+  that read "Cohort 1 (2025–26)" now reads `PROGRAM_LABEL` — "Month 20 of
+  24" — derived from `PROGRAM_START` and `TODAY_REF` rather than hardcoded,
+  so the label can't drift from the pacing chart it sits above.
+- `COHORT_START` renamed to `PROGRAM_START` in `deals.ts` and
+  `notifications.ts`; the two were already the same date, now they're
+  visibly the same concept.
+- Per-scout stat hints that read "this cohort" now read "over the program";
+  roster counts that read "of 30 in Cohort 1" now read "of 30 on the roster".
+- The retention story in the brief was cohort-over-cohort (58% → 79% → 86%
+  across a pilot and two intakes). With one program there is no second
+  intake, so it's re-cut as retention *within* the 24 months.
+**The one real consequence:** the carry milestone ladder was justified as
+"lifetime, carries across cohorts," which is what made $500K reachable at
+all. That justification is gone. Re-cut against the pool instead: at full
+$6M deployment the average scout accounts for ~$200K, so a top-decile scout
+plausibly clears the first rung inside 24 months. The thresholds themselves
+are unchanged. What the gap to today's $1.35M now says is that deployment is
+behind pace — which was already true and already in the brief — rather than
+that the ladder is mis-sized.

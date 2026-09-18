@@ -40,7 +40,7 @@ export function ScoutLogin() {
         <ShapersWordmark className="text-3xl text-foreground" />
         <div>
           <h1 className="text-xl text-foreground">Scout Portal</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Shapers Fund II · Cohort 1 (2025–26)</p>
+          <p className="mt-1 text-sm text-muted-foreground">Shapers Fund II · 24-month scout program</p>
         </div>
       </div>
 

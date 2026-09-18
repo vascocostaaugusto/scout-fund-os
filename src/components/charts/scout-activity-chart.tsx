@@ -20,7 +20,7 @@ export function ScoutActivityChart() {
     <div className="h-80 w-full rounded-xl border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <span className="text-sm font-medium text-foreground">Memos submitted per scout</span>
-        <span className="text-xs text-muted-foreground">Cohort 1 to date</span>
+        <span className="text-xs text-muted-foreground">Program to date</span>
       </div>
       <ResponsiveContainer width="100%" height="88%">
         <BarChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>

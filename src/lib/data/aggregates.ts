@@ -29,7 +29,7 @@ export const activeScouts = scouts.filter((s) => s.status !== "alumni").length;
 export const scoutCountByTier: Record<1 | 2 | 3, number> = { 1: 0, 2: 0, 3: 0 };
 for (const s of scouts) scoutCountByTier[s.tier]++;
 
-// ---- Deal-derived (cohort-at-a-glance snapshot, as of the published docs
+// ---- Deal-derived (program-at-a-glance snapshot, as of the published docs
 // and first paint) — anything shown live in the working app while a partner
 // or scout is making decisions should instead read through useLiveStats(),
 // which runs these exact same formulas over the session's live deals. See
@@ -97,7 +97,7 @@ export const SCOUT_CARRY_RATE_ASSUMPTION = derive.SCOUT_CARRY_RATE_ASSUMPTION;
 export type ScoutUpside = derive.ScoutUpside;
 export const scoutUpside = derive.computeScoutUpside(deals, scouts);
 
-// ---- Near-term response-time trend (last 8 "weeks" of the cohort, synthetic
+// ---- Near-term response-time trend (last 8 "weeks" of the program, synthetic
 // but consistent with avgResponseHours) --------------------------------------
 const responseRng = makeRng(4471);
 export interface ResponseWeek {
@@ -116,6 +116,20 @@ export const responseTimeTrend: ResponseWeek[] = Array.from({ length: 8 }, (_, i
 // separate funding-execution timestamp, and this is the closest one it has.
 export const PROGRAM_START = new Date("2025-01-20T09:00:00Z");
 export const TODAY_REF = new Date("2026-09-16T09:00:00Z");
+
+// The program runs for a fixed 24 months — there's one of it, not a series of
+// intakes, so everything that used to be labelled by intake is labelled by how
+// far through that window we are. Derived rather than hardcoded so the label
+// can't drift from the pacing chart it sits above.
+const monthsElapsed =
+  (TODAY_REF.getTime() - PROGRAM_START.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
+// The month we're *in*, not the count completed — 19 months and 27 days in is
+// month 20, which is how anyone running the program would describe it.
+export const PROGRAM_MONTH_CURRENT = Math.min(
+  Math.max(Math.floor(monthsElapsed) + 1, 1),
+  PACING_TARGET_MONTHS,
+);
+export const PROGRAM_LABEL = `Month ${PROGRAM_MONTH_CURRENT} of ${PACING_TARGET_MONTHS}`;
 
 export type PacingPoint = derive.PacingPoint;
 export const deploymentPacing: PacingPoint[] = derive.computeDeploymentPacing(deals, {

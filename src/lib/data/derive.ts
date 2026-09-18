@@ -148,6 +148,21 @@ export function computeRepeatFunderScouts(scoutStats: Map<string, ScoutStats>): 
   return [...scoutStats.values()].filter((s) => s.dealsFunded >= 2).length;
 }
 
+// Retention, for a program that runs once for a fixed term. There's no second
+// intake to compare against, so the question isn't "how many came back" — it's
+// whether the people recruited at the start are still sending companies now.
+// A roster nobody has formally left is easy; a roster still submitting is the
+// result. Counted on submissions, not on roster status, for that reason.
+export function computeActiveSubmitters(
+  deals: Deal[],
+  opts: { todayRef: Date; withinDays: number },
+): number {
+  const cutoff = opts.todayRef.getTime() - opts.withinDays * 24 * 60 * 60 * 1000;
+  return new Set(
+    deals.filter((d) => new Date(d.submittedAt).getTime() >= cutoff).map((d) => d.scoutId),
+  ).size;
+}
+
 export interface ScoutUpside {
   scoutId: string;
   deployedUsd: number;

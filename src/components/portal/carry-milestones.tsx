@@ -25,8 +25,8 @@ export function CarryMilestones({ scoutId }: { scoutId: string }) {
       </div>
       <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
         Past your per-deal carry, sourcing consistently unlocks a small share of the fund&apos;s overall
-        carry. Progress counts capital the fund deployed into companies you sourced, and it carries over
-        from one cohort to the next — <span className="text-foreground">{formatUsd(deployed)}</span> so far.
+        carry. Progress counts every dollar the fund has deployed into companies you sourced, across the
+        full 24 months — <span className="text-foreground">{formatUsd(deployed)}</span> so far.
         {next ? ` ${formatUsd(remainingUsd)} more to reach the ${next.label.toLowerCase()}.` : ""}
       </p>
 
@@ -70,8 +70,9 @@ export function CarryMilestones({ scoutId }: { scoutId: string }) {
 
       <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground/70">
         Milestones step up rather than stack — reaching the third means holding 0.50%, not the sum of all
-        three. These are multi-cohort thresholds: nobody clears the first one in a single year. Intros to
-        companies the fund had already met don&apos;t count toward them.
+        three. The rungs are sized against the full $6M pool, not this year&apos;s run-rate — clearing the
+        first one puts you well into the top of the roster. Intros to companies the fund had already met
+        don&apos;t count toward them.
       </p>
     </div>
   );

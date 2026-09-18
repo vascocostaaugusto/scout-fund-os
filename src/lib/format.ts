@@ -5,11 +5,14 @@ export function formatUsdCompact(n: number): string {
   if (Math.abs(n) >= 1_000) {
     return `$${Math.round(n / 1000)}K`;
   }
-  return `$${n.toLocaleString("en-US")}`;
+  return `$${Math.round(n).toLocaleString("en-US")}`;
 }
 
+// Always whole dollars. Derived figures (carry shares, marked value) land on
+// fractions — a scout's estimated upside reading "$517.5" looks like a bug even
+// though the arithmetic is right, and nobody quotes carry to the half-dollar.
 export function formatUsd(n: number): string {
-  return `$${n.toLocaleString("en-US")}`;
+  return `$${Math.round(n).toLocaleString("en-US")}`;
 }
 
 export function formatPct(n: number, decimals = 1): string {

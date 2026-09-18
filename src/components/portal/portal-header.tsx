@@ -16,7 +16,7 @@ export function PortalHeader({ scout }: { scout: Scout }) {
             <TierBadge tier={scout.tier} />
           </div>
           <span className="text-xs text-muted-foreground">
-            {scout.coverage} · {scout.cohort}
+            {scout.coverage} · {scout.tierLabel}
           </span>
         </div>
       </div>

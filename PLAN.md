@@ -31,7 +31,7 @@ Shared app shell: left rail nav (persistent, shows all 7 nodes + overview), top 
 Single source of truth generated once with a seeded PRNG so all numbers are internally consistent, then exported as static TS objects (computed at module load, deterministic — not Math.random on every render).
 
 Core entities:
-- `Scout`: id, name, tier (1|2|3), role/title, org affiliation, vertical/geography tag, avatarInitials, joinedCohort, status (active/alumni), memosSubmitted, dealsFunded, capitalDeployed, slaAvgHours
+- `Scout`: id, name, tier (1|2|3), role/title, org affiliation, vertical/geography tag, avatarInitials, joinedAt, status (active/alumni), memosSubmitted, dealsFunded, capitalDeployed, slaAvgHours
 - `Deal`: id, scoutId, companyName, sector, geography, stage (Submitted/UnderReview/Approved/Declined/CheckWritten/FollowOnWatch/Exited/Dead), checkSize, submittedAt, slaHours, partnerNotes, followOnParticipated (bool)
 - `NotificationEvent`: id, ts, type (submission/status-change/digest), text, dealId
 - `RiskItem`: id, risk, likelihood, impact, mitigation, category

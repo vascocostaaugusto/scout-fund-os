@@ -7,14 +7,20 @@
 // or a decision in the Fund Portal won't show up anywhere else in the app.
 import { useMemo } from "react";
 import { useDealStore } from "./deal-store";
-import { scouts } from "./data";
+import { scouts, TODAY_REF } from "./data";
 import {
   computeDealDerived,
   computeScoutStats,
   computeRepeatFunderScouts,
   computeScoutUpside,
   computeScoutsBlockedForPayout,
+  computeActiveSubmitters,
 } from "./data/derive";
+
+// "Still sending us companies" is the retention question for a fixed-term
+// program. A quarter is long enough that a scout between intros isn't counted
+// as lapsed, short enough that going quiet shows up before the term ends.
+const RETENTION_WINDOW_DAYS = 90;
 
 export function useLiveStats() {
   const { deals } = useDealStore();
@@ -28,6 +34,10 @@ export function useLiveStats() {
       repeatFunderScouts: computeRepeatFunderScouts(scoutStats),
       scoutUpside: computeScoutUpside(deals, scouts),
       scoutsBlockedForPayout: computeScoutsBlockedForPayout(deals, scouts),
+      activeSubmitters: computeActiveSubmitters(deals, {
+        todayRef: TODAY_REF,
+        withinDays: RETENTION_WINDOW_DAYS,
+      }),
     };
   }, [deals]);
 }

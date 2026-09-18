@@ -1,7 +1,6 @@
 import { makeRng } from "./prng";
 import type { Scout as ScoutType } from "./types";
 
-const COHORT = "Cohort 1 (2025–26)";
 const onboardingRng = makeRng(9182);
 
 interface ScoutSeed {
@@ -83,7 +82,6 @@ export const scouts: ScoutType[] = SEEDS.map((seed, i) => ({
   affiliation: seed.affiliation,
   coverage: seed.coverage,
   initials: initials(seed.name),
-  cohort: COHORT,
   status: seed.status ?? "active",
   joinedAt: seed.joinedAt,
   // The participation & carry agreement is signed as part of onboarding —
@@ -98,5 +96,3 @@ export const scouts: ScoutType[] = SEEDS.map((seed, i) => ({
 }));
 
 export const scoutById = new Map(scouts.map((s) => [s.id, s]));
-
-export const COHORT_LABEL = COHORT;
