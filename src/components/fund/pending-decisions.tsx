@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 const DEFAULT_TICKET = 25_000;
 
 export function PendingDecisions() {
-  const { deals, overrides, decideDeal, resetDeal, requestInfo, setAttribution } = useDealStore();
+  const { deals, overrides, decideDeal, resetDeal, requestInfo } = useDealStore();
   const { owner: actingAs } = useDecisionOwner();
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [tickets, setTickets] = useState<Record<string, number>>({});
@@ -97,22 +97,6 @@ export function PendingDecisions() {
                     {d.pitch}
                   </p>
                 )}
-
-                <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-border/60 bg-background/40 px-3 py-2">
-                  <input
-                    type="checkbox"
-                    checked={!d.scoutAttributed}
-                    onChange={(e) => setAttribution(d.id, !e.target.checked)}
-                    className="mt-0.5 size-3.5 shrink-0 accent-[var(--primary)]"
-                  />
-                  <span className="flex flex-col">
-                    <span className="text-[11px] text-foreground">We&apos;d already met this company</span>
-                    <span className="text-[11px] text-muted-foreground">
-                      Still decide on it as normal, it just stops counting as sourced, so no carry credit for{" "}
-                      {scout?.name.split(" ")[0]}.
-                    </span>
-                  </span>
-                </label>
 
                 {d.conflictDisclosed ? (
                   <div className="flex items-start gap-2 rounded-lg border border-critical/30 bg-critical/10 px-3 py-2 text-[11px] text-critical">

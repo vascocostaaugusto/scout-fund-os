@@ -120,12 +120,6 @@ export interface Deal {
   // before they can decide.
   conflictDisclosed: boolean;
   conflictNotes: string | null;
-  // Attribution. An intro only earns the scout credit, per-deal carry, if
-  // the fund had no prior contact with the company. If someone here had
-  // already met them or been introduced, the deal can still proceed; it
-  // just doesn't count as sourced.
-  scoutAttributed: boolean;
-  priorContactNote: string | null;
   // A separate decision from the original scout ticket — whether the fund
   // (from Fund II proper, not the scout pool) follows into the company's
   // next priced round. Only actionable while stage is "follow_on_watch".

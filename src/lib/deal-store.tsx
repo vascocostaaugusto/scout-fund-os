@@ -56,7 +56,6 @@ interface DealStoreValue {
   submitIntro: (input: NewIntroInput) => Deal;
   requestInfo: (dealId: string, question: string, partner: string) => void;
   respondToInfo: (dealId: string, response: string) => void;
-  setAttribution: (dealId: string, attributed: boolean, note?: string) => void;
   decideDeal: (dealId: string, decision: "approved" | "declined", partner: string, note: string, ticketUsd?: number) => void;
   resetDeal: (dealId: string) => void;
   submitLegalData: (dealId: string, input: LegalDataInput) => void;
@@ -174,8 +173,6 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
         followOnParticipated: false,
         conflictDisclosed: Boolean(input.conflictNotes?.trim()),
         conflictNotes: input.conflictNotes?.trim() || null,
-        scoutAttributed: true,
-        priorContactNote: null,
         followOnDecision: "undecided",
         followOnCheckUsd: null,
         legalEntityName: null,
@@ -221,18 +218,6 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       applyPatch(dealId, {
         infoResponse: response,
         partnerNotes: "Scout answered — back in the decision queue.",
-      });
-    },
-    [applyPatch],
-  );
-
-  // An intro the fund had already seen still gets worked — it just stops
-  // counting as scout-sourced, so no carry attribution on this deal.
-  const setAttribution = useCallback(
-    (dealId: string, attributed: boolean, note?: string) => {
-      applyPatch(dealId, {
-        scoutAttributed: attributed,
-        priorContactNote: attributed ? null : note || "Fund had prior contact with this company.",
       });
     },
     [applyPatch],
@@ -458,7 +443,6 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       submitIntro,
       requestInfo,
       respondToInfo,
-      setAttribution,
       decideDeal,
       resetDeal,
       submitLegalData,
@@ -479,7 +463,6 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
       submitIntro,
       requestInfo,
       respondToInfo,
-      setAttribution,
       decideDeal,
       resetDeal,
       submitLegalData,
