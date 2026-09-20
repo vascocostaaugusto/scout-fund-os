@@ -50,7 +50,7 @@ export const STAGE_HINT: Record<DealStage, string> = {
   approved: "Cleared — SAFE and wire in progress",
   declined: "Passed at first look",
   check_written: "SAFE executed, wire confirmed",
-  follow_on_watch: "Right-of-first-look active on the next round",
+  follow_on_watch: "Next round signaled, fund deciding whether to follow on",
   exited: "Return realized",
   dead: "Capital written off",
 };

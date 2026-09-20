@@ -82,7 +82,7 @@ const partnerNotesByStage: Record<DealStage, string[]> = {
   ],
   approved: ["Cleared first look, SAFE terms in redline.", "Approved, closing docs with scout."],
   check_written: [
-    "SAFE executed, right-of-first-look logged.",
+    "SAFE executed, check funded.",
     "Convertible closed at cap; monitoring for next round.",
     "Check wired, scout retains board observer intro.",
   ],
@@ -291,7 +291,6 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     infoRequestedAt: null,
     infoResponse: null,
     submittedByScout: false,
-    rightOfFirstLook: hasTicket,
     followOnParticipated: stage === "follow_on_watch" || stage === "exited",
     conflictDisclosed,
     conflictNotes,

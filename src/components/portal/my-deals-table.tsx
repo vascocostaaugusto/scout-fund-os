@@ -37,7 +37,6 @@ export function MyDealsTable({ scoutId }: { scoutId: string }) {
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Check</TableHead>
             <TableHead>Submitted</TableHead>
-            <TableHead>Right-of-first-look</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -54,7 +53,6 @@ export function MyDealsTable({ scoutId }: { scoutId: string }) {
                 {d.checkSizeUsd ? formatUsd(d.checkSizeUsd) : "—"}
               </TableCell>
               <TableCell className="text-xs text-muted-foreground">{formatDate(d.submittedAt)}</TableCell>
-              <TableCell className="text-xs text-muted-foreground">{d.rightOfFirstLook ? "Active" : "—"}</TableCell>
             </TableRow>
           ))}
         </TableBody>

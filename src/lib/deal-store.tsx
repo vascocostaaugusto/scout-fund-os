@@ -171,7 +171,6 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
         whyGreatDesc: input.whyGreatDesc.trim() || null,
         requestedTicketUsd,
         autonomyApproved,
-        rightOfFirstLook: autonomyApproved,
         followOnParticipated: false,
         conflictDisclosed: Boolean(input.conflictNotes?.trim()),
         conflictNotes: input.conflictNotes?.trim() || null,
@@ -258,7 +257,6 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
         firstLookAt: isFirstLook ? REFERENCE_NOW.toISOString() : current.firstLookAt,
         responseHours,
         isLate: responseHours > 48,
-        rightOfFirstLook: decision === "approved",
       };
       if (decision === "approved") {
         // The $100K program cap is enforced here, not just suggested in the
@@ -372,7 +370,7 @@ export function DealStoreProvider({ children }: { children: ReactNode }) {
         wireStatus: "confirmed",
         wireConfirmedAt: REFERENCE_NOW.toISOString(),
         stage: "check_written" as DealStage,
-        partnerNotes: "Wire confirmed — check written, right-of-first-look logged.",
+        partnerNotes: "Wire confirmed — check written.",
       });
     },
     [applyPatch],

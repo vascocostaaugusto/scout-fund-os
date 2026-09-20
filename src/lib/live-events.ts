@@ -47,7 +47,7 @@ export function randomLiveEvent(): LiveEvent {
   return {
     kind: "status_change",
     title: `Check written by ${scout.name}`,
-    description: `${company} · SAFE executed, right-of-first-look logged`,
+    description: `${company} · SAFE executed, check funded`,
     actor: scout.name,
   };
 }

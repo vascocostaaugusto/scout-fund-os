@@ -113,7 +113,6 @@ export interface Deal {
   infoRequestedAt: string | null;
   infoResponse: string | null;
   submittedByScout: boolean; // true for intros submitted through the Scout Portal this session
-  rightOfFirstLook: boolean;
   followOnParticipated: boolean;
   // Declared by the scout at submission — does the scout have an existing
   // stake, personal relationship, or other conflict with this company?
