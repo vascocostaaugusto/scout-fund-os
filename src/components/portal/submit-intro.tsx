@@ -51,14 +51,16 @@ export function SubmitIntro({ scoutId }: { scoutId: string }) {
 
   const clampedTicket = Math.min(Math.max(ticket, 0), TICKET_HARD_CAP_USD);
   const autonomy = clampedTicket > 0 && clampedTicket <= SCOUT_AUTONOMY_CAP_USD;
-  const canSubmit =
-    company.trim().length > 1 &&
-    clampedTicket > 0 &&
-    problemDesc.trim().length > 4 &&
-    productDesc.trim().length > 4 &&
-    teamDesc.trim().length > 4 &&
-    whyGreatDesc.trim().length > 4 &&
-    (!hasConflict || conflictNotes.trim().length > 4);
+
+  const missing: string[] = [];
+  if (company.trim().length <= 1) missing.push("a company name");
+  if (clampedTicket <= 0) missing.push("a ticket size above $0");
+  if (problemDesc.trim().length <= 4) missing.push("more on the problem");
+  if (productDesc.trim().length <= 4) missing.push("more on the product");
+  if (teamDesc.trim().length <= 4) missing.push("more on the team");
+  if (whyGreatDesc.trim().length <= 4) missing.push("why they'll be great");
+  if (hasConflict && conflictNotes.trim().length <= 4) missing.push("the relationship details");
+  const canSubmit = missing.length === 0;
 
   const canFileLegal =
     !!legalDraft &&
@@ -406,9 +408,9 @@ export function SubmitIntro({ scoutId }: { scoutId: string }) {
             <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            {!canSubmit ? (
+            {missing.length > 0 ? (
               <span className="text-[11px] text-muted-foreground">
-                Company, a ticket size, and all four mini-memo fields are required
+                Still needed: {missing.join(", ")}
               </span>
             ) : null}
           </div>
