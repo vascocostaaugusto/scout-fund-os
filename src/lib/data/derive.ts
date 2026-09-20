@@ -108,9 +108,9 @@ export interface ScoutStats {
   memosSubmitted: number;
   dealsFunded: number;
   capitalDeployedUsd: number;
-  // Deployment on deals the fund hadn't already seen. This is the figure the
-  // carry milestones run off — an intro to a company already in the pipeline
-  // still gets funded, it just doesn't count as sourced.
+  // Deployment on deals the fund hadn't already seen. An intro to a company
+  // already in the pipeline still gets funded, it just doesn't count as
+  // sourced, so it's excluded here.
   attributedDeployedUsd: number;
   unattributedDeals: number;
   avgResponseHours: number | null;

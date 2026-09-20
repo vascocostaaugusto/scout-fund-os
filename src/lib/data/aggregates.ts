@@ -20,14 +20,22 @@ export const SCOUT_POOL_PCT_OF_FUND = SCOUT_POOL_SIZE / FUND_II_TARGET_MID;
 // validation constraint.
 export const TICKET_SIZE_TYPICAL_MIN = 10_000;
 export const TICKET_SIZE_TYPICAL_MAX = 50_000;
+// Up to this size, a scout can commit the check on their own — no partner
+// needs to review or sign off. Above it, the deal needs the fund's OK,
+// same as before. This is a real gate, not a display convention: see
+// submitIntro in deal-store.tsx.
+export const SCOUT_AUTONOMY_CAP_USD = 10_000;
+// The largest ticket the program will write at all, scout-led or
+// partner-approved. Set by the partnership and revisable — not derived
+// from anything else, so it's called out here rather than buried.
+export const TICKET_HARD_CAP_USD = 100_000;
 export const PACING_TARGET_MONTHS = 24;
 export const PACING_MONTHLY_TARGET_USD = SCOUT_POOL_SIZE / PACING_TARGET_MONTHS;
 
 // ---- Roster-derived (unaffected by session deal decisions — safe static) --
 export const totalScouts = scouts.length;
 export const activeScouts = scouts.filter((s) => s.status !== "alumni").length;
-export const scoutCountByTier: Record<1 | 2 | 3, number> = { 1: 0, 2: 0, 3: 0 };
-for (const s of scouts) scoutCountByTier[s.tier]++;
+export const coverageAreaCount = new Set(scouts.map((s) => s.coverage)).size;
 
 // ---- Deal-derived (program-at-a-glance snapshot, as of the published docs
 // and first paint) — anything shown live in the working app while a partner

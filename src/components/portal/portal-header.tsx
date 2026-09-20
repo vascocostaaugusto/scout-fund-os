@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import type { Scout } from "@/lib/data";
-import { TierBadge } from "@/components/network/tier-badge";
 
 export function PortalHeader({ scout }: { scout: Scout }) {
   return (
@@ -11,12 +10,9 @@ export function PortalHeader({ scout }: { scout: Scout }) {
           {scout.initials}
         </div>
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-semibold text-foreground">{scout.name}</h1>
-            <TierBadge tier={scout.tier} />
-          </div>
+          <h1 className="text-xl font-semibold text-foreground">{scout.name}</h1>
           <span className="text-xs text-muted-foreground">
-            {scout.coverage} · {scout.tierLabel}
+            {scout.coverage} · {scout.profile}
           </span>
         </div>
       </div>

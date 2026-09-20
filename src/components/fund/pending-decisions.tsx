@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Check, X, RotateCcw, ShieldAlert, MessageCircleQuestion } from "lucide-react";
-import { scoutById } from "@/lib/data";
+import { scoutById, TICKET_HARD_CAP_USD } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
 import { useDecisionOwner } from "@/lib/decision-owner-store";
 import { formatDate, formatUsd, timeAgo } from "@/lib/format";
@@ -31,8 +31,8 @@ export function PendingDecisions() {
     .filter(([, o]) => o.patch.stage === "approved" || o.patch.stage === "declined")
     .sort((a, b) => new Date(b[1].decidedAt).getTime() - new Date(a[1].decidedAt).getTime());
 
-  function decide(dealId: string, decision: "approved" | "declined") {
-    decideDeal(dealId, decision, actingAs, notes[dealId] ?? "", tickets[dealId] ?? DEFAULT_TICKET);
+  function decide(dealId: string, decision: "approved" | "declined", requestedTicketUsd: number | null) {
+    decideDeal(dealId, decision, actingAs, notes[dealId] ?? "", tickets[dealId] ?? requestedTicketUsd ?? DEFAULT_TICKET);
     setNotes((prev) => {
       const next = { ...prev };
       delete next[dealId];
@@ -73,9 +73,30 @@ export function PendingDecisions() {
                     {d.stage === "submitted" ? "Awaiting first look" : "Under review"}
                   </span>
                 </div>
-                <p className="border-l-2 border-border pl-3 text-xs leading-relaxed text-muted-foreground">
-                  {d.pitch}
-                </p>
+                {d.problemDesc || d.productDesc || d.teamDesc || d.whyGreatDesc ? (
+                  <dl className="grid gap-x-4 gap-y-1.5 border-l-2 border-border pl-3 text-xs leading-relaxed sm:grid-cols-2">
+                    <div>
+                      <dt className="text-[10px] uppercase tracking-wide text-muted-foreground/70">Problem</dt>
+                      <dd className="text-muted-foreground">{d.problemDesc || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] uppercase tracking-wide text-muted-foreground/70">Product</dt>
+                      <dd className="text-muted-foreground">{d.productDesc || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] uppercase tracking-wide text-muted-foreground/70">Team</dt>
+                      <dd className="text-muted-foreground">{d.teamDesc || "—"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] uppercase tracking-wide text-muted-foreground/70">Why great</dt>
+                      <dd className="text-muted-foreground">{d.whyGreatDesc || "—"}</dd>
+                    </div>
+                  </dl>
+                ) : (
+                  <p className="border-l-2 border-border pl-3 text-xs leading-relaxed text-muted-foreground">
+                    {d.pitch}
+                  </p>
+                )}
 
                 <label className="flex cursor-pointer items-start gap-2 rounded-lg border border-border/60 bg-background/40 px-3 py-2">
                   <input
@@ -87,8 +108,8 @@ export function PendingDecisions() {
                   <span className="flex flex-col">
                     <span className="text-[11px] text-foreground">We&apos;d already met this company</span>
                     <span className="text-[11px] text-muted-foreground">
-                      Still decide on it as normal — it just stops counting as sourced, so no carry and no
-                      milestone credit for {scout?.name.split(" ")[0]}.
+                      Still decide on it as normal, it just stops counting as sourced, so no carry credit for{" "}
+                      {scout?.name.split(" ")[0]}.
                     </span>
                   </span>
                 </label>
@@ -97,7 +118,8 @@ export function PendingDecisions() {
                   <div className="flex items-start gap-2 rounded-lg border border-critical/30 bg-critical/10 px-3 py-2 text-[11px] text-critical">
                     <ShieldAlert className="mt-0.5 size-3.5 shrink-0" />
                     <span>
-                      <strong className="font-semibold">Conflict disclosed by scout —</strong> {d.conflictNotes}
+                      <strong className="font-semibold">Prior relationship with the founders, disclosed by scout —</strong>{" "}
+                      {d.conflictNotes}
                     </span>
                   </div>
                 ) : null}
@@ -152,11 +174,22 @@ export function PendingDecisions() {
                     <input
                       type="number"
                       step={1000}
-                      value={tickets[d.id] ?? DEFAULT_TICKET}
-                      onChange={(e) => setTickets((prev) => ({ ...prev, [d.id]: Number(e.target.value) }))}
+                      max={TICKET_HARD_CAP_USD}
+                      value={tickets[d.id] ?? d.requestedTicketUsd ?? DEFAULT_TICKET}
+                      onChange={(e) =>
+                        setTickets((prev) => ({
+                          ...prev,
+                          [d.id]: Math.min(Number(e.target.value), TICKET_HARD_CAP_USD),
+                        }))
+                      }
                       className="w-24 rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary/50"
                     />
-                    <span className="text-muted-foreground/60">(typical $10K–$50K — outliers OK)</span>
+                    <span className="text-muted-foreground/60">
+                      {d.requestedTicketUsd
+                        ? `scout requested ${formatUsd(d.requestedTicketUsd)} — `
+                        : ""}
+                      program cap {formatUsd(TICKET_HARD_CAP_USD)}
+                    </span>
                   </label>
                   <div className="ml-auto flex gap-2">
                     <Button
@@ -171,11 +204,16 @@ export function PendingDecisions() {
                       <MessageCircleQuestion className="size-3.5" />
                       Ask for info
                     </Button>
-                    <Button size="sm" variant="ghost" className="text-critical hover:bg-critical/10 hover:text-critical" onClick={() => decide(d.id, "declined")}>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-critical hover:bg-critical/10 hover:text-critical"
+                      onClick={() => decide(d.id, "declined", d.requestedTicketUsd)}
+                    >
                       <X className="size-3.5" />
                       Decline
                     </Button>
-                    <Button size="sm" onClick={() => decide(d.id, "approved")}>
+                    <Button size="sm" onClick={() => decide(d.id, "approved", d.requestedTicketUsd)}>
                       <Check className="size-3.5" />
                       Approve
                     </Button>

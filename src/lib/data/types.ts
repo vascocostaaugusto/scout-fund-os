@@ -1,5 +1,3 @@
-export type ScoutTier = 1 | 2 | 3;
-
 // The pipeline for bringing on a new scout — nomination through a signed
 // agreement. Distinct from the deal pipeline; this is how the network
 // itself grows, not how a deal moves.
@@ -14,7 +12,7 @@ export type CandidateStage =
 export interface ScoutCandidate {
   id: string;
   name: string;
-  proposedTier: ScoutTier;
+  proposedProfile: string; // e.g. "Operator", "Portfolio founder" — descriptive, not ranked
   proposedCoverage: string;
   affiliation: string;
   referredBy: string; // an existing scout or partner name
@@ -34,8 +32,9 @@ export interface Scout {
   id: string;
   name: string;
   email: string;
-  tier: ScoutTier;
-  tierLabel: string;
+  // Descriptive, not ranked — the program doesn't sort scouts into tiers.
+  // e.g. "Founder", "Ex-VC", "Operator".
+  profile: string;
   title: string;
   affiliation: string;
   coverage: string; // vertical or geography they own
@@ -91,6 +90,22 @@ export interface Deal {
   reviewingPartner: string;
   partnerNotes: string;
   pitch: string; // the scout's own one-line case for the company — the memo itself
+  // The mini memo every scout writes per deal — problem, product, team, and
+  // why this one's worth a check. Null on older/seeded deals that predate
+  // this requirement, which fall back to displaying `pitch` instead.
+  problemDesc: string | null;
+  productDesc: string | null;
+  teamDesc: string | null;
+  whyGreatDesc: string | null;
+  // What the scout actually asked for at submission. Deals at or under the
+  // full-autonomy threshold are auto-approved for this amount with no
+  // partner review; above it, it's carried into the Fund Portal queue as
+  // the suggested ticket, capped at the program's hard maximum.
+  requestedTicketUsd: number | null;
+  // True when this deal cleared straight to "approved" under the scout's
+  // own authority (ticket at or under SCOUT_AUTONOMY_CAP_USD) rather than
+  // through a partner decision.
+  autonomyApproved: boolean;
   // The "more info" arm of the first-look response. A partner can send a
   // question back instead of deciding; the deal waits on the scout until
   // they answer, then returns to the decision queue.
@@ -106,10 +121,10 @@ export interface Deal {
   // before they can decide.
   conflictDisclosed: boolean;
   conflictNotes: string | null;
-  // Attribution. An intro only earns the scout credit — per-deal carry and
-  // progress toward a milestone — if the fund had no prior contact with the
-  // company. If someone here had already met them or been introduced, the
-  // deal can still proceed; it just doesn't count as sourced.
+  // Attribution. An intro only earns the scout credit, per-deal carry, if
+  // the fund had no prior contact with the company. If someone here had
+  // already met them or been introduced, the deal can still proceed; it
+  // just doesn't count as sourced.
   scoutAttributed: boolean;
   priorContactNote: string | null;
   // A separate decision from the original scout ticket — whether the fund
@@ -117,6 +132,16 @@ export interface Deal {
   // next priced round. Only actionable while stage is "follow_on_watch".
   followOnDecision: FollowOnDecision;
   followOnCheckUsd: number | null;
+  // The legal/ops data the scout submits on an approved deal before a SAFE
+  // can be drafted: who the money actually goes to, and the proposed
+  // terms. The SAFE is generated from this, not assigned independently of
+  // it — see submitLegalData / generateSafe in deal-store.tsx.
+  legalEntityName: string | null; // legal name of the company receiving the investment
+  taxId: string | null; // NIF / company tax ID
+  proposedValuationCapUsd: number | null;
+  proposedDiscountPct: number | null;
+  proposedSafeDate: string | null; // ISO date, scout's proposed SAFE date
+  legalDataSubmittedAt: string | null; // gates "Generate SAFE" in the closing queue
   legalDocStatus: LegalDocStatus;
   safeTerms: SafeTerms | null;
   wireStatus: WireStatus;

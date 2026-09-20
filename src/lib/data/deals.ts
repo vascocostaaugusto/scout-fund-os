@@ -111,12 +111,14 @@ const STAGE_WEIGHTS: [DealStage, number][] = [
 
 const TOTAL_DEALS = 150;
 
-// Tier-1 operators are the most active sourcers by design (widest network,
-// most tenure); tier-3 specialists source fewer but higher-conviction deals.
-const TIER_ACTIVITY_WEIGHT: Record<1 | 2 | 3, number> = { 1: 1.35, 2: 1.0, 3: 0.75 };
-
+// Scouts aren't sorted into ranked tiers, but sourcing volume still varies
+// person to person in real life — each scout gets a stable, seeded weight
+// (derived from their id, not any ranking) rather than uniform activity.
 function buildScoutWeights() {
-  return scouts.map((s) => [s.id, TIER_ACTIVITY_WEIGHT[s.tier]] as const);
+  return scouts.map((s) => {
+    const local = makeRng(hashSeed(`activity:${s.id}`));
+    return [s.id, local.float(0.7, 1.4, 2)] as const;
+  });
 }
 
 function checkSizeFor(): number {
@@ -272,6 +274,19 @@ export const deals: Deal[] = Array.from({ length: TOTAL_DEALS }, (_, i) => {
     reviewingPartner: rng.pick(PARTNERS),
     partnerNotes: rng.pick(partnerNotesByStage[stage]),
     pitch: pitchFor(companyName, sector),
+    // Predates the mini-memo requirement — falls back to `pitch` in the UI.
+    problemDesc: null,
+    productDesc: null,
+    teamDesc: null,
+    whyGreatDesc: null,
+    requestedTicketUsd: null,
+    autonomyApproved: false,
+    legalEntityName: null,
+    taxId: null,
+    proposedValuationCapUsd: null,
+    proposedDiscountPct: null,
+    proposedSafeDate: null,
+    legalDataSubmittedAt: null,
     infoRequest: null,
     infoRequestedAt: null,
     infoResponse: null,

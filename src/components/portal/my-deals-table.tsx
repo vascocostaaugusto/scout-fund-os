@@ -22,7 +22,7 @@ export function MyDealsTable({ scoutId }: { scoutId: string }) {
   if (rows.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-border bg-card px-4 py-10 text-center text-sm text-muted-foreground">
-        No memos submitted yet — your first intro will show up here as soon as you submit it.
+        No deals submitted yet — your first one will show up here as soon as you submit it.
       </div>
     );
   }

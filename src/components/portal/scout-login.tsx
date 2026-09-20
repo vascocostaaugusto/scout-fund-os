@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { ShapersWordmark } from "@/components/brand/shapers-wordmark";
 import { scouts } from "@/lib/data";
-import { TierBadge } from "@/components/network/tier-badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +65,7 @@ export function ScoutLogin() {
                 <span className="truncate text-sm font-medium text-foreground">{s.name}</span>
                 <span className="truncate text-xs text-muted-foreground">{s.email}</span>
               </div>
-              <TierBadge tier={s.tier} />
+              <span className="shrink-0 text-[11px] text-muted-foreground">{s.profile}</span>
               {selected === s.id ? <Check className="size-4 shrink-0 text-primary" /> : null}
             </button>
           ))}

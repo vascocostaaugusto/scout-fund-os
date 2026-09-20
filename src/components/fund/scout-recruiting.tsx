@@ -2,7 +2,6 @@
 
 import { UserPlus, ArrowRight, X } from "lucide-react";
 import { useCandidateStore } from "@/lib/candidate-store";
-import { TierBadge } from "@/components/network/tier-badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import type { CandidateStage } from "@/lib/data";
@@ -49,7 +48,9 @@ export function ScoutRecruiting() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-foreground">{c.name}</span>
-                    <TierBadge tier={c.proposedTier} />
+                    <span className="rounded-full border border-border/60 px-2 py-0.5 text-[11px] text-muted-foreground">
+                      {c.proposedProfile}
+                    </span>
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {c.proposedCoverage} · {c.affiliation} · referred by {c.referredBy}

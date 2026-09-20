@@ -18,7 +18,7 @@ export default function NetworkPage() {
         icon={Users}
         tagline="Program component"
         title="Scout Network"
-        description="The active roster, tiered by coverage — who's sourcing, and how much they've moved."
+        description="The active roster, by coverage — who's sourcing, and how much they've moved."
       />
 
       <LiveRosterStats />
@@ -27,7 +27,7 @@ export default function NetworkPage() {
         <LiveRosterTable />
       </Section>
 
-      <Section title="Sourcing activity" subtitle="Shading tracks tier — Tier 1 operators carry the widest network and, expectedly, the highest memo volume.">
+      <Section title="Sourcing activity" subtitle="Memo volume per scout — operators with the widest existing network tend to source the most.">
         <ScoutActivityChart />
       </Section>
 

@@ -9,11 +9,8 @@ const data = scouts
     name: s.name.split(" ")[0] + " " + s.name.split(" ")[1][0] + ".",
     memos: scoutStats.get(s.id)?.memosSubmitted ?? 0,
     funded: scoutStats.get(s.id)?.dealsFunded ?? 0,
-    tier: s.tier,
   }))
   .sort((a, b) => b.memos - a.memos);
-
-const TIER_OPACITY: Record<number, number> = { 1: 1, 2: 0.72, 3: 0.5 };
 
 export function ScoutActivityChart() {
   return (
@@ -51,8 +48,8 @@ export function ScoutActivityChart() {
             }
           />
           <Bar dataKey="memos" radius={[4, 4, 0, 0]} maxBarSize={22}>
-            {data.map((d, i) => (
-              <Cell key={i} fill="var(--chart-1)" fillOpacity={TIER_OPACITY[d.tier]} />
+            {data.map((_, i) => (
+              <Cell key={i} fill="var(--chart-1)" />
             ))}
           </Bar>
         </BarChart>

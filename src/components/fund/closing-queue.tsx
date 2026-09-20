@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Send, Stamp, Landmark, CheckCircle2, RotateCcw } from "lucide-react";
+import { FileText, Send, Stamp, Landmark, CheckCircle2, RotateCcw, Bell, Clock } from "lucide-react";
 import { scoutById } from "@/lib/data";
 import { useDealStore } from "@/lib/deal-store";
 import { formatUsd, formatDate } from "@/lib/format";
@@ -77,6 +77,15 @@ export function ClosingQueue() {
                   ) : null}
                 </div>
 
+                {d.legalEntityName ? (
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 rounded-lg border border-border/60 bg-background/40 px-3 py-2 text-[11px] text-muted-foreground">
+                    <span>
+                      <span className="text-foreground">{d.legalEntityName}</span> · NIF {d.taxId}
+                    </span>
+                    {d.proposedSafeDate ? <span>SAFE date {formatDate(d.proposedSafeDate)}</span> : null}
+                  </div>
+                ) : null}
+
                 {/* Closing tracker: SAFE drafted → sent → executed → wire sent → wired */}
                 <div className="relative flex items-start pt-1">
                   {/* connector track, spanning first icon centre (10%) to last (90%) */}
@@ -111,8 +120,23 @@ export function ClosingQueue() {
                   })}
                 </div>
 
+                {d.legalDocStatus === "not_started" && !d.legalDataSubmittedAt ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-warning/40 bg-warning/[0.06] px-3 py-2 text-[11px] text-warning">
+                    <Clock className="size-3.5 shrink-0" />
+                    Awaiting legal and SAFE data from the scout: name, NIF, amount, cap, discount, date. The
+                    SAFE can&apos;t be drafted until that&apos;s on file.
+                  </div>
+                ) : null}
+
+                {legalDone && d.wireStatus === "not_initiated" ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-primary/40 bg-primary/[0.06] px-3 py-2 text-[11px] text-primary">
+                    <Bell className="size-3.5 shrink-0" />
+                    Wire reminder: the founder signed. Nothing else is blocking this check.
+                  </div>
+                ) : null}
+
                 <div className="flex flex-wrap items-center gap-2">
-                  {d.legalDocStatus === "not_started" ? (
+                  {d.legalDocStatus === "not_started" && d.legalDataSubmittedAt ? (
                     <Button size="sm" onClick={() => generateSafe(d.id)}>
                       <FileText className="size-3.5" />
                       Generate SAFE

@@ -3,7 +3,7 @@
 // Same pattern as deal-store.tsx: session-local overrides over the seeded
 // candidates array, persisted to localStorage. Advancing a candidate to
 // "signed" does not splice them into the live `scouts` roster — that would
-// cascade into every tier count and aggregate in the app. It's left as an
+// cascade into every roster count and aggregate in the app. It's left as an
 // explicit, honest stopping point (see the confirmation copy in the panel).
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
